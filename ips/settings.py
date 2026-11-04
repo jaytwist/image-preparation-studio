@@ -31,6 +31,7 @@ class Settings:
     comfy_url: str = "http://127.0.0.1:8188"
     comfy_vram_min_free_mb: int = 4000
     recursive_import: bool = True
+    auto_run_on_open: bool = True        # Prepare tab runs Smart Auto immediately after import
 
     @staticmethod
     def load(path: Path | None = None) -> "Settings":
