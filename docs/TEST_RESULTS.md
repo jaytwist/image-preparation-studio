@@ -92,11 +92,65 @@ clean photo/portrait/screenshot/AI images; no re-sharpening of oversharpened, no
 Misses: 16-bit P3 fixture with purely Gaussian noise (DRUNet beat SCUNet; regret 0.078) and a q60 AI portrait
 where no-op tied FBCNN on the composite although PSNR/SSIM/ΔE favour FBCNN (37.4→40.1 dB).
 
-### 5b. Held-out set (never used for tuning; router frozen at commit `e62dfe2`, originally `b65ff9d`)
-**Pending** — held-out evaluation running; results will replace this line.
+### 5b. Held-out set — the unbiased estimate (`reports/eval/holdout_results.json`)
+66 items never used for tuning (`ips/eval/holdout.py`): 16 real historical/degraded photos (CodeFormer, GFPGAN,
+Solvay 1927, RealSRSet) · 7 genuine AI images (FLUX, FLUX.2, Chroma, Qwen-Image, HiDream, SD3.5, Hunyuan) + 7
+metadata-stripped JPEG copies · 3 real UI screenshots + 3 JPEG copies · 30 synthetic edits on unseen sources with
+different operators (cool/green casts, Gaussian noise, beauty filter, local-contrast HDR, r=1 oversharpening, q20).
+Router frozen before evaluation at `7d2bc1a` (recorded as `6bf3cce` before commit re-authoring; core code identical).
 
-### 5c. Identity-threshold validation on unseen faces (CodeFormer cropped faces)
-**Pending** — unseen-face validation running; results will replace this line.
+| Measure (frozen router) | Tuning set | **Held-out** |
+|---|---|---|
+| Content-class accuracy | 95 % | **88 %** (historical 100 %, screenshots 100 %, synthetic 97 %, AI 50 %: the 7 metadata-stripped AI JPEGs read as photos, by design) |
+| Expectation checks (no-op on clean / no re-sharpen / no re-smooth / AI untouched) | 10/10 | **22/24** (failed: two clean Set5 portraits received denoise/WB) |
+| Auto ranked first of its neighbourhood (composite heuristic) | 87 % | **47 %** |
+| Auto not worse than input — SSIM | – | **34/38** |
+| Auto not worse than input — ΔE (colour) | – | **28/38** |
+
+Findings (raw metrics; the composite heuristic proved misleading and is not used for conclusions):
+* **Genuine AI images (7/7) and real screenshots (3/3) were correctly left untouched.**
+* **JPEG cleanup generalises**: FBCNN improved SSIM and PSNR on 7/7 stripped AI JPEGs (+2.9 to +5.8 dB) and 3/3
+  real screenshot JPEGs (SSIM +0.05 to +0.06), although the composite ranked it last on four AI items.
+* **Automatic white balance does not generalise**: on unseen photos it *raised* colour error in 8/8 cases
+  (e.g. clean portrait ΔE 0 → 4.8; cool-cast recall only 3/9). Gray-world-family estimates remove scene colour together
+  with any cast. **Post-hoc fix** (commit after evaluation): Faithful Auto no longer white-balances photos; it reports the
+  cast and offers WB in Manual (scans keep automatic correction). Recomputed from the measured "Auto − WB" variants:
+  not-worse-ΔE 28 → **35/38**, SSIM unchanged. *Post-hoc: a new held-out set is needed for an unbiased confirmation.*
+* Diagnosis precision/recall (actionable issues): JPEG P 0.60 / R 1.00 · noise P 0.40 / R 1.00 · colour cast
+  P 0.38 / R 0.33 · oversharpening/HDR R 0.00 (6 missed — but Auto never sharpened them, so no harm) ·
+  oversmoothing R 0.00 (2 missed; flag only).
+* Held-out observation for review: on the colourised 1927 Solvay photograph Auto removed part of the warm
+  colourisation (intent unknowable) — resolved by the photo-WB change above.
+
+### 5c. Identity review signals on unseen faces
+Two CodeFormer face sets (8 + 9 faces) never used for tuning, ×0.5 → ×2 by each method, beauty-filtered copies,
+and JPEG q30 copies cleaned by FBCNN (legitimate — must not be flagged). Files: `reports/eval/identity_validation*.json`.
+
+| Case | Set 1 (thresholds tuned on tuning corpus) | Set 2 |
+|---|---|---|
+| Lanczos / SwinIR ×2 | 0/6 flagged | 0/3 |
+| Real-ESRGAN ×2plus | 6/6 flagged | 3/3 |
+| Beauty filter | 6/6 flagged | 3/3 |
+| Real-ESRGAN general v3, RealPLKSR | 0/6 (similarity 0.996 / 0.999 on large clear faces) | 0/3 |
+| FBCNN on q30 (legitimate) | **5/6 flagged — false positives** | 2/3 |
+| Faces detected | 6/8 | 3/9 |
+
+Two defects followed: (a) after JPEG/denoise, legitimate cleanup (skin/non-face texture ratio 0.82–1.30) and beauty
+smoothing (0.71–1.04) overlap → skin texture is now an informational note after artifact removal, not a flag;
+(b) tight crops defeated the detector → padded re-detection (17/17 detected). Both face sets were used to diagnose
+these, so they are no longer clean; the final check used the held-out Set5 face, never used for identity work:
+
+| Held-out woman ×2 (final thresholds) | Flagged | Similarity vs source |
+|---|---|---|
+| Lanczos, SwinIR ×2 | no | 0.998 |
+| Real-ESRGAN ×2plus / ×4plus / general | **yes / yes / yes** | 0.939 / 0.954 / 0.963 |
+| RealPLKSR | no | 0.984 |
+
+Visual inspection (contact sheets) agrees: all Real-ESRGAN outputs show plastic skin and darkened, redrawn eyes;
+RealPLKSR raises contrast/saturation. **RealPLKSR evades every automatic signal in all sets**; it remains
+Manual-only and any GAN/"balanced" output goes to the Review Queue by policy. Faces under ~140 px (held-out Set5
+"head" at ×0.5) are not detected, so identity cannot be assessed on very small images.
+Re-run of both face sets with the final thresholds: **pending** (running).
 
 ## 6. Defects found by testing and fixed (all re-tested)
 
@@ -111,6 +165,11 @@ where no-op tied FBCNN on the composite although PSNR/SSIM/ΔE favour FBCNN (37.
 | 7 | UI test crash | worker signal object freed while queued → segfault | workers kept alive until delivery |
 | 8 | test design | colour-cast estimator confused orange cat with cast; fade vs natural low contrast | 3-estimator consensus + scene-hue dominance; fade needs scan evidence |
 | 9 | bench | one-time model loads counted in warm timings | separated |
+| 10 | unseen-face validation | legitimate JPEG cleanup flagged as skin smoothing (5/6) | texture → note after JPEG/denoise |
+| 11 | unseen-face validation | tight face crops not detected (8/17 missed) | padded re-detection (17/17) |
+| 12 | held-out evaluation | automatic WB raised colour error on 8/8 unseen photos | no automatic WB on photos (Faithful) |
+| 13 | text evaluation | pixel/glyph metrics cannot detect garbled letters | OCR-based dev evaluation; policy regression test |
+| 14 | held-out review | no-ground-truth sheets labelled the source "ground truth" | relabelled |
 
 ## 7. Performance (not the acceptance measurement)
 

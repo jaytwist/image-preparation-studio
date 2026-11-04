@@ -148,7 +148,8 @@ class Harness:
             results["tasks"][task] = rows
         return results
 
-    def contact_sheet(self, name: str, gt: np.ndarray, outs: dict[str, np.ndarray], faces) -> None:
+    def contact_sheet(self, name: str, gt: np.ndarray, outs: dict[str, np.ndarray], faces,
+                      ref_label: str = "ground truth") -> None:
         """Side-by-side crops (face or centre) for human visual review."""
         h, w = gt.shape[:2]
         if faces:
@@ -159,7 +160,7 @@ class Harness:
             cw, ch = min(w, 256), min(h, 256)
             x0, y0 = (w - cw) // 2, (h - ch) // 2
             x1, y1 = x0 + cw, y0 + ch
-        tiles = [("ground truth", gt)] + list(outs.items())
+        tiles = [(ref_label, gt)] + list(outs.items())
         size = 256
         cells = []
         for lab, im in tiles:
@@ -204,7 +205,7 @@ class Harness:
                       f"tex×{m['texture_vs_lanczos']:.2f} face {fi.get('face_sim_min', float('nan')):.3f}", flush=True)
             ref = cv2.resize(src, (src.shape[1] * 2, src.shape[0] * 2), interpolation=cv2.INTER_NEAREST)
             sf = [type(f)(box=tuple(v * 2 for v in f.box), score=f.score) for f in faces]
-            self.contact_sheet(f"real__{iid}", ref, outs, sf)
+            self.contact_sheet(f"real__{iid}", ref, outs, sf, ref_label="source (no ground truth)")
         return rows
 
 
@@ -522,7 +523,8 @@ def holdout_eval(out: Path, frozen_commit: str) -> dict[str, Any]:
                 rep = compare_faces(src.image.rgb, o, src.diag.faces, h.fa) if src.diag.faces else None
                 row["identity_vs_source"] = rep.to_json() if rep else None
                 ident.append(row["item"])
-                h.contact_sheet(f"holdout_auto__{it['id']}", src.image.rgb, {"Auto ×1": o}, src.diag.faces)
+                h.contact_sheet(f"holdout_auto__{it['id']}", src.image.rgb, {"Auto ×1": o}, src.diag.faces,
+                                ref_label="source (no ground truth)")
             rows.append(row)
             print(f"[holdout] {it['id']:42s} {a.content_class:12s} {r1.summary()[:70]:70s} "
                   f"{row.get('auto_rank_composite', '')}/{row.get('n_candidates', '')} {checks}", flush=True)
