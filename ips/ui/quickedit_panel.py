@@ -1,7 +1,6 @@
 """Quick Edit tab: mask-based lightweight edits. Every save is an *Edited Variant* or *Transparent Cutout*."""
 from __future__ import annotations
 
-import time
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal

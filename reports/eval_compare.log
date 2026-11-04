@@ -9,3 +9,8 @@
 [upscale_x2] group_x2           lanczos                  psnr 36.98 ssim 0.9782 ΔE 0.73 tex 0.59 face 0.986 t 0.1s
 [upscale_x2] group_x2           swinir_x2                psnr 37.51 ssim 0.9823 ΔE 0.71 tex 0.94 face 0.984 t 316.1s
 [upscale_x2] group_x2           realesrgan_x2plus        psnr 29.71 ssim 0.9361 ΔE 2.50 tex 1.20 face 0.883 t 69.2s
+[upscale_x2] group_x2           realesrgan_x4plus        psnr 30.16 ssim 0.9486 ΔE 2.50 tex 1.25 face 0.914 t 125.6s
+[upscale_x2] group_x2           realesr_general_x4v3     psnr 29.41 ssim 0.9424 ΔE 2.39 tex 1.51 face 0.915 t 9.4s
+[upscale_x2] group_x2           realplksr_nomos2_x4      psnr 30.14 ssim 0.9518 ΔE 2.46 tex 1.37 face 0.940 t 49.3s
+[upscale_x2] ui_x2              lanczos                  psnr 22.94 ssim 0.8742 ΔE 1.74 tex 0.39 face nan t 0.0s
+[upscale_x2] ui_x2              nearest                  psnr 22.41 ssim 0.8926 ΔE 1.48 tex 0.63 face nan t 0.0s

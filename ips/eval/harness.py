@@ -369,7 +369,7 @@ def write_auto_md(rep: dict[str, Any], path: Path) -> None:
     for it in d["items"]:
         L.append(f"| {it['item']} | {', '.join(it['truth_issues'])} | {', '.join(it['pred_issues'])} | "
                  f"{it['auto_x1']} | {it['checks']} |")
-    L += ["", f"## Routing vs neighbourhood (ablations/substitutions), ×1", "",
+    L += ["", "## Routing vs neighbourhood (ablations/substitutions), ×1", "",
           f"Auto ranked first in **{r['top1_rate']:.0%}** of items; mean composite regret **{r['mean_regret']}**.", "",
           "| item | Auto | best candidate | Auto rank | regret |", "|---|---|---|---|---|"]
     for it in r["items"]:

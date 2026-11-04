@@ -8,7 +8,7 @@ Checksums were computed on the downloaded files; ``tools/fetch_models.py`` verif
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 

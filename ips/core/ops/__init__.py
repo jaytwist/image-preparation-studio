@@ -159,7 +159,6 @@ def face_mask(shape: tuple[int, int], boxes: list[tuple[float, float, float, flo
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         ax, ay = (x1 - x0) / 2 * expand, (y1 - y0) / 2 * expand * 1.15
         cv2.ellipse(m, (int(cx), int(cy)), (max(1, int(ax)), max(1, int(ay))), 0, 0, 360, 1.0, -1)
-        sigma = max(1.0, 0.12 * min(ax, ay))
         m = np.maximum(m, 0)
     if m.any():
         sig = max(1.0, 0.06 * math.sqrt(m.sum() / max(1, len(boxes))))

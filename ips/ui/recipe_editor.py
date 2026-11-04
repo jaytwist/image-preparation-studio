@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout
                                QPushButton, QSlider, QVBoxLayout, QWidget)
 
 from ..backends.registry import MODELS
-from ..core.recipes import CLASSICAL_PARAMS, METHODS, OP_KINDS, Operation, Recipe, default_op, map_strength
+from ..core.recipes import METHODS, OP_KINDS, Operation, Recipe, default_op, map_strength
 
 EXTRA_METHODS: dict[str, list[str]] = {}   # e.g. {"upscale": ["comfy:upscale:<model file>"]} when ComfyUI is up
 

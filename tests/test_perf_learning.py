@@ -1,6 +1,4 @@
 """Fast Profile gating (empirical 15 s contract) and evidence-driven learning from corrections."""
-import json
-
 from ips.core.perf import FastProfile, bucket, route_key
 
 

@@ -1,5 +1,4 @@
 """Decode/encode, colour management, bit depth, alpha, orientation, metadata transfer + audit."""
-import io
 import threading
 
 import numpy as np

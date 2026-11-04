@@ -3,13 +3,10 @@
 These are code-level UI checks. Real Windows desktop validation (HiDPI, drag/drop from Explorer,
 GPU responsiveness) is tracked separately in docs/TEST_RESULTS.md.
 """
-import os
-import time
-from pathlib import Path
 
 import numpy as np
 import pytest
-from PySide6.QtCore import QPointF, QRectF, Qt
+from PySide6.QtCore import QPointF, Qt
 
 from tests.conftest import ROOT
 

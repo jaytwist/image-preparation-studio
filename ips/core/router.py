@@ -268,7 +268,8 @@ def _choose_upscaler(a: Assessment, req: RouteRequest, scale: float, rat: list[s
             op.why = (f"Balanced mode → {MODELS[mid].name} (GAN: synthesises plausible texture; not a faithful "
                       "reconstruction)")
             rat.append(op.why)
-            flags.append("Balanced (GAN) upscale: fine texture is synthesised. Review faces and text.")
+            flags.append("Balanced (GAN) upscale: fine texture is synthesised; in the portrait benchmark Real-ESRGAN "
+                         "visibly smoothed skin (beautification class). Review faces and text.")
             ops.append(op)
             if MODELS[mid].scale != scale:
                 rat.append(f"Model ×{MODELS[mid].scale} result resized to exact ×{scale:g} with area/Lanczos.")

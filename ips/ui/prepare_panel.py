@@ -105,7 +105,7 @@ class PreparePanel(QWidget):
         row = QHBoxLayout()
         self.mode = QComboBox()
         self.mode.addItem("Faithful (default)", "faithful")
-        self.mode.addItem("Balanced (GAN texture, labelled)", "balanced")
+        self.mode.addItem("Balanced (GAN texture – can smooth skin/alter faces; always reviewed)", "balanced")
         self.mode.addItem("Generative Recovery (not available in v1)", "generative")
         self.mode.model().item(2).setEnabled(False)
         row.addWidget(self.mode, 2)

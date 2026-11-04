@@ -14,7 +14,6 @@ import json
 import logging
 import sys
 import time
-from pathlib import Path
 
 
 def _studio(args):
