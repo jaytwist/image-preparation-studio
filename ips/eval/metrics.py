@@ -104,7 +104,51 @@ def face_identity(out: np.ndarray, ref: np.ndarray, faces, analyzer) -> dict[str
         r["face_texture_ratio"] = float(np.mean(ftex))
     if drift:
         r["landmark_drift_max"] = float(max(drift))
+    r.update(face_regions(o, ref, faces))
     return r
+
+
+def face_regions(o: np.ndarray, ref: np.ndarray, faces) -> dict[str, float]:
+    """Face fidelity beyond embeddings: structure (SSIM), skin colour (ΔE2000 in the central face),
+    fine and mid-band skin texture ratios. Worst face reported (min SSIM, max ΔE, texture furthest from 1)."""
+    ss, de, fine, mid = [], [], [], []
+    h, w = ref.shape[:2]
+    for f in faces[:8]:
+        if f.size < 24:
+            continue
+        x0, y0, x1, y1 = [int(round(v)) for v in f.box]
+        x0, y0, x1, y1 = max(0, x0), max(0, y0), min(w, x1), min(h, y1)
+        if x1 - x0 < 16 or y1 - y0 < 16:
+            continue
+        lr, lo = luma(ref[y0:y1, x0:x1]), luma(o[y0:y1, x0:x1])
+        ss.append(float(structural_similarity(lr, lo, data_range=1.0)))
+        cy0, cy1, cx0, cx1 = y0 + (y1 - y0) // 4, y1 - (y1 - y0) // 4, x0 + (x1 - x0) // 4, x1 - (x1 - x0) // 4
+        de.append(float(np.mean(deltaE_ciede2000(rgb2lab(ref[cy0:cy1, cx0:cx1]), rgb2lab(o[cy0:cy1, cx0:cx1])))))
+        fine.append(hf_energy(lo) / (hf_energy(lr) + 1e-6))
+        dog = lambda x: float(np.abs(cv2.GaussianBlur(x, (0, 0), 1.0) - cv2.GaussianBlur(x, (0, 0), 3.0)).mean())
+        mid.append(dog(lo) / (dog(lr) + 1e-6))
+    if not ss:
+        return {}
+    far = lambda v: max(v, key=lambda x: abs(np.log(max(x, 1e-3))))
+    return {"face_ssim_min": float(min(ss)), "skin_delta_e_max": float(max(de)),
+            "face_fine_texture_worst": float(far(fine)), "face_mid_texture_worst": float(far(mid))}
+
+
+def text_fidelity(out: np.ndarray, gt: np.ndarray) -> dict[str, float]:
+    """Glyph fidelity on text/UI: SSIM inside the GT text mask and the fraction of glyph pixels whose
+    binarised value differs (catches invented/garbled letters that global metrics average away)."""
+    from ..core.ops import text_mask
+    o = match(out, gt)
+    m = text_mask(gt, dilate=1) > 0.5
+    if m.sum() < 100:
+        return {}
+    yg, yo = luma(gt), luma(o)
+    ys, xs = np.where(m)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    _, smap = structural_similarity(yg[y0:y1, x0:x1], yo[y0:y1, x0:x1], data_range=1.0, full=True)
+    thr = 0.5 * (np.percentile(yg[m], 10) + np.percentile(yg[m], 90))
+    bg, bo = yg < thr, yo < thr
+    return {"text_ssim": float(smap[m[y0:y1, x0:x1]].mean()), "glyph_error": float((bg != bo)[m].mean())}
 
 
 def composite(m: dict[str, Any]) -> float:
@@ -116,6 +160,10 @@ def composite(m: dict[str, Any]) -> float:
     s += 0.15 * (1 - min(1.0, m.get("delta_e", 10) / 10))
     s += 0.15 * (1 - min(1.0, abs(np.log(max(1e-3, m.get("texture_ratio", 1.0))))))
     s += 0.10 * (1 - min(1.0, m.get("structure_change", 1)))
+    if "glyph_error" in m:
+        s -= 1.0 * m["glyph_error"]  # garbled glyphs dominate for text images
+    if "face_ssim_min" in m:
+        s += 0.10 * m["face_ssim_min"] - 0.01 * m.get("skin_delta_e_max", 0)
     if "face_sim_min" in m:
         s += 0.30 * m["face_sim_min"]
         if m["face_sim_min"] < 0.80:

@@ -56,7 +56,9 @@ def test_duplicates_and_name_collisions(studio_nomodels, corpus, tmp_path):
     outs = studio_nomodels.db.query("SELECT path FROM outputs WHERE batch_id=?", (bid,))
     paths = [o["path"] for o in outs]
     assert len(paths) == len(set(paths)) == 6  # 3 unique sources × 2 profiles, no overwrite
-    assert any("/dupes/a/" in p for p in paths) and any("/dupes/b/" in p for p in paths)
+    parts = [Path(p).parts for p in paths]
+    assert any(("dupes", "a") == pt[i:i + 2] for pt in parts for i in range(len(pt))) and \
+        any(("dupes", "b") == pt[i:i + 2] for pt in parts for i in range(len(pt)))
 
 
 def test_crash_recovery_and_verified_skip(studio_nomodels, corpus, tmp_path):

@@ -1,0 +1,42 @@
+{
+  "ground_truth": {
+    "ocr_cer": 0.0,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review LC Overview Invoice #1042 2026-01-10 $1,049.00 Approved [Ol Reports Invoice #1043 2026-02-"
+  },
+  "lanczos": {
+    "ocr_cer": 0.4525043177892919,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review LJ Overview lneeekce ZLO32 WPRG-O1-10 51.059. agoroved [) Reports lreeeice T1033 WPRMB-O2-"
+  },
+  "nearest": {
+    "ocr_cer": 0.540587219343696,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review DO Gerview invoice L0G DORS-0L-10 1.045.090 Aponved (CD Reports Incite SLOSS DEST) sl. App"
+  },
+  "swinir_x2": {
+    "ocr_cer": 0.44905008635578586,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review 0 Overview Inechce F1GAS AVZS-O1-20 $1.049.00 Aga rover (CD Paports Irevedce SLOSS AZ-C2-1"
+  },
+  "realesrgan_x2plus": {
+    "ocr_cer": 0.6701208981001727,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review OD Orerrion UCP COLON. NIGOWO 3.0190) sono! DD Repent: Mace AOU NIGAM $1206) Atoryred UuMU"
+  },
+  "realesrgan_x4plus": {
+    "ocr_cer": 0.4905008635578584,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard ~- Q3 Review OD Overview Ice Z1OIZ WBH-01-10 41.0190 asorwred DC Reports WnCe 21033) WD5-02-11 91.1490"
+  },
+  "realesr_general_x4v3": {
+    "ocr_cer": 0.46459412780656306,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review OD Orerviow UNCE ZLOAZ DTH-O1-10 $1.019.0) acorured DD Fepors tice 21098 WIH-O2-1L $1.1499"
+  },
+  "realplksr_nomos2_x4": {
+    "ocr_cer": 0.26770293609671847,
+    "ocr_ref_chars": 579,
+    "ocr_sample": "Project Dashboard \u2014 Q3 Review D Overview Incice B1042 2026-01-10 $1,019.00 Agoruved (DD Reports Immeice 1048 2026-02-)1 "
+  }
+}

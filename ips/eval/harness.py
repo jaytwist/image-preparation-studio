@@ -132,6 +132,8 @@ class Harness:
                     o, secs, load = self.run_recipe(src, r)
                     m = M.full_reference(o, gt)
                     m.update(M.face_identity(o, gt, gt_faces, self.fa))
+                    if it["content"] == "screenshot":
+                        m.update(M.text_fidelity(o, gt))
                     m["seconds_warm"] = round(secs, 3)
                     m["model_load_s"] = round(load, 3)
                     m["out_mp"] = round(o.shape[0] * o.shape[1] / 1e6, 3)
@@ -334,7 +336,8 @@ def write_compare_md(res: dict[str, Any], real: list[dict[str, Any]], path: Path
          "reported separately; `composite` is only a development ranking heuristic. Times are warm "
          "(model load excluded) on the device above — CPU numbers say nothing about the RTX 5070 Ti.", ""]
     cols = ["candidate", "psnr", "ssim", "delta_e", "texture_ratio", "structure_change", "blockiness",
-            "face_sim_min", "face_texture_ratio", "landmark_drift_max", "seconds_warm", "composite"]
+            "face_sim_min", "landmark_drift_max", "face_ssim_min", "skin_delta_e_max", "face_fine_texture_worst",
+            "face_mid_texture_worst", "text_ssim", "glyph_error", "seconds_warm", "composite"]
     for task, rows in res["tasks"].items():
         L.append(f"## {task}")
         for iid in dict.fromkeys(r["item"] for r in rows):

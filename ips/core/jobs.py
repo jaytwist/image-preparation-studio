@@ -41,7 +41,8 @@ def enumerate_inputs(paths: list[str | Path], recursive: bool = True) -> list[tu
             for f in sorted(x for x in it if x.is_file()):
                 if f.suffix.lower() in SUPPORTED_EXTS and not f.name.startswith("."):
                     rel = f.parent.relative_to(p)
-                    rel_dir = str(Path(p.name) / rel) if str(rel) != "." else p.name
+                    # stored POSIX-style so the library DB, reports and sidecars are portable across OSes
+                    rel_dir = (Path(p.name) / rel).as_posix() if str(rel) != "." else p.name
                     key = str(f.resolve())
                     if key not in seen:
                         seen.add(key)

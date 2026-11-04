@@ -134,3 +134,14 @@ def test_rationale_always_present(st, corpus):
     _, r = _route(st, corpus, "dslr/coffee_iso6400.jpg")
     assert r.rationale and all(o.why for o in r.ops)
     assert r.predicted_seconds is not None
+
+
+@pytest.mark.parametrize("mode", ["faithful", "balanced"])
+@pytest.mark.parametrize("rel", ["screenshot/ui_half.png", "screenshot/ui_clean.png"])
+def test_regression_no_learned_upscaler_on_text(st, corpus, rel, mode):
+    """Regression (evidence: reports/eval/ocr_ui_x2.json, docs/TEST_RESULTS.md): GAN/learned upscalers
+    produced legible-but-wrong text on the UI fixture (e.g. "$1,049.00" -> "$1,019.00", "Approved" ->
+    "Aprorved"). Text/UI content must never be routed to a learned upscaler by Auto, in any mode."""
+    _, r = _route(st, corpus, rel, mode=mode, scale=2)
+    ups = [o for o in r.ops if o.kind == "upscale"]
+    assert ups and all(not o.model_id for o in ups), r.summary()
