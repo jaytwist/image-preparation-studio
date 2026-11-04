@@ -14,6 +14,7 @@ class Settings:
     device: str = "auto"                 # auto | cuda | cpu
     tile: int = 0                        # 0 = per-model default
     max_cached_models: int = 3
+    unload_idle_minutes: int = 5         # release GPU memory for other apps when Studio is idle (0 = never)
     default_mode: str = "faithful"
     upscale_low_res_auto: bool = True
     identity_check: bool = True

@@ -175,6 +175,17 @@ class MainWindow(QMainWindow):
         self._comfy_timer = QTimer(self)
         self._comfy_timer.timeout.connect(self._probe_comfy)
         self._comfy_timer.start(15000)
+        self._idle_timer = QTimer(self)
+        self._idle_timer.timeout.connect(self._unload_idle)
+        self._idle_timer.start(30000)
+
+    def _unload_idle(self):
+        mins = self.studio.settings.unload_idle_minutes
+        if not mins or not self.studio._models_ok:
+            return
+        from ..backends import direct
+        if direct._BACKEND is not None and direct._BACKEND.unload_if_idle(mins * 60):
+            self.statusBar().showMessage(f"Models released from memory after {mins} idle minutes.")
 
     def _open_from_batch(self, path, jobref, rel):
         self.tabs.setCurrentWidget(self.prepare)

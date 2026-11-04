@@ -78,8 +78,11 @@ class DirectBackend:
         self.use_half = use_half and self.dev_info.kind == "cuda"
         self._cache: OrderedDict[str, Any] = OrderedDict()
         self.load_times_ms: dict[str, float] = {}
+        self.last_used = time.time()
         if self.dev_info.kind == "cpu":
             torch.set_num_threads(max(1, torch.get_num_threads()))
+        else:
+            torch.backends.cudnn.benchmark = True  # fixed tile shapes -> autotuned kernels
 
     # ------------------------------------------------------------------ loading
     def _load_descriptor(self, info: ModelInfo, variant: dict[str, Any] | None = None):
@@ -112,6 +115,7 @@ class DirectBackend:
     def get(self, model_id: str, params: dict[str, Any] | None = None):
         info = MODELS[model_id]
         key = self._key(model_id, params or {})
+        self.last_used = time.time()
         if key in self._cache:
             self._cache.move_to_end(key)
             return self._cache[key]
@@ -149,6 +153,16 @@ class DirectBackend:
     def unload_all(self) -> None:
         while self._cache:
             self._evict()
+
+    def unload_if_idle(self, idle_s: float) -> bool:
+        """Release VRAM for other local apps (ComfyUI / NH Maker 2) after *idle_s* seconds without use."""
+        if self._cache and time.time() - self.last_used > idle_s and GPU_LOCK.acquire(blocking=False):
+            try:
+                self.unload_all()
+                return True
+            finally:
+                GPU_LOCK.release()
+        return False
 
     def is_loaded(self, model_id: str, params: dict[str, Any] | None = None) -> bool:
         return self._key(model_id, params or {}) in self._cache
@@ -199,10 +213,13 @@ class DirectBackend:
             mult = max(1, int(getattr(req, "multiple_of", 1) or 1))
             minimum = int(getattr(req, "minimum", 0) or 0)
             tile = self.tile_override or info.tile
-            if self.dev_info.kind == "cuda":
+            if self.dev_info.kind == "cuda" and not self.tile_override:
                 free = torch.cuda.mem_get_info()[0] // 2**20
                 if free < 3000:
                     tile = min(tile, 256)
+                elif free > 8000:
+                    # larger tiles amortise overlap on 16 GB cards; transformer (SwinIR) kept smaller
+                    tile = max(tile, 384 if model_id.startswith("swinir") else 512)
             h, w = rgb.shape[:2]
             out = np.zeros((h * scale, w * scale, 3), np.float32)
             weight = np.zeros((h * scale, w * scale, 1), np.float32)
