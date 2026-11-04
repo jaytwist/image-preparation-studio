@@ -25,3 +25,4 @@ reports/eval/*.sqlite*
 reports/*.log
 reports/ui/
 fixtures/holdout/
+reports/ci/*.log
