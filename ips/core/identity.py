@@ -173,13 +173,17 @@ class IdentityReport:
         return asdict(self)
 
 
-# thresholds calibrated on the synthetic/real portrait fixtures (see docs/AUTO_RECIPES.md)
-SIM_REVIEW = 0.80
+# Thresholds calibrated on TUNING faces (portrait/group fixtures; docs/TEST_RESULTS.md §identity) and
+# validated on unseen CodeFormer faces. Comparison is output-vs-source at source resolution, so
+# upscaling artefacts above the source's Nyquist are invisible to texture/SSIM; for upscales the
+# embedding similarity is therefore the primary (and much stricter) signal.
+SIM_REVIEW = 0.80               # 1x restoration (legitimate heavy JPEG cleanup reached 0.827)
+SIM_REVIEW_UPSCALE = 0.98       # faithful upscalers >= 0.993; GAN upscalers <= 0.97
 LANDMARK_REVIEW = 0.06
-SMOOTHING_REVIEW = 0.60
-FINE_SMOOTHING_REVIEW = 0.60
+SMOOTHING_REVIEW = 0.92         # mid-band skin texture: beauty filter 0.86, legitimate restorations >= 0.98
+FINE_SMOOTHING_REVIEW = 0.45    # fine texture alone is not discriminative (noise/JPEG removal lowers it)
 INVENTED_REVIEW = 1.80
-SKIN_DE_REVIEW = 6.0
+SKIN_DE_REVIEW = 1.5            # only when no colour operation ran (GAN 1.8, legitimate <= 1.1)
 
 
 def _ssim(a: np.ndarray, b: np.ndarray) -> float:
@@ -188,13 +192,17 @@ def _ssim(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
-                  analyzer: FaceAnalyzer | None = None, denoise_applied: bool = False) -> IdentityReport:
+                  analyzer: FaceAnalyzer | None = None, denoise_applied: bool = False,
+                  upscaled: bool | None = None, color_changed: bool = False) -> IdentityReport:
     """Compare *faces* (detected on source) between source and output (any scale, same framing)."""
     if not faces:
         return IdentityReport(available=True, method="no faces detected")
     analyzer = analyzer or FaceAnalyzer.get()
     sh, sw = src_rgb.shape[:2]
     oh, ow = out_rgb.shape[:2]
+    if upscaled is None:
+        upscaled = ow > sw * 1.05
+    sim_thr = SIM_REVIEW_UPSCALE if upscaled else SIM_REVIEW
     if (oh, ow) != (sh, sw):
         out_s = cv2.resize(out_rgb, (sw, sh), interpolation=cv2.INTER_AREA)
     else:
@@ -240,21 +248,20 @@ def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
                 iod = float(np.linalg.norm(a[0] - a[1])) + 1e-6
                 fd.landmark_drift_iod = float(np.linalg.norm(a - b, axis=1).mean() / iod)
         # flags
-        if fd.embedding_similarity is not None and fd.embedding_similarity < SIM_REVIEW:
-            fd.flags.append(f"identity embedding similarity {fd.embedding_similarity:.3f} < {SIM_REVIEW}")
+        if fd.embedding_similarity is not None and fd.embedding_similarity < sim_thr:
+            fd.flags.append(f"identity embedding similarity {fd.embedding_similarity:.3f} < {sim_thr}"
+                            f"{' (upscaled output)' if upscaled else ''}")
         if fd.landmark_drift_iod is not None and fd.landmark_drift_iod > LANDMARK_REVIEW:
             fd.flags.append(f"landmark geometry drift {fd.landmark_drift_iod:.3f} IOD > {LANDMARK_REVIEW}")
-        # beautification removes fine skin texture first; denoising legitimately removes fine noise, so the
-        # fine-texture threshold is relaxed when a denoise op ran (mid-band texture must still survive).
-        fine_thr = FINE_SMOOTHING_REVIEW * (0.6 if denoise_applied else 1.0)
+        fine_thr = FINE_SMOOTHING_REVIEW * (0.8 if denoise_applied else 1.0)
         if (fd.mid_texture_ratio is not None and fd.mid_texture_ratio < SMOOTHING_REVIEW) or \
                 (fd.fine_texture_ratio is not None and fd.fine_texture_ratio < fine_thr):
-            fd.flags.append(f"possible skin smoothing / beautification (fine-texture ×{fd.fine_texture_ratio:.2f}, "
-                            f"mid-texture ×{fd.mid_texture_ratio:.2f})")
+            fd.flags.append(f"possible skin smoothing / beautification (mid-texture ×{fd.mid_texture_ratio:.2f}, "
+                            f"fine-texture ×{fd.fine_texture_ratio:.2f})")
         if fd.fine_texture_ratio is not None and fd.fine_texture_ratio > INVENTED_REVIEW:
             fd.flags.append(f"possible invented fine detail (fine-texture ×{fd.fine_texture_ratio:.2f})")
-        if fd.skin_delta_e is not None and fd.skin_delta_e > SKIN_DE_REVIEW:
-            fd.flags.append(f"skin tone shift ΔE {fd.skin_delta_e:.1f} > {SKIN_DE_REVIEW}")
+        if not color_changed and fd.skin_delta_e is not None and fd.skin_delta_e > SKIN_DE_REVIEW:
+            fd.flags.append(f"skin tone shift ΔE {fd.skin_delta_e:.1f} > {SKIN_DE_REVIEW} without a colour operation")
         rep.faces.append(fd)
         rep.flags.extend(f"face {i + 1}: {m}" for m in fd.flags)
     if sims:
