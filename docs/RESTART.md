@@ -9,7 +9,7 @@ Paused on 2026-11-04 at the user's request. State is fully committed and pushed 
 |---|---|
 | App (Prepare / Auto / Manual / Quick Edit / Batch / Before-After / Outputs / metadata) | Implemented, tested on Linux and on real Windows (CPU) |
 | Windows CI (GitHub Actions, `.github/workflows/windows.yml`) | Last code commit `c7df8f8`: **83 passed, 1 skipped**, app launch smoke OK, privacy audit `disallowed: []` |
-| Linux regression | Last full pass per suite in TEST_RESULTS §2; final combined re-run was stopped at 85 % with **0 failures** |
+| Linux regression | Full combined run on final code: **84 passed, 0 failed** (14 min, `pytest -n 2 --dist loadfile`) |
 | Held-out validation | Done with frozen router (`reports/eval/holdout_results.json`); WB fix applied post-hoc |
 | Identity review signals | Recalibrated + 2 defects fixed; validated on unseen faces (TEST_RESULTS §5c) |
 | RTX 5070 Ti / ComfyUI / NH Maker 2 coexistence | **Not done** — no access (Remote Control never shared) |
@@ -26,7 +26,7 @@ Paused on 2026-11-04 at the user's request. State is fully committed and pushed 
    run.cmd -PrivacyAudit
    ```
    `-Bench` populates the Fast Profile; only routes with measured warm p95 ≤ 15 s become Fast Auto.
-2. **Finish the local regression** (only needed if code changes): `python -m pytest -q -rs` (≈ 25 min on CPU).
+2. **Regression after any code change**: `python -m pytest -q -rs -n 2 --dist loadfile` (≈ 14 min on 4 CPU cores).
 3. **Fresh held-out set** to confirm the post-hoc white-balance change without bias (the current held-out set was
    used to motivate it). Build with new sources/seed in `ips/eval/holdout.py`, then
    `python -m ips.eval.harness holdout`.

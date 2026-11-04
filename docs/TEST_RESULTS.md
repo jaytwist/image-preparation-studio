@@ -24,7 +24,7 @@ extrapolated. "Pending" marks what has not been measured.
 | UI offscreen: compare-view alignment math, Prepare Auto→Manual→export, Quick Edit, Batch, Gallery (`test_ui`) | 4/4 | ✅ |
 | Fast-Profile gate, learning from corrections (`test_perf_learning`) | 2/2 | ✅ |
 | Privacy: env enforced; strace of full workload = 0 outbound connects (`test_privacy`) | 2/2 | 1 passed, 1 skipped (strace is Linux-only) |
-| **Total** | see §9 | **83 passed, 1 skipped** (last code commit) |
+| **Total** | **84 passed** | **83 passed, 1 skipped** (last code commit) |
 | App launch smoke (`run.ps1 -Smoke`) | – | ✅ `SMOKE OK` |
 | Privacy audit (`run.ps1 -PrivacyAudit`, psutil, native libraries included) | – | ✅ `disallowed: []` |
 
@@ -194,5 +194,4 @@ CPU only; the 15 s contract is GPU-specific and **unmeasured** until `run.cmd -B
 ## 9. Final regression run
 * **Windows CI** on the last code commit `c7df8f8` (all fixes included): **83 passed, 1 skipped** (strace test is
   Linux-only), app launch smoke `OK`, privacy audit `disallowed: []`.
-* **Linux** combined re-run: stopped at 85 % at the user's request with **0 failures**; every suite had passed
-  individually after its last change (§2). Remaining work and restart instructions: `docs/RESTART.md`.
+* **Linux** full combined run on the final code (`64e55a0`): **84 passed, 0 failed, 0 skipped** (strace privacy test included), 14 min on 2 workers (`pytest -n 2 --dist loadfile`). Remaining work: `docs/RESTART.md`.
