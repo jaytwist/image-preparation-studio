@@ -1,0 +1,9 @@
+[upscale_x2] portrait_x2        lanczos                  psnr 30.82 ssim 0.9526 ΔE 1.66 tex 0.46 face 0.972 t 0.0s
+/home/user/image-preparation-studio/.venv/lib/python3.12/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorShape.cpp:4207.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+[upscale_x2] portrait_x2        swinir_x2                psnr 30.94 ssim 0.9608 ΔE 1.59 tex 1.13 face 0.972 t 23.5s
+[upscale_x2] portrait_x2        realesrgan_x2plus        psnr 27.12 ssim 0.8986 ΔE 2.87 tex 0.94 face 0.808 t 3.8s
+[upscale_x2] portrait_x2        realesrgan_x4plus        psnr 28.65 ssim 0.9275 ΔE 2.69 tex 0.87 face 0.913 t 11.5s
+[upscale_x2] portrait_x2        realesr_general_x4v3     psnr 28.40 ssim 0.9243 ΔE 2.55 tex 0.94 face 0.930 t 1.2s
+[upscale_x2] portrait_x2        realplksr_nomos2_x4      psnr 28.01 ssim 0.8820 ΔE 2.59 tex 0.97 face 0.960 t 9.2s
+[upscale_x2] group_x2           lanczos                  psnr 36.98 ssim 0.9782 ΔE 0.73 tex 0.59 face 0.986 t 0.1s
