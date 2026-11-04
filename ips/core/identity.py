@@ -184,6 +184,8 @@ SMOOTHING_REVIEW = 0.92         # mid-band skin texture: beauty filter 0.86, leg
 FINE_SMOOTHING_REVIEW = 0.45    # fine texture alone is not discriminative (noise/JPEG removal lowers it)
 INVENTED_REVIEW = 1.80
 SKIN_DE_REVIEW = 1.5            # only when no colour operation ran (GAN 1.8, legitimate <= 1.1)
+SELECTIVE_SMOOTHING_REVIEW = 0.93  # after JPEG/denoise: skin texture change ÷ non-face texture change
+                                   # (legitimate FBCNN/SCUNet 0.97-1.30; beauty filter 0.71-1.04)
 
 
 def _ssim(a: np.ndarray, b: np.ndarray) -> float:
@@ -193,7 +195,8 @@ def _ssim(a: np.ndarray, b: np.ndarray) -> float:
 
 def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
                   analyzer: FaceAnalyzer | None = None, denoise_applied: bool = False,
-                  upscaled: bool | None = None, color_changed: bool = False) -> IdentityReport:
+                  upscaled: bool | None = None, color_changed: bool = False,
+                  artifact_removal: bool | None = None) -> IdentityReport:
     """Compare *faces* (detected on source) between source and output (any scale, same framing)."""
     if not faces:
         return IdentityReport(available=True, method="no faces detected")
@@ -203,12 +206,27 @@ def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
     if upscaled is None:
         upscaled = ow > sw * 1.05
     sim_thr = SIM_REVIEW_UPSCALE if upscaled else SIM_REVIEW
+    if artifact_removal is None:
+        artifact_removal = denoise_applied
     if (oh, ow) != (sh, sw):
         out_s = cv2.resize(out_rgb, (sw, sh), interpolation=cv2.INTER_AREA)
     else:
         out_s = out_rgb
     rep = IdentityReport(available=True, method=f"{analyzer.name}" + ("+arcface" if analyzer.has_embeddings else ""))
     out_faces = analyzer.detect(out_s) if analyzer.det is not None else []
+
+    def _dog(x):
+        return np.abs(cv2.GaussianBlur(x, (0, 0), 1.0) - cv2.GaussianBlur(x, (0, 0), 3.0))
+    ys_all = cv2.cvtColor(src_rgb, cv2.COLOR_RGB2GRAY)
+    yo_all = cv2.cvtColor(out_s, cv2.COLOR_RGB2GRAY)
+    nonface = np.ones((sh, sw), bool)
+    for f in faces:
+        x0, y0, x1, y1 = [int(round(v)) for v in f.box]
+        pad = int(0.15 * max(x1 - x0, y1 - y0))
+        nonface[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad] = False
+    rest_ratio = None
+    if nonface.sum() > 500:
+        rest_ratio = float(_dog(yo_all)[nonface].mean() / (_dog(ys_all)[nonface].mean() + 1e-6))
     sims = []
     for i, f in enumerate(faces[:8]):
         fd = FaceDrift(index=i, box=f.box)
@@ -253,9 +271,18 @@ def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
                             f"{' (upscaled output)' if upscaled else ''}")
         if fd.landmark_drift_iod is not None and fd.landmark_drift_iod > LANDMARK_REVIEW:
             fd.flags.append(f"landmark geometry drift {fd.landmark_drift_iod:.3f} IOD > {LANDMARK_REVIEW}")
-        fine_thr = FINE_SMOOTHING_REVIEW * (0.8 if denoise_applied else 1.0)
-        if (fd.mid_texture_ratio is not None and fd.mid_texture_ratio < SMOOTHING_REVIEW) or \
-                (fd.fine_texture_ratio is not None and fd.fine_texture_ratio < fine_thr):
+        # skin smoothing. After artifact removal (JPEG/denoise) texture legitimately drops everywhere, so only a
+        # *skin-selective* drop counts; otherwise the absolute mid-band test applies.
+        skin_mid = float(_dog(cv2.cvtColor(src_rgb[cy0:cy1, cx0:cx1], cv2.COLOR_RGB2GRAY)).mean())
+        skin_mid_o = float(_dog(cv2.cvtColor(out_s[cy0:cy1, cx0:cx1], cv2.COLOR_RGB2GRAY)).mean())
+        skin_ratio = skin_mid_o / (skin_mid + 1e-6)
+        if artifact_removal and rest_ratio:
+            sel = skin_ratio / max(rest_ratio, 1e-3)
+            if sel < SELECTIVE_SMOOTHING_REVIEW:
+                fd.flags.append(f"possible skin smoothing / beautification (skin texture ×{skin_ratio:.2f} vs "
+                                f"non-face ×{rest_ratio:.2f}: selective ×{sel:.2f})")
+        elif (fd.mid_texture_ratio is not None and fd.mid_texture_ratio < SMOOTHING_REVIEW) or \
+                (fd.fine_texture_ratio is not None and fd.fine_texture_ratio < FINE_SMOOTHING_REVIEW):
             fd.flags.append(f"possible skin smoothing / beautification (mid-texture ×{fd.mid_texture_ratio:.2f}, "
                             f"fine-texture ×{fd.fine_texture_ratio:.2f})")
         if fd.fine_texture_ratio is not None and fd.fine_texture_ratio > INVENTED_REVIEW:

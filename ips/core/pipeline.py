@@ -208,9 +208,10 @@ class Pipeline:
             t0 = time.perf_counter()
             from .identity import compare_faces
             denoised = any(o.kind == "denoise" for o in ops_list)
+            artifact = any(o.kind in ("denoise", "jpeg_cleanup") for o in ops_list)
             colour = any(o.kind in GLOBAL_COLOR_KINDS for o in ops_list)
             rep = compare_faces(src_for_identity, cur, faces, self.face_analyzer, denoise_applied=denoised,
-                                color_changed=colour)
+                                color_changed=colour, artifact_removal=artifact)
             if fidelity_guard and recipe.mode == "faithful" and rep.flags:
                 bad = [fd for fd in rep.faces if fd.flags and not any("too small" in x for x in fd.flags)]
                 if bad:
@@ -226,7 +227,7 @@ class Pipeline:
                         f"Fidelity guard: {len(bad)} flagged face region(s) blended 60% toward a conservative "
                         "rendering (classical colour ops + Lanczos). Review recommended.")
                     rep2 = compare_faces(src_for_identity, cur, faces, self.face_analyzer, denoise_applied=denoised,
-                                         color_changed=colour)
+                                         color_changed=colour, artifact_removal=artifact)
                     d = rep2.to_json()
                     d["before_guard"] = rep.to_json()
                     res.identity = d

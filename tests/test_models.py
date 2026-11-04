@@ -105,3 +105,24 @@ def test_pipeline_end_to_end_small(corpus, tmp_path):
     assert o.result.identity and o.result.identity["faces"], "faces must be checked"
     assert o.timings_ms["total_job_ms"] > 0 and "warm_job_ms" in o.timings_ms
     assert all(x.path.is_file() for x in o.outputs)
+
+
+def test_regression_identity_signals(be, corpus):
+    """Regression (docs/TEST_RESULTS.md §3, §5c): Studio's review signals originally flagged 0/12 GAN outputs.
+    Known beautification output must be flagged; faithful upscale and legitimate JPEG cleanup must not."""
+    from ips.core.identity import FaceAnalyzer, compare_faces
+    from ips.core.ops import resize_scale
+    from ips.eval.fixtures import jpeg_roundtrip
+    fa = FaceAnalyzer.get()
+    half = imageio.load_image(corpus / "portrait/astronaut_half.png").rgb
+    faces = fa.detect(half)
+    assert faces
+    gan = compare_faces(half, be.run("realesrgan_x2plus", half, {}), faces, fa)
+    assert gan.flags, "known GAN beautification (Real-ESRGAN x2plus) must reach the Review Queue"
+    assert not compare_faces(half, resize_scale(half, 2), faces, fa).flags
+    assert not compare_faces(half, be.run("swinir_x2", half, {}), faces, fa).flags
+    full = imageio.load_image(corpus / "portrait/astronaut_clean.png").rgb
+    jq = jpeg_roundtrip(full, 30)
+    fj = fa.detect(jq)
+    legit = compare_faces(jq, be.run("fbcnn_color", jq, {"qf": 30}), fj, fa, artifact_removal=True)
+    assert not legit.flags, legit.flags
