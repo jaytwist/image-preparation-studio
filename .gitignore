@@ -23,3 +23,4 @@ reports/eval/visual/
 reports/eval/_tmp_outputs/
 reports/eval/*.sqlite*
 reports/*.log
+reports/ui/
