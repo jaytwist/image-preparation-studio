@@ -10,11 +10,13 @@
   .\run.ps1 -Bench          # measure the 15 s Fast Profile on this GPU -> reports\bench_*.json
   .\run.ps1 -Test           # run the automated test suite
   .\run.ps1 -PrivacyAudit   # verify no outbound network connections during a workload
+  .\run.ps1 -SetupOnly      # create/refresh .venv only
+  .\run.ps1 -Smoke          # launch the app, open the main window, exit after 8 s (installation check)
   .\run.ps1 -Cli prepare C:\photos --profiles archive,share
 #>
 param(
   [switch]$Setup, [switch]$FetchModels, [switch]$Inspect, [switch]$Bench, [switch]$BenchQuick,
-  [switch]$Test, [switch]$PrivacyAudit, [string]$Python = "", [string]$TorchIndex = "https://download.pytorch.org/whl/cu128",
+  [switch]$Test, [switch]$PrivacyAudit, [switch]$SetupOnly, [switch]$Smoke, [string]$Python = "", [string]$TorchIndex = "https://download.pytorch.org/whl/cu128",
   [Parameter(ValueFromRemainingArguments = $true)][string[]]$Cli
 )
 $ErrorActionPreference = "Stop"
@@ -49,6 +51,7 @@ function Ensure-Venv {
 }
 
 Ensure-Venv
+if ($SetupOnly) { exit 0 }
 New-Item -ItemType Directory -Force -Path (Join-Path $Root "reports") | Out-Null
 
 if ($FetchModels) { & $Py tools\fetch_models.py --all; exit $LASTEXITCODE }
@@ -61,4 +64,5 @@ if ($Test) {
   & $Py -m pytest -q; exit $LASTEXITCODE
 }
 if ($Cli -and $Cli.Count -gt 0) { & $Py -m ips.cli @Cli; exit $LASTEXITCODE }
+if ($Smoke) { $env:IPS_SMOKE_SECONDS = "8"; & $Py -m ips.app; exit $LASTEXITCODE }
 & $Py -m ips.app

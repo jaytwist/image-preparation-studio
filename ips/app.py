@@ -61,6 +61,17 @@ def main(argv=None) -> int:
     args = (sys.argv if argv is None else argv)[1:]
     if args and os.path.isfile(args[0]):
         w.prepare.open_path(args[0])
+    smoke = float(os.environ.get("IPS_SMOKE_SECONDS", "0") or 0)
+    if smoke > 0:  # installation check: window must come up, backend probe must run, then exit cleanly
+        from PySide6.QtCore import QTimer
+
+        def done():
+            ok = w.isVisible() and "Device:" in w.backend_lbl.text()
+            logging.getLogger("ips.app").info("smoke: visible=%s backend=%r", w.isVisible(), w.backend_lbl.text())
+            print("SMOKE", "OK" if ok else "FAIL", w.backend_lbl.text(), flush=True)
+            w.close()
+            app.exit(0 if ok else 3)
+        QTimer.singleShot(int(smoke * 1000), done)
     return app.exec()
 
 

@@ -1,0 +1,58 @@
+# Real-Windows validation (CPU; GitHub-hosted runners have no NVIDIA GPU).
+# Verifies: run.ps1 install path, Windows wheels, Windows file paths, full test suite with offscreen Qt,
+# app launch smoke test, privacy audit, CPU bench smoke. GPU/RTX 5070 Ti validation is separate.
+name: windows
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 150
+    env:
+      QT_QPA_PLATFORM: offscreen
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: models
+          key: models-${{ hashFiles('ips/backends/registry.py') }}
+      - name: Setup (isolated .venv, CPU torch)
+        shell: pwsh
+        run: .\run.ps1 -SetupOnly -TorchIndex https://download.pytorch.org/whl/cpu
+      - name: Fetch models (checksum-verified)
+        shell: pwsh
+        run: .\run.ps1 -FetchModels
+      - name: Environment report
+        shell: pwsh
+        run: .\run.ps1 -Inspect
+      - name: Fetch public test assets + build corpus
+        shell: pwsh
+        run: .\.venv\Scripts\python.exe -m ips.eval.fixtures --fetch
+      - name: Test suite
+        shell: pwsh
+        run: .\.venv\Scripts\python.exe -m pytest -q -rs --junitxml=reports\junit_windows.xml
+      - name: App launch smoke test
+        shell: pwsh
+        run: .\run.ps1 -Smoke
+      - name: Privacy audit (no outbound connections)
+        shell: pwsh
+        run: .\run.ps1 -PrivacyAudit
+      - name: CPU bench smoke (not a GPU certification)
+        shell: pwsh
+        run: .\run.ps1 -BenchQuick
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-evidence
+          path: |
+            reports/*.json
+            reports/*.xml
+            reports/ui/*.png
