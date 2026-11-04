@@ -413,9 +413,6 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
-
 
 # ----------------------------------------------------------------------------- held-out evaluation
 
@@ -435,7 +432,7 @@ def holdout_eval(out: Path, frozen_commit: str) -> dict[str, Any]:
     h.items = {i["id"]: i for i in man}
     global CORPUS
     saved, CORPUS = CORPUS, root
-    rows, diag, ident = [], [], []
+    rows, ident = [], []
     counts = {k: {"tp": 0, "fp": 0, "fn": 0} for k in ISSUES}
     try:
         for it in man:
@@ -559,3 +556,7 @@ def _holdout_main(out: Path) -> None:
     rep = holdout_eval(out, commit)
     (out / "holdout_results.json").write_text(json.dumps(rep, indent=2, default=str), "utf-8")
     print(json.dumps({k: v for k, v in rep.items() if k != "items"}, indent=2, default=str))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
