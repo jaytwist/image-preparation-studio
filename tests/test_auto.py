@@ -45,13 +45,14 @@ def test_low_res_clean_gets_only_upscale(st, corpus):
 def test_old_phone_recipe(st, corpus):
     src, r = _route(st, corpus, "old_phone/astronaut_oldphone.jpg")
     k = kinds(r)
-    assert {"jpeg_cleanup", "white_balance", "upscale"} <= k, r.summary()
+    assert {"jpeg_cleanup", "upscale"} <= k and "white_balance" not in k, r.summary()
+    assert any("White balance available in Manual" in f for f in r.flags), "detected cast must be surfaced"
     j = next(o for o in r.ops if o.kind == "jpeg_cleanup")
     assert j.method == "model:fbcnn_color" and 25 <= j.params["qf"] <= 45, "qf must reflect the injected q35"
     up = next(o for o in r.ops if o.kind == "upscale")
     assert up.method == "model:swinir_x2" and up.blend == 1.0
     order = [o.kind for o in r.ops]
-    assert order.index("jpeg_cleanup") < order.index("white_balance") < order.index("upscale")
+    assert order.index("jpeg_cleanup") < order.index("upscale")
     assert any("re-saved" in o.why for o in r.ops if o.kind == "jpeg_cleanup"), "re-save must be explained"
 
 

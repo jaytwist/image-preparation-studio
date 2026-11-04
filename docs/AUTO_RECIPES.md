@@ -55,13 +55,17 @@ ComfyUI, `parameters` A1111), JPEG quantisation tables → IJG quality estimate.
 |---|---|---|---|---|
 | 1 | jpeg_cleanup | jpeg severity ≥ 0.15 | FBCNN, **qf = FBCNN blind prediction** (fallback: quant-table q, +10 if unconfirmed); screenshots +10 (gentler) + legibility flag | native QF |
 | 2 | denoise | noise ≥ 0.12, not grain intent | photo → SCUNet real-PSNR, post-blend 0.55+0.45·sev; scan/AI → DRUNet σ = 1.0× per-channel estimate; faces present → 40–50 % face-region protection | SCUNet: post-blend (labelled); DRUNet: native σ |
-| 3 | white_balance | photo/scan, cast ≥ 0.2, confidence ≥ 0.6, not warm intent | consensus gains, strength min(0.8, 0.45+0.4·sev)×(1−dominance), luminance preserved | native |
+| 3 | white_balance | **scan only** (photos: reported + offered in Manual, never automatic in Faithful — held-out evidence: automatic WB raised ΔE vs ground truth in 8/8 photo cases); cast ≥ 0.2, confidence ≥ 0.6 | consensus gains, strength min(0.8, 0.45+0.4·sev)×(1−dominance), luminance preserved | native |
 | 4 | exposure | underexposed ≥ 0.2 → EV (bounded so p99 stays unclipped, ≤ +1.2); faded ≥ 0.25 → black = 0.8·p1, white = p99+0.02 | levels | native |
 | 5 | upscale | scale policy: explicit, AI/Video target long edge, or ×2 when long side < 1024 (setting) | photo/AI → SwinIR ×2 (+Lanczos for remainder); screenshot → Lanczos, pixel art → nearest; Balanced → Real-ESRGAN | model scale; exact target by area/Lanczos resize |
 | 6 | sharpen | blur_soft ≥ 0.25 and not oversharpened | halo-clamped luminance unsharp (cannot overshoot local min/max) | native amount |
 | – | no-op | nothing above triggers and scale = 1 | "No enhancement needed" with the measured values | – |
 
-Post-run (Faithful): **fidelity guard** (DECISIONS D6). Review Queue on: identity flags, guard action,
+Post-run (Faithful): **fidelity guard** (DECISIONS D6). Identity review thresholds (calibrated on tuning faces,
+validated on unseen faces): embedding similarity < 0.98 after an upscale (< 0.80 at 1×), landmark drift > 0.06 IOD,
+mid-band skin texture < 0.92 when no JPEG/denoise ran (after JPEG/denoise it is an informational note — legitimate
+cleanup and beauty smoothing overlap), skin ΔE > 1.5 without a colour op. Tight face crops are re-detected on a padded
+canvas. Any GAN ("balanced") model output goes to Review regardless of signals (RealPLKSR evades all signals). Review Queue on: identity flags, guard action,
 confidence < 0.55, GAN use, Quality-Override runs.
 
 ## 5. Learning from corrections

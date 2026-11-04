@@ -161,7 +161,13 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
 
     # ---------------------------------------------------------------- colour
     c = a.issue("color_cast")
-    if c and c.severity >= 0.2 and cls in ("photo", "scan") and not suppressed("white_balance"):
+    if c and c.severity >= 0.2 and cls == "photo" and req.mode == "faithful":
+        # Held-out evidence (docs/TEST_RESULTS.md §5b): automatic WB increased colour error vs ground truth on most
+        # unseen photos (scene colour is removed together with any cast). Faithful Auto therefore only reports it.
+        rat.append(f"Possible colour cast ({c.evidence}). Not corrected automatically for photos: illuminant "
+                   "estimates cannot separate scene colour from a cast reliably. Try White balance in Manual.")
+        flags.append("Possible colour cast detected — White balance available in Manual (not applied automatically).")
+    elif c and c.severity >= 0.2 and cls in ("photo", "scan") and not suppressed("white_balance"):
         if "warm_light" in a.intents and c.severity < 0.7:
             rat.append(f"Warm cast kept: likely intentional lighting ({c.evidence}). Manual WB available.")
         elif c.confidence < 0.6:

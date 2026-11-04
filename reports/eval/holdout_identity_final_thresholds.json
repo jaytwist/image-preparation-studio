@@ -1,0 +1,69 @@
+{
+  "syn_set5_woman_x2/lanczos": {
+    "flagged": false,
+    "sim": 0.9979723691940308,
+    "flags": []
+  },
+  "syn_set5_woman_x2/swinir_x2": {
+    "flagged": false,
+    "sim": 0.9978334903717041,
+    "flags": []
+  },
+  "syn_set5_woman_x2/realesrgan_x2plus": {
+    "flagged": true,
+    "sim": 0.9387048482894897,
+    "flags": [
+      "face 1: identity embedding similarity 0.939 < 0.98 (upscaled output)",
+      "face 1: skin tone shift \u0394E 1.7 > 1.5 without a colour operation"
+    ]
+  },
+  "syn_set5_woman_x2/realesrgan_x4plus": {
+    "flagged": true,
+    "sim": 0.9541524052619934,
+    "flags": [
+      "face 1: identity embedding similarity 0.954 < 0.98 (upscaled output)"
+    ]
+  },
+  "syn_set5_woman_x2/realesr_general_x4v3": {
+    "flagged": true,
+    "sim": 0.9631509780883789,
+    "flags": [
+      "face 1: identity embedding similarity 0.963 < 0.98 (upscaled output)"
+    ]
+  },
+  "syn_set5_woman_x2/realplksr_nomos2_x4": {
+    "flagged": false,
+    "sim": 0.9842483401298523,
+    "flags": []
+  },
+  "syn_set5_head_x2/lanczos": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  },
+  "syn_set5_head_x2/swinir_x2": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  },
+  "syn_set5_head_x2/realesrgan_x2plus": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  },
+  "syn_set5_head_x2/realesrgan_x4plus": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  },
+  "syn_set5_head_x2/realesr_general_x4v3": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  },
+  "syn_set5_head_x2/realplksr_nomos2_x4": {
+    "flagged": false,
+    "sim": null,
+    "flags": []
+  }
+}

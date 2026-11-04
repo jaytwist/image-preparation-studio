@@ -1,0 +1,3702 @@
+{
+  "frozen_commit": "6bf3cce",
+  "n_items": 66,
+  "content_accuracy": 0.879,
+  "content_accuracy_by_category": {
+    "ai_generated": 0.5,
+    "historical": 1.0,
+    "screenshot": 1.0,
+    "synthetic_holdout": 0.967
+  },
+  "expectation_checks": {
+    "passed": 22,
+    "total": 24,
+    "failed_items": [
+      "syn_set5_head_clean",
+      "syn_set5_woman_clean"
+    ]
+  },
+  "diagnosis_actionable": {
+    "jpeg_artifacts": {
+      "tp": 9,
+      "fp": 6,
+      "fn": 0,
+      "precision": 0.6,
+      "recall": 1.0
+    },
+    "noise": {
+      "tp": 2,
+      "fp": 3,
+      "fn": 0,
+      "precision": 0.4,
+      "recall": 1.0
+    },
+    "color_cast": {
+      "tp": 3,
+      "fp": 5,
+      "fn": 6,
+      "precision": 0.375,
+      "recall": 0.333
+    },
+    "faded": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    "oversharpened": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    "oversmoothed": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0
+    }
+  },
+  "routing": {
+    "n": 38,
+    "top1_rate": 0.474,
+    "auto_not_worse_than_input_ssim": 34,
+    "auto_not_worse_than_input_delta_e": 28
+  },
+  "no_ground_truth_reviewed_by_sheet": [
+    "hist_codeformer_00",
+    "hist_codeformer_01",
+    "hist_codeformer_02",
+    "hist_codeformer_03",
+    "hist_codeformer_04",
+    "hist_codeformer_05",
+    "hist_codeformer_06",
+    "hist_gfpgan_10045",
+    "hist_solvay_1927_0018",
+    "hist_solvay_1927_2_16",
+    "hist_realsr_dog",
+    "hist_realsr_frog",
+    "hist_realsr_painting",
+    "hist_realsr_tiger"
+  ],
+  "synthetic_items": 40,
+  "items": [
+    {
+      "item": "hist_codeformer_00",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=82]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=82] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 4,
+      "flags": [
+        "4 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              56.15215301513672,
+              83.20755767822266,
+              100.2796401977539,
+              130.83599853515625
+            ],
+            "embedding_similarity": 0.9790600538253784,
+            "landmark_drift_iod": 0.005199333690160723,
+            "region_ssim": 0.9913729704486995,
+            "fine_texture_ratio": 0.8748924266608414,
+            "mid_texture_ratio": 1.0000178086686815,
+            "skin_delta_e": 0.3094900846481323,
+            "flags": []
+          },
+          {
+            "index": 1,
+            "box": [
+              392.7393798828125,
+              67.6795883178711,
+              431.5550537109375,
+              120.65731811523438
+            ],
+            "embedding_similarity": 0.9737291932106018,
+            "landmark_drift_iod": 0.005921333878913829,
+            "region_ssim": 0.9912197824296146,
+            "fine_texture_ratio": 0.8263294464786136,
+            "mid_texture_ratio": 0.9977222403077489,
+            "skin_delta_e": 0.15229421854019165,
+            "flags": []
+          },
+          {
+            "index": 2,
+            "box": [
+              177.0139617919922,
+              77.39103698730469,
+              211.82388305664062,
+              125.15901947021484
+            ],
+            "embedding_similarity": 0.9865031242370605,
+            "landmark_drift_iod": 0.00707440289889664,
+            "region_ssim": 0.993912050436283,
+            "fine_texture_ratio": 0.8634054632542217,
+            "mid_texture_ratio": 0.9971193698042984,
+            "skin_delta_e": 0.21945959329605103,
+            "flags": []
+          },
+          {
+            "index": 3,
+            "box": [
+              284.1007385253906,
+              83.32806396484375,
+              317.619140625,
+              126.1288070678711
+            ],
+            "embedding_similarity": 0.9767952561378479,
+            "landmark_drift_iod": 0.012680882285742918,
+            "region_ssim": 0.9927949476196039,
+            "fine_texture_ratio": 0.8130390958995213,
+            "mid_texture_ratio": 0.9981791184833756,
+            "skin_delta_e": 0.1678064465522766,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9737291932106018,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_01",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=74] \u2192 white_balance[classical:neutral_cast|strength=0.46,gains=[0.826, 1.0, 1.1562]]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=74] \u2192 white_balance[classical:neutral_cast|strength=0.46,gains=[0.826, 1.0, 1.1562]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 4,
+      "flags": [
+        "4 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              95.74762725830078,
+              106.87372589111328,
+              143.62490844726562,
+              173.92494201660156
+            ],
+            "embedding_similarity": 0.9666110277175903,
+            "landmark_drift_iod": 0.009964034929210165,
+            "region_ssim": 0.9880018702807788,
+            "fine_texture_ratio": 0.8265839353540141,
+            "mid_texture_ratio": 0.9979867842441466,
+            "skin_delta_e": 8.575460433959961,
+            "flags": [
+              "skin tone shift \u0394E 8.6 > 6.0"
+            ]
+          },
+          {
+            "index": 1,
+            "box": [
+              165.99403381347656,
+              59.387569427490234,
+              212.3592987060547,
+              126.02865600585938
+            ],
+            "embedding_similarity": 0.9746264219284058,
+            "landmark_drift_iod": 0.0031769625878775454,
+            "region_ssim": 0.9879893600207861,
+            "fine_texture_ratio": 0.8216253515885019,
+            "mid_texture_ratio": 0.9984692696102714,
+            "skin_delta_e": 8.789933204650879,
+            "flags": [
+              "skin tone shift \u0394E 8.8 > 6.0"
+            ]
+          },
+          {
+            "index": 2,
+            "box": [
+              37.15717697143555,
+              40.86435317993164,
+              81.6891098022461,
+              107.56676483154297
+            ],
+            "embedding_similarity": 0.9621210694313049,
+            "landmark_drift_iod": 0.00877335532393724,
+            "region_ssim": 0.9857958834078092,
+            "fine_texture_ratio": 0.8083970692698899,
+            "mid_texture_ratio": 0.9983983320212153,
+            "skin_delta_e": 8.061338424682617,
+            "flags": [
+              "skin tone shift \u0394E 8.1 > 6.0"
+            ]
+          },
+          {
+            "index": 3,
+            "box": [
+              104.52650451660156,
+              14.39804744720459,
+              148.79693603515625,
+              71.764404296875
+            ],
+            "embedding_similarity": 0.9618696570396423,
+            "landmark_drift_iod": 0.011800117712251907,
+            "region_ssim": 0.989148229209759,
+            "fine_texture_ratio": 0.8289741380971746,
+            "mid_texture_ratio": 1.000352448308097,
+            "skin_delta_e": 8.135809898376465,
+            "flags": [
+              "skin tone shift \u0394E 8.1 > 6.0"
+            ]
+          }
+        ],
+        "flags": [
+          "face 1: skin tone shift \u0394E 8.6 > 6.0",
+          "face 2: skin tone shift \u0394E 8.8 > 6.0",
+          "face 3: skin tone shift \u0394E 8.1 > 6.0",
+          "face 4: skin tone shift \u0394E 8.1 > 6.0"
+        ],
+        "worst_similarity": 0.9618696570396423,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_02",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "blur_soft",
+        "color_cast"
+      ],
+      "actionable_pred": [
+        "color_cast"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.59,gains=[0.9911, 1.0, 1.1212]] \u2192 sharpen[classical:halo_free_unsharp|amount=0.3,radius=1.0,threshold=0.01]",
+      "auto_default": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.59,gains=[0.9911, 1.0, 1.1212]] \u2192 sharpen[classical:halo_free_unsharp|amount=0.3,radius=1.0,threshold=0.01]",
+      "checks": {},
+      "faces": 4,
+      "flags": [],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              147.9574432373047,
+              30.616056442260742,
+              279.3742370605469,
+              221.65060424804688
+            ],
+            "embedding_similarity": 0.9994491338729858,
+            "landmark_drift_iod": 0.001055142874565456,
+            "region_ssim": 0.9995348651963312,
+            "fine_texture_ratio": 1.0479970057574803,
+            "mid_texture_ratio": 1.0143073572881434,
+            "skin_delta_e": 3.2073490619659424,
+            "flags": []
+          },
+          {
+            "index": 1,
+            "box": [
+              408.509033203125,
+              81.00765228271484,
+              536.9219970703125,
+              253.16741943359375
+            ],
+            "embedding_similarity": 0.9993239641189575,
+            "landmark_drift_iod": 0.00092437887935981,
+            "region_ssim": 0.9996863414259172,
+            "fine_texture_ratio": 1.0353076335682654,
+            "mid_texture_ratio": 1.0122851430899433,
+            "skin_delta_e": 2.8382256031036377,
+            "flags": []
+          },
+          {
+            "index": 2,
+            "box": [
+              873.3233032226562,
+              93.34408569335938,
+              1004.2461547851562,
+              262.0894470214844
+            ],
+            "embedding_similarity": 0.9993473291397095,
+            "landmark_drift_iod": 0.001010342586524885,
+            "region_ssim": 0.9995987159869422,
+            "fine_texture_ratio": 1.0424013345483636,
+            "mid_texture_ratio": 1.0110901013773896,
+            "skin_delta_e": 3.164573907852173,
+            "flags": []
+          },
+          {
+            "index": 3,
+            "box": [
+              632.4813232421875,
+              74.13308715820312,
+              754.9537963867188,
+              253.54420471191406
+            ],
+            "embedding_similarity": 0.9995468854904175,
+            "landmark_drift_iod": 0.0012728908288794506,
+            "region_ssim": 0.9996195300844074,
+            "fine_texture_ratio": 1.0401085663791954,
+            "mid_texture_ratio": 1.0119457473496014,
+            "skin_delta_e": 3.0813558101654053,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9993239641189575,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_03",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=80] \u2192 white_balance[classical:neutral_cast|strength=0.54,gains=[0.9124, 1.0, 0.978]]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=80] \u2192 white_balance[classical:neutral_cast|strength=0.54,gains=[0.9124, 1.0, 0.978]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              101.59795379638672,
+              26.492013931274414,
+              202.4238739013672,
+              172.43142700195312
+            ],
+            "embedding_similarity": 0.9966009855270386,
+            "landmark_drift_iod": 0.008035052976886578,
+            "region_ssim": 0.9900805828736183,
+            "fine_texture_ratio": 0.7115862020566931,
+            "mid_texture_ratio": 0.9947179310921032,
+            "skin_delta_e": 2.830284357070923,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9966009855270386,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_04",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=70] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              78.16558837890625,
+              50.07139205932617,
+              132.64137268066406,
+              120.43140411376953
+            ],
+            "embedding_similarity": 0.9851577877998352,
+            "landmark_drift_iod": 0.02493966836247671,
+            "region_ssim": 0.986216005356032,
+            "fine_texture_ratio": 0.8388612035956096,
+            "mid_texture_ratio": 1.0000207175546785,
+            "skin_delta_e": 0.19060000777244568,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9851577877998352,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_05",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=73]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=73] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              72.57843017578125,
+              39.37263870239258,
+              129.93263244628906,
+              106.80940246582031
+            ],
+            "embedding_similarity": 0.9775391817092896,
+            "landmark_drift_iod": 0.006013230738887624,
+            "region_ssim": 0.9848692783783087,
+            "fine_texture_ratio": 0.8249942948611519,
+            "mid_texture_ratio": 0.9980026071059616,
+            "skin_delta_e": 0.18715700507164001,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9775391817092896,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_codeformer_06",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "blur_soft",
+        "low_resolution",
+        "oversmoothed"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: sharpen[classical:halo_free_unsharp|amount=0.4,radius=1.0,threshold=0.01]",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2] \u2192 sharpen[classical:halo_free_unsharp|amount=0.4,radius=1.0,threshold=0.01]",
+      "checks": {},
+      "faces": 2,
+      "flags": [
+        "Defocus/soft blur (Crete blur 0.57, gradient anisotropy 0.11): faithful deblurring is not automatic; Manual offers classical halo-free deconvolution sharpening.",
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              101.87882995605469,
+              135.75131225585938,
+              333.3724365234375,
+              441.1922607421875
+            ],
+            "embedding_similarity": 0.9998852610588074,
+            "landmark_drift_iod": 0.0008984582796885798,
+            "region_ssim": 0.9996407345244097,
+            "fine_texture_ratio": 1.0503351484548056,
+            "mid_texture_ratio": 1.018705637802412,
+            "skin_delta_e": 0.011424128897488117,
+            "flags": []
+          },
+          {
+            "index": 1,
+            "box": [
+              382.6326904296875,
+              100.56633758544922,
+              587.6514892578125,
+              384.34881591796875
+            ],
+            "embedding_similarity": 0.9998166561126709,
+            "landmark_drift_iod": 0.0007561433119332662,
+            "region_ssim": 0.9996589615714244,
+            "fine_texture_ratio": 1.0433747288091888,
+            "mid_texture_ratio": 1.0162454934576624,
+            "skin_delta_e": 0.011785258539021015,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9998166561126709,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_gfpgan_10045",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=62]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=62]",
+      "checks": {},
+      "faces": 3,
+      "flags": [
+        "3 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              174.190185546875,
+              96.37164306640625,
+              249.85781860351562,
+              215.13955688476562
+            ],
+            "embedding_similarity": 0.9871466159820557,
+            "landmark_drift_iod": 0.0082734206990486,
+            "region_ssim": 0.9851262618331933,
+            "fine_texture_ratio": 0.6602961279575249,
+            "mid_texture_ratio": 0.96291877711935,
+            "skin_delta_e": 0.06350165605545044,
+            "flags": []
+          },
+          {
+            "index": 1,
+            "box": [
+              381.5325927734375,
+              128.59901428222656,
+              453.0834655761719,
+              221.79421997070312
+            ],
+            "embedding_similarity": 0.9904097318649292,
+            "landmark_drift_iod": 0.00330821360367702,
+            "region_ssim": 0.9894637471695689,
+            "fine_texture_ratio": 0.7121461603882149,
+            "mid_texture_ratio": 0.9848782245032773,
+            "skin_delta_e": 0.0651097223162651,
+            "flags": []
+          },
+          {
+            "index": 2,
+            "box": [
+              370.25128173828125,
+              431.0297546386719,
+              436.85736083984375,
+              515.2019653320312
+            ],
+            "embedding_similarity": 0.9813995957374573,
+            "landmark_drift_iod": 0.004620193317467616,
+            "region_ssim": 0.9846421856246811,
+            "fine_texture_ratio": 0.7079471467480197,
+            "mid_texture_ratio": 0.9809555697653022,
+            "skin_delta_e": 0.19182319939136505,
+            "flags": []
+          }
+        ],
+        "flags": [],
+        "worst_similarity": 0.9813995957374573,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_solvay_1927_0018",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "blur_soft",
+        "low_resolution",
+        "oversmoothed"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: sharpen[classical:halo_free_unsharp|amount=0.48,radius=1.0,threshold=0.01]",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2] \u2192 sharpen[classical:halo_free_unsharp|amount=0.48,radius=1.0,threshold=0.01]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Defocus/soft blur (Crete blur 0.68, gradient anisotropy 0.12): faithful deblurring is not automatic; Manual offers classical halo-free deconvolution sharpening.",
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "identity_vs_source": null
+    },
+    {
+      "item": "hist_solvay_1927_2_16",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "blur_soft",
+        "color_cast",
+        "low_resolution",
+        "oversmoothed"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.55,gains=[0.9053, 1.0, 1.0315]] \u2192 sharpen[classical:halo_free_unsharp|amount=0.48,radius=1.0,threshold=0.01]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.55,gains=[0.9053, 1.0, 1.0315]] \u2192 upscale[model:swinir_x2] \u2192 sharpen[classical:halo_free_unsharp|amount=0.48,radius=1.0,threshold=0.01]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Defocus/soft blur (Crete blur 0.70, gradient anisotropy 0.12): faithful deblurring is not automatic; Manual offers classical halo-free deconvolution sharpening.",
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "identity_vs_source": null
+    },
+    {
+      "item": "hist_realsr_dog",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              38.07368087768555,
+              34.97215270996094,
+              72.87947082519531,
+              82.34795379638672
+            ],
+            "embedding_similarity": 0.5035746097564697,
+            "landmark_drift_iod": null,
+            "region_ssim": 0.4355555546444138,
+            "fine_texture_ratio": 0.07493300241762614,
+            "mid_texture_ratio": 0.7705079471302876,
+            "skin_delta_e": 1.169916033744812,
+            "flags": [
+              "identity embedding similarity 0.504 < 0.8",
+              "possible skin smoothing / beautification (fine-texture \u00d70.07, mid-texture \u00d70.77)"
+            ]
+          }
+        ],
+        "flags": [
+          "face 1: identity embedding similarity 0.504 < 0.8",
+          "face 1: possible skin smoothing / beautification (fine-texture \u00d70.07, mid-texture \u00d70.77)"
+        ],
+        "worst_similarity": 0.5035746097564697,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_realsr_frog",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "identity_vs_source": {
+        "available": true,
+        "method": "scrfd-10g+arcface",
+        "faces": [
+          {
+            "index": 0,
+            "box": [
+              88.86298370361328,
+              119.3265151977539,
+              202.17233276367188,
+              240.0
+            ],
+            "embedding_similarity": 0.7325018048286438,
+            "landmark_drift_iod": null,
+            "region_ssim": 0.798757677650316,
+            "fine_texture_ratio": 0.17689145436511877,
+            "mid_texture_ratio": 0.9456095003987511,
+            "skin_delta_e": 0.6522434949874878,
+            "flags": [
+              "identity embedding similarity 0.733 < 0.8",
+              "possible skin smoothing / beautification (fine-texture \u00d70.18, mid-texture \u00d70.95)"
+            ]
+          }
+        ],
+        "flags": [
+          "face 1: identity embedding similarity 0.733 < 0.8",
+          "face 1: possible skin smoothing / beautification (fine-texture \u00d70.18, mid-texture \u00d70.95)"
+        ],
+        "worst_similarity": 0.7325018048286438,
+        "note": "Signals only: embeddings/landmarks/texture ratios cannot prove identity preservation. Flagged results go to the Review Queue for visual inspection."
+      }
+    },
+    {
+      "item": "hist_realsr_foreman",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": []
+    },
+    {
+      "item": "hist_realsr_building",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "hist_realsr_painting",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=64] \u2192 denoise[model:scunet_real_psnr|blend=0.67]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=64] \u2192 denoise[model:scunet_real_psnr|blend=0.67] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "identity_vs_source": null
+    },
+    {
+      "item": "hist_realsr_tiger",
+      "category": "historical",
+      "synthetic": false,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr] \u2192 white_balance[classical:neutral_cast|strength=0.42,gains=[0.9865, 1.0, 1.075]]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr] \u2192 white_balance[classical:neutral_cast|strength=0.42,gains=[0.9865, 1.0, 1.075]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "identity_vs_source": null
+    },
+    {
+      "item": "ai_flux__girl_in_field",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 1,
+      "flags": []
+    },
+    {
+      "item": "aijpg_flux__girl_in_field",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=56]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=56]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 38.1698,
+          "ssim": 0.9757,
+          "delta_e": 1.1406,
+          "texture_ratio": 1.0424,
+          "structure_change": 0.06,
+          "blockiness": 0.7842,
+          "composite": 0.9528
+        },
+        "auto": {
+          "psnr": 41.5817,
+          "ssim": 0.9918,
+          "delta_e": 0.7627,
+          "texture_ratio": 0.7287,
+          "structure_change": 0.0288,
+          "blockiness": 0.0168,
+          "composite": 0.9345
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 38.1698,
+          "ssim": 0.9757,
+          "delta_e": 1.1406,
+          "texture_ratio": 1.0424,
+          "structure_change": 0.06,
+          "blockiness": 0.7842,
+          "composite": 0.9528
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 3.412,
+        "d_ssim": 0.0161,
+        "d_delta_e": -0.378
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_chroma__fennec_girl_flowers",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 1,
+      "flags": []
+    },
+    {
+      "item": "aijpg_chroma__fennec_girl_flowers",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=40]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=40]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 33.153,
+          "ssim": 0.9615,
+          "delta_e": 2.1946,
+          "texture_ratio": 0.8858,
+          "structure_change": 0.079,
+          "blockiness": 0.7194,
+          "composite": 0.898
+        },
+        "auto": {
+          "psnr": 38.0826,
+          "ssim": 0.9855,
+          "delta_e": 1.1794,
+          "texture_ratio": 0.6554,
+          "structure_change": 0.0311,
+          "blockiness": 0.0126,
+          "composite": 0.9021
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 33.153,
+          "ssim": 0.9615,
+          "delta_e": 2.1946,
+          "texture_ratio": 0.8858,
+          "structure_change": 0.079,
+          "blockiness": 0.7194,
+          "composite": 0.898
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 4.93,
+        "d_ssim": 0.024,
+        "d_delta_e": -1.015
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_qwen_image__qwen_image_basic_example",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "aijpg_qwen_image__qwen_image_basic_example",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 37.1018,
+          "ssim": 0.9752,
+          "delta_e": 1.6395,
+          "texture_ratio": 0.9868,
+          "structure_change": 0.049,
+          "blockiness": 0.4491,
+          "composite": 0.9465
+        },
+        "auto": {
+          "psnr": 42.8849,
+          "ssim": 0.988,
+          "delta_e": 0.8721,
+          "texture_ratio": 0.7446,
+          "structure_change": 0.032,
+          "blockiness": 0.0159,
+          "composite": 0.9341
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 37.1018,
+          "ssim": 0.9752,
+          "delta_e": 1.6395,
+          "texture_ratio": 0.9868,
+          "structure_change": 0.049,
+          "blockiness": 0.4491,
+          "composite": 0.9465
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 5.783,
+        "d_ssim": 0.0128,
+        "d_delta_e": -0.767
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_flux2__flux2_example",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "aijpg_flux2__flux2_example",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 35.439,
+          "ssim": 0.9705,
+          "delta_e": 1.7612,
+          "texture_ratio": 0.8957,
+          "structure_change": 0.0375,
+          "blockiness": 0.4254,
+          "composite": 0.9229
+        },
+        "auto": {
+          "psnr": 39.867,
+          "ssim": 0.984,
+          "delta_e": 1.1322,
+          "texture_ratio": 0.7248,
+          "structure_change": 0.0311,
+          "blockiness": 0.02,
+          "composite": 0.9239
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 35.439,
+          "ssim": 0.9705,
+          "delta_e": 1.7612,
+          "texture_ratio": 0.8957,
+          "structure_change": 0.0375,
+          "blockiness": 0.4254,
+          "composite": 0.9229
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 4.428,
+        "d_ssim": 0.0135,
+        "d_delta_e": -0.629
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_hidream__hidream_dev_example",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": [
+        "Clipped highlights (2.3% clipped highlights (not recoverable)): detail there cannot be faithfully recovered."
+      ]
+    },
+    {
+      "item": "aijpg_hidream__hidream_dev_example",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Clipped highlights (2.1% clipped highlights (not recoverable)): detail there cannot be faithfully recovered."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 34.5554,
+          "ssim": 0.9679,
+          "delta_e": 1.6731,
+          "texture_ratio": 1.0511,
+          "structure_change": 0.0489,
+          "blockiness": 0.3406,
+          "composite": 0.9277
+        },
+        "auto": {
+          "psnr": 39.0989,
+          "ssim": 0.9916,
+          "delta_e": 0.9834,
+          "texture_ratio": 0.8601,
+          "structure_change": 0.0176,
+          "blockiness": 0.0188,
+          "composite": 0.9537
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 34.5554,
+          "ssim": 0.9679,
+          "delta_e": 1.6731,
+          "texture_ratio": 1.0511,
+          "structure_change": 0.0489,
+          "blockiness": 0.3406,
+          "composite": 0.9277
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 4.544,
+        "d_ssim": 0.0237,
+        "d_delta_e": -0.69
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_sd3__sd3.5_simple_example",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "aijpg_sd3__sd3.5_simple_example",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=55]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=55]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 36.9304,
+          "ssim": 0.9617,
+          "delta_e": 1.7287,
+          "texture_ratio": 0.789,
+          "structure_change": 0.0719,
+          "blockiness": 0.8169,
+          "composite": 0.9026
+        },
+        "auto": {
+          "psnr": 39.8304,
+          "ssim": 0.9733,
+          "delta_e": 1.0642,
+          "texture_ratio": 0.5115,
+          "structure_change": 0.0617,
+          "blockiness": 0.1143,
+          "composite": 0.8646
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 36.9304,
+          "ssim": 0.9617,
+          "delta_e": 1.7287,
+          "texture_ratio": 0.789,
+          "structure_change": 0.0719,
+          "blockiness": 0.8169,
+          "composite": 0.9026
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 2.9,
+        "d_ssim": 0.0116,
+        "d_delta_e": -0.664
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ai_hunyuan_image__hunyuan_image_example",
+      "category": "ai_generated",
+      "synthetic": false,
+      "content_truth": "ai_generated",
+      "content_pred": "ai_generated",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "aijpg_hunyuan_image__hunyuan_image_example",
+      "category": "ai_generated",
+      "synthetic": true,
+      "content_truth": "ai_generated",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=70]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 39.0114,
+          "ssim": 0.9807,
+          "delta_e": 1.3783,
+          "texture_ratio": 1.008,
+          "structure_change": 0.0336,
+          "blockiness": 0.4678,
+          "composite": 0.9624
+        },
+        "auto": {
+          "psnr": 44.1086,
+          "ssim": 0.9896,
+          "delta_e": 0.8057,
+          "texture_ratio": 0.7313,
+          "structure_change": 0.0236,
+          "blockiness": 0.0309,
+          "composite": 0.934
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 39.0114,
+          "ssim": 0.9807,
+          "delta_e": 1.3783,
+          "texture_ratio": 1.008,
+          "structure_change": 0.0336,
+          "blockiness": 0.4678,
+          "composite": 0.9624
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 5.097,
+        "d_ssim": 0.0089,
+        "d_delta_e": -0.573
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ui_chainner_screenshot",
+      "category": "screenshot",
+      "synthetic": false,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_op_x1": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "uijpg_chainner_screenshot",
+      "category": "screenshot",
+      "synthetic": true,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=45]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=45]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Text/UI image processed by JPEG cleanup: verify glyph legibility."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 29.4775,
+          "ssim": 0.904,
+          "delta_e": 2.2718,
+          "texture_ratio": 1.1806,
+          "structure_change": 0.2289,
+          "blockiness": 0.9142,
+          "text_ssim": 0.8555,
+          "glyph_error": 0.0165,
+          "composite": 0.8189
+        },
+        "auto": {
+          "psnr": 32.3132,
+          "ssim": 0.9655,
+          "delta_e": 1.5001,
+          "texture_ratio": 0.9639,
+          "structure_change": 0.0542,
+          "blockiness": 0.4248,
+          "text_ssim": 0.9154,
+          "glyph_error": 0.0098,
+          "composite": 0.9125
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 29.4775,
+          "ssim": 0.904,
+          "delta_e": 2.2718,
+          "texture_ratio": 1.1806,
+          "structure_change": 0.2289,
+          "blockiness": 0.9142,
+          "text_ssim": 0.8555,
+          "glyph_error": 0.0165,
+          "composite": 0.8189
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 2.836,
+        "d_ssim": 0.0615,
+        "d_delta_e": -0.772
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ui_chainner_simple",
+      "category": "screenshot",
+      "synthetic": false,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [],
+      "actionable_pred": [],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "No enhancement needed (no-op)",
+      "checks": {
+        "no_op_x1": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "uijpg_chainner_simple",
+      "category": "screenshot",
+      "synthetic": true,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [
+        "jpeg_artifacts"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=45]",
+      "auto_default": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=45]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Text/UI image processed by JPEG cleanup: verify glyph legibility."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 30.8681,
+          "ssim": 0.9297,
+          "delta_e": 2.0445,
+          "texture_ratio": 1.1401,
+          "structure_change": 0.1722,
+          "blockiness": 1.6875,
+          "text_ssim": 0.9723,
+          "glyph_error": 0.0229,
+          "composite": 0.8436
+        },
+        "auto": {
+          "psnr": 33.9742,
+          "ssim": 0.9795,
+          "delta_e": 1.2899,
+          "texture_ratio": 0.9365,
+          "structure_change": 0.0398,
+          "blockiness": 0.8457,
+          "text_ssim": 0.9914,
+          "glyph_error": 0.0171,
+          "composite": 0.9179
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 30.8681,
+          "ssim": 0.9297,
+          "delta_e": 2.0445,
+          "texture_ratio": 1.1401,
+          "structure_change": 0.1722,
+          "blockiness": 1.6875,
+          "text_ssim": 0.9723,
+          "glyph_error": 0.0229,
+          "composite": 0.8436
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 3.106,
+        "d_ssim": 0.0498,
+        "d_delta_e": -0.755
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "ui_chainner_input_override",
+      "category": "screenshot",
+      "synthetic": false,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[classical:nearest|scale=2]",
+      "checks": {
+        "no_op_x1": true
+      },
+      "faces": 0,
+      "flags": []
+    },
+    {
+      "item": "uijpg_chainner_input_override",
+      "category": "screenshot",
+      "synthetic": true,
+      "content_truth": "screenshot",
+      "content_pred": "screenshot",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=45]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=45] \u2192 upscale[classical:lanczos|scale=2.0]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Text/UI image processed by JPEG cleanup: verify glyph legibility."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 29.992,
+          "ssim": 0.9308,
+          "delta_e": 2.169,
+          "texture_ratio": 1.1833,
+          "structure_change": 0.173,
+          "blockiness": 0.5647,
+          "text_ssim": 0.9472,
+          "glyph_error": 0.0244,
+          "composite": 0.8318
+        },
+        "auto": {
+          "psnr": 32.6242,
+          "ssim": 0.9806,
+          "delta_e": 1.3957,
+          "texture_ratio": 0.9727,
+          "structure_change": 0.0419,
+          "blockiness": 0.1658,
+          "text_ssim": 0.9805,
+          "glyph_error": 0.0159,
+          "composite": 0.9185
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 29.992,
+          "ssim": 0.9308,
+          "delta_e": 2.169,
+          "texture_ratio": 1.1833,
+          "structure_change": 0.173,
+          "blockiness": 0.5647,
+          "text_ssim": 0.9472,
+          "glyph_error": 0.0244,
+          "composite": 0.8318
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 2.632,
+        "d_ssim": 0.0498,
+        "d_delta_e": -0.773
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_head_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|blend=0.69]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|blend=0.69] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 30.1953,
+          "ssim": 0.9819,
+          "delta_e": 4.2769,
+          "texture_ratio": 1.0843,
+          "structure_change": 0.0274,
+          "blockiness": 0.0154,
+          "composite": 0.876
+        },
+        "auto": {
+          "psnr": 29.5873,
+          "ssim": 0.9142,
+          "delta_e": 4.2425,
+          "texture_ratio": 0.4642,
+          "structure_change": 0.151,
+          "blockiness": 0.0228,
+          "composite": 0.7285
+        },
+        "auto \u2212 denoise": {
+          "psnr": 30.1953,
+          "ssim": 0.9819,
+          "delta_e": 4.2769,
+          "texture_ratio": 1.0843,
+          "structure_change": 0.0274,
+          "blockiness": 0.0154,
+          "composite": 0.876
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 29.1092,
+          "ssim": 0.89,
+          "delta_e": 4.4283,
+          "texture_ratio": 0.2888,
+          "structure_change": 0.205,
+          "blockiness": 0.0227,
+          "composite": 0.6727
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 28.834,
+          "ssim": 0.8662,
+          "delta_e": 4.5049,
+          "texture_ratio": 0.5435,
+          "structure_change": 0.2831,
+          "blockiness": 0.0175,
+          "composite": 0.7106
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -0.608,
+        "d_ssim": -0.0677,
+        "d_delta_e": -0.034
+      },
+      "n_candidates": 5
+    },
+    {
+      "item": "syn_set5_head_gauss_noise_png",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 28.1976,
+          "ssim": 0.7024,
+          "delta_e": 4.2286,
+          "texture_ratio": 2.1319,
+          "structure_change": 0.4772,
+          "blockiness": 0.0089,
+          "composite": 0.5971
+        },
+        "auto": {
+          "psnr": 30.5703,
+          "ssim": 0.7896,
+          "delta_e": 3.0634,
+          "texture_ratio": 0.207,
+          "structure_change": 0.3819,
+          "blockiness": 0.0305,
+          "composite": 0.6358
+        },
+        "auto \u2212 denoise": {
+          "psnr": 28.1976,
+          "ssim": 0.7024,
+          "delta_e": 4.2286,
+          "texture_ratio": 2.1319,
+          "structure_change": 0.4772,
+          "blockiness": 0.0089,
+          "composite": 0.5971
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 30.3216,
+          "ssim": 0.8155,
+          "delta_e": 3.1201,
+          "texture_ratio": 1.4325,
+          "structure_change": 0.3561,
+          "blockiness": 0.0145,
+          "composite": 0.7444
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 28.1645,
+          "ssim": 0.7129,
+          "delta_e": 4.0284,
+          "texture_ratio": 1.6033,
+          "structure_change": 0.5052,
+          "blockiness": 0.0125,
+          "composite": 0.6447
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 2.373,
+        "d_ssim": 0.0872,
+        "d_delta_e": -1.165
+      },
+      "n_candidates": 5
+    },
+    {
+      "item": "syn_set5_head_beauty_filter",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 36.2146,
+          "ssim": 0.9494,
+          "delta_e": 1.1156,
+          "texture_ratio": 0.6882,
+          "structure_change": 0.1215,
+          "blockiness": 0.0111,
+          "composite": 0.8781
+        },
+        "auto": {
+          "psnr": 36.2146,
+          "ssim": 0.9494,
+          "delta_e": 1.1156,
+          "texture_ratio": 0.6882,
+          "structure_change": 0.1215,
+          "blockiness": 0.0111,
+          "composite": 0.8781
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_head_hdr_local_contrast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|blend=0.79]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|blend=0.79] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 22.5025,
+          "ssim": 0.771,
+          "delta_e": 6.0026,
+          "texture_ratio": 1.7445,
+          "structure_change": 0.0822,
+          "blockiness": 0.0176,
+          "composite": 0.6496
+        },
+        "auto": {
+          "psnr": 22.4402,
+          "ssim": 0.7501,
+          "delta_e": 6.0996,
+          "texture_ratio": 0.687,
+          "structure_change": 0.2069,
+          "blockiness": 0.0128,
+          "composite": 0.6532
+        },
+        "auto \u2212 denoise": {
+          "psnr": 22.5025,
+          "ssim": 0.771,
+          "delta_e": 6.0026,
+          "texture_ratio": 1.7445,
+          "structure_change": 0.0822,
+          "blockiness": 0.0176,
+          "composite": 0.6496
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 22.6589,
+          "ssim": 0.7911,
+          "delta_e": 5.8835,
+          "texture_ratio": 1.1987,
+          "structure_change": 0.1236,
+          "blockiness": 0.0164,
+          "composite": 0.7132
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 22.4002,
+          "ssim": 0.7408,
+          "delta_e": 5.9622,
+          "texture_ratio": 1.3567,
+          "structure_change": 0.1903,
+          "blockiness": 0.0257,
+          "composite": 0.6631
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -0.062,
+        "d_ssim": -0.0209,
+        "d_delta_e": 0.097
+      },
+      "n_candidates": 5
+    },
+    {
+      "item": "syn_set5_head_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|blend=0.64]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|blend=0.64] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": false
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0159,
+          "composite": 1.0
+        },
+        "auto": {
+          "psnr": 35.474,
+          "ssim": 0.936,
+          "delta_e": 1.8481,
+          "texture_ratio": 0.5015,
+          "structure_change": 0.1155,
+          "blockiness": 0.0259,
+          "composite": 0.8115
+        },
+        "auto \u2212 denoise": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0159,
+          "composite": 1.0
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 32.8973,
+          "ssim": 0.9084,
+          "delta_e": 2.6389,
+          "texture_ratio": 0.3542,
+          "structure_change": 0.1728,
+          "blockiness": 0.019,
+          "composite": 0.7253
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 31.5445,
+          "ssim": 0.8686,
+          "delta_e": 3.0039,
+          "texture_ratio": 0.4687,
+          "structure_change": 0.2866,
+          "blockiness": 0.018,
+          "composite": 0.7218
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -Infinity,
+        "d_ssim": -0.064,
+        "d_delta_e": 1.848
+      },
+      "n_candidates": 5
+    },
+    {
+      "item": "syn_set5_head_x2",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "x2_candidates": {
+        "lanczos": {
+          "psnr": 31.6706,
+          "ssim": 0.8692,
+          "delta_e": 2.6744,
+          "texture_ratio": 0.2737,
+          "structure_change": 0.2282,
+          "blockiness": 0.0627,
+          "studio_review_flags": []
+        },
+        "swinir_x2": {
+          "psnr": 31.3699,
+          "ssim": 0.8693,
+          "delta_e": 2.707,
+          "texture_ratio": 0.5959,
+          "structure_change": 0.217,
+          "blockiness": 0.2534,
+          "studio_review_flags": []
+        },
+        "realesrgan_x2plus": {
+          "psnr": 29.3271,
+          "ssim": 0.758,
+          "delta_e": 3.4052,
+          "texture_ratio": 0.3479,
+          "structure_change": 0.5026,
+          "blockiness": 0.0241,
+          "studio_review_flags": []
+        },
+        "realesrgan_x4plus": {
+          "psnr": 29.1219,
+          "ssim": 0.7792,
+          "delta_e": 3.4525,
+          "texture_ratio": 0.367,
+          "structure_change": 0.4392,
+          "blockiness": 0.0271,
+          "studio_review_flags": []
+        },
+        "realesr_general_x4v3": {
+          "psnr": 30.0826,
+          "ssim": 0.8238,
+          "delta_e": 3.2165,
+          "texture_ratio": 0.4109,
+          "structure_change": 0.4145,
+          "blockiness": 0.0288,
+          "studio_review_flags": []
+        },
+        "realplksr_nomos2_x4": {
+          "psnr": 29.5896,
+          "ssim": 0.8008,
+          "delta_e": 3.4419,
+          "texture_ratio": 0.8443,
+          "structure_change": 0.3184,
+          "blockiness": 0.0624,
+          "studio_review_flags": []
+        }
+      }
+    },
+    {
+      "item": "syn_set5_woman_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.74,gains=[0.813, 1.0, 0.9564]]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.74,gains=[0.813, 1.0, 0.9564]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 29.0784,
+          "ssim": 0.998,
+          "delta_e": 4.8975,
+          "texture_ratio": 0.991,
+          "structure_change": 0.0029,
+          "blockiness": 0.1989,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9963,
+          "face_sim_mean": 0.9963,
+          "face_texture_ratio": 0.9909,
+          "landmark_drift_max": 0.0029,
+          "face_ssim_min": 0.998,
+          "skin_delta_e_max": 6.9937,
+          "face_fine_texture_worst": 0.991,
+          "face_mid_texture_worst": 0.9827,
+          "composite": 1.2118
+        },
+        "auto": {
+          "psnr": 25.1359,
+          "ssim": 0.9977,
+          "delta_e": 7.4658,
+          "texture_ratio": 0.9821,
+          "structure_change": 0.003,
+          "blockiness": 0.1962,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9935,
+          "face_sim_mean": 0.9935,
+          "face_texture_ratio": 0.9816,
+          "landmark_drift_max": 0.0051,
+          "face_ssim_min": 0.9977,
+          "skin_delta_e_max": 10.2087,
+          "face_fine_texture_worst": 0.9817,
+          "face_mid_texture_worst": 0.9716,
+          "composite": 1.124
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 29.0784,
+          "ssim": 0.998,
+          "delta_e": 4.8975,
+          "texture_ratio": 0.991,
+          "structure_change": 0.0029,
+          "blockiness": 0.1989,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9963,
+          "face_sim_mean": 0.9963,
+          "face_texture_ratio": 0.9909,
+          "landmark_drift_max": 0.0029,
+          "face_ssim_min": 0.998,
+          "skin_delta_e_max": 6.9937,
+          "face_fine_texture_worst": 0.991,
+          "face_mid_texture_worst": 0.9827,
+          "composite": 1.2118
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -3.942,
+        "d_ssim": -0.0003,
+        "d_delta_e": 2.568
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_woman_gauss_noise_png",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution",
+        "noise"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces] \u2192 white_balance[classical:neutral_cast|strength=0.64,gains=[0.7998, 1.0, 1.0658]]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|face_protect=0.5|protect_faces] \u2192 white_balance[classical:neutral_cast|strength=0.64,gains=[0.7998, 1.0, 1.0658]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 27.9702,
+          "ssim": 0.7086,
+          "delta_e": 4.4501,
+          "texture_ratio": 2.8334,
+          "structure_change": 0.373,
+          "blockiness": 0.0126,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8743,
+          "face_sim_mean": 0.8743,
+          "face_texture_ratio": 2.7743,
+          "landmark_drift_max": 0.0191,
+          "face_ssim_min": 0.6699,
+          "skin_delta_e_max": 4.1543,
+          "face_fine_texture_worst": 2.7914,
+          "face_mid_texture_worst": 1.0569,
+          "composite": 0.8574
+        },
+        "auto": {
+          "psnr": 28.555,
+          "ssim": 0.9578,
+          "delta_e": 4.7921,
+          "texture_ratio": 0.7235,
+          "structure_change": 0.0925,
+          "blockiness": 0.0418,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8833,
+          "face_sim_mean": 0.8833,
+          "face_texture_ratio": 0.6972,
+          "landmark_drift_max": 0.0109,
+          "face_ssim_min": 0.9575,
+          "skin_delta_e_max": 6.2637,
+          "face_fine_texture_worst": 0.6958,
+          "face_mid_texture_worst": 0.9603,
+          "composite": 1.1065
+        },
+        "auto \u2212 denoise": {
+          "psnr": 25.7575,
+          "ssim": 0.7106,
+          "delta_e": 6.87,
+          "texture_ratio": 2.8102,
+          "structure_change": 0.3721,
+          "blockiness": 0.0137,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8713,
+          "face_sim_mean": 0.8713,
+          "face_texture_ratio": 2.7482,
+          "landmark_drift_max": 0.0246,
+          "face_ssim_min": 0.6726,
+          "skin_delta_e_max": 7.8856,
+          "face_fine_texture_worst": 2.765,
+          "face_mid_texture_worst": 1.0464,
+          "composite": 0.7759
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 27.6701,
+          "ssim": 0.8416,
+          "delta_e": 4.9508,
+          "texture_ratio": 1.875,
+          "structure_change": 0.2398,
+          "blockiness": 0.0149,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.891,
+          "face_sim_mean": 0.891,
+          "face_texture_ratio": 1.9071,
+          "landmark_drift_max": 0.0153,
+          "face_ssim_min": 0.8071,
+          "skin_delta_e_max": 6.3271,
+          "face_fine_texture_worst": 1.9148,
+          "face_mid_texture_worst": 1.0073,
+          "composite": 0.9747
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 26.6806,
+          "ssim": 0.8356,
+          "delta_e": 5.7324,
+          "texture_ratio": 1.9121,
+          "structure_change": 0.2644,
+          "blockiness": 0.0152,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.7689,
+          "face_sim_mean": 0.7689,
+          "face_texture_ratio": 1.3353,
+          "landmark_drift_max": 0.0144,
+          "face_ssim_min": 0.9207,
+          "skin_delta_e_max": 6.6027,
+          "face_fine_texture_worst": 1.3401,
+          "face_mid_texture_worst": 0.9904,
+          "composite": 0.4231
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 33.9451,
+          "ssim": 0.9584,
+          "delta_e": 1.9615,
+          "texture_ratio": 0.731,
+          "structure_change": 0.0923,
+          "blockiness": 0.0433,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8871,
+          "face_sim_mean": 0.8871,
+          "face_texture_ratio": 0.7056,
+          "landmark_drift_max": 0.0103,
+          "face_ssim_min": 0.9579,
+          "skin_delta_e_max": 1.7356,
+          "face_fine_texture_worst": 0.7042,
+          "face_mid_texture_worst": 0.9723,
+          "composite": 1.2175
+        }
+      },
+      "auto_rank_composite": 2,
+      "auto_vs_input": {
+        "d_psnr": 0.585,
+        "d_ssim": 0.2492,
+        "d_delta_e": 0.342
+      },
+      "n_candidates": 6
+    },
+    {
+      "item": "syn_set5_woman_jpeg_q20",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=20] \u2192 white_balance[classical:neutral_cast|strength=0.66,gains=[0.781, 1.0, 1.0656]]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=20] \u2192 white_balance[classical:neutral_cast|strength=0.66,gains=[0.781, 1.0, 1.0656]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "1 face(s) present: identity drift signals will be computed after processing."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 30.1288,
+          "ssim": 0.9151,
+          "delta_e": 3.193,
+          "texture_ratio": 0.8984,
+          "structure_change": 0.1812,
+          "blockiness": 0.6537,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8799,
+          "face_sim_mean": 0.8799,
+          "face_texture_ratio": 0.8963,
+          "landmark_drift_max": 0.0125,
+          "face_ssim_min": 0.908,
+          "skin_delta_e_max": 2.726,
+          "face_fine_texture_worst": 0.8972,
+          "face_mid_texture_worst": 1.0069,
+          "composite": 1.1702
+        },
+        "auto": {
+          "psnr": 27.3227,
+          "ssim": 0.9507,
+          "delta_e": 5.6389,
+          "texture_ratio": 0.6633,
+          "structure_change": 0.1145,
+          "blockiness": 0.0317,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8878,
+          "face_sim_mean": 0.8878,
+          "face_texture_ratio": 0.6498,
+          "landmark_drift_max": 0.0104,
+          "face_ssim_min": 0.9475,
+          "skin_delta_e_max": 7.1913,
+          "face_fine_texture_worst": 0.6503,
+          "face_mid_texture_worst": 0.9665,
+          "composite": 1.0618
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 26.4865,
+          "ssim": 0.9151,
+          "delta_e": 6.1331,
+          "texture_ratio": 0.8907,
+          "structure_change": 0.1815,
+          "blockiness": 0.6445,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.8741,
+          "face_sim_mean": 0.8741,
+          "face_texture_ratio": 0.8881,
+          "landmark_drift_max": 0.014,
+          "face_ssim_min": 0.9083,
+          "skin_delta_e_max": 7.2211,
+          "face_fine_texture_worst": 0.889,
+          "face_mid_texture_worst": 0.9965,
+          "composite": 1.0645
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 32.2466,
+          "ssim": 0.9511,
+          "delta_e": 2.5404,
+          "texture_ratio": 0.6702,
+          "structure_change": 0.1145,
+          "blockiness": 0.0338,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.895,
+          "face_sim_mean": 0.895,
+          "face_texture_ratio": 0.6576,
+          "landmark_drift_max": 0.0106,
+          "face_ssim_min": 0.9479,
+          "skin_delta_e_max": 2.1815,
+          "face_fine_texture_worst": 0.6581,
+          "face_mid_texture_worst": 0.9789,
+          "composite": 1.1808
+        }
+      },
+      "auto_rank_composite": 4,
+      "auto_vs_input": {
+        "d_psnr": -2.806,
+        "d_ssim": 0.0356,
+        "d_delta_e": 2.446
+      },
+      "n_candidates": 4
+    },
+    {
+      "item": "syn_set5_woman_beauty_filter",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.67,gains=[0.7713, 1.0, 1.0674]]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.67,gains=[0.7713, 1.0, 1.0674]] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 1,
+      "flags": [
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 35.3988,
+          "ssim": 0.9598,
+          "delta_e": 1.188,
+          "texture_ratio": 0.7814,
+          "structure_change": 0.1031,
+          "blockiness": 0.1301,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9162,
+          "face_sim_mean": 0.9162,
+          "face_texture_ratio": 0.7743,
+          "landmark_drift_max": 0.0139,
+          "face_ssim_min": 0.9642,
+          "skin_delta_e_max": 1.1955,
+          "face_fine_texture_worst": 0.7737,
+          "face_mid_texture_worst": 0.8428,
+          "composite": 1.2589
+        },
+        "auto": {
+          "psnr": 27.7721,
+          "ssim": 0.9583,
+          "delta_e": 5.3234,
+          "texture_ratio": 0.773,
+          "structure_change": 0.1043,
+          "blockiness": 0.1306,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9118,
+          "face_sim_mean": 0.9118,
+          "face_texture_ratio": 0.7651,
+          "landmark_drift_max": 0.0158,
+          "face_ssim_min": 0.9628,
+          "skin_delta_e_max": 7.1323,
+          "face_fine_texture_worst": 0.7646,
+          "face_mid_texture_worst": 0.832,
+          "composite": 1.105
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 35.3988,
+          "ssim": 0.9598,
+          "delta_e": 1.188,
+          "texture_ratio": 0.7814,
+          "structure_change": 0.1031,
+          "blockiness": 0.1301,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9162,
+          "face_sim_mean": 0.9162,
+          "face_texture_ratio": 0.7743,
+          "landmark_drift_max": 0.0139,
+          "face_ssim_min": 0.9642,
+          "skin_delta_e_max": 1.1955,
+          "face_fine_texture_worst": 0.7737,
+          "face_mid_texture_worst": 0.8428,
+          "composite": 1.2589
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -7.627,
+        "d_ssim": -0.0015,
+        "d_delta_e": 4.135
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_woman_hdr_local_contrast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "oversmoothed"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.44,gains=[0.9029, 1.0, 1.0363]]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.44,gains=[0.9029, 1.0, 1.0363]] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 1,
+      "flags": [
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 18.7945,
+          "ssim": 0.7373,
+          "delta_e": 8.8602,
+          "texture_ratio": 1.5951,
+          "structure_change": 0.14,
+          "blockiness": 0.173,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9311,
+          "face_sim_mean": 0.9311,
+          "face_texture_ratio": 1.6172,
+          "landmark_drift_max": 0.0068,
+          "face_ssim_min": 0.8745,
+          "skin_delta_e_max": 6.393,
+          "face_fine_texture_worst": 1.6136,
+          "face_mid_texture_worst": 1.6422,
+          "composite": 0.8882
+        },
+        "auto": {
+          "psnr": 18.6309,
+          "ssim": 0.7382,
+          "delta_e": 9.9382,
+          "texture_ratio": 1.5884,
+          "structure_change": 0.142,
+          "blockiness": 0.1708,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9339,
+          "face_sim_mean": 0.9339,
+          "face_texture_ratio": 1.6107,
+          "landmark_drift_max": 0.0064,
+          "face_ssim_min": 0.8762,
+          "skin_delta_e_max": 7.921,
+          "face_fine_texture_worst": 1.6072,
+          "face_mid_texture_worst": 1.6356,
+          "composite": 0.8579
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 18.7945,
+          "ssim": 0.7373,
+          "delta_e": 8.8602,
+          "texture_ratio": 1.5951,
+          "structure_change": 0.14,
+          "blockiness": 0.173,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9311,
+          "face_sim_mean": 0.9311,
+          "face_texture_ratio": 1.6172,
+          "landmark_drift_max": 0.0068,
+          "face_ssim_min": 0.8745,
+          "skin_delta_e_max": 6.393,
+          "face_fine_texture_worst": 1.6136,
+          "face_mid_texture_worst": 1.6422,
+          "composite": 0.8882
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -0.164,
+        "d_ssim": 0.0009,
+        "d_delta_e": 1.078
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_woman_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.66,gains=[0.783, 1.0, 1.0667]]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.66,gains=[0.783, 1.0, 1.0667]] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": false
+      },
+      "faces": 1,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.2013,
+          "faces_evaluated": 1,
+          "face_sim_min": 1.0,
+          "face_sim_mean": 1.0,
+          "face_texture_ratio": 1.0,
+          "landmark_drift_max": 0.0,
+          "face_ssim_min": 1.0,
+          "skin_delta_e_max": 0.0,
+          "face_fine_texture_worst": 1.0,
+          "face_mid_texture_worst": 1.0,
+          "composite": 1.4
+        },
+        "auto": {
+          "psnr": 29.1106,
+          "ssim": 0.9999,
+          "delta_e": 4.813,
+          "texture_ratio": 0.9913,
+          "structure_change": 0.0001,
+          "blockiness": 0.197,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9971,
+          "face_sim_mean": 0.9971,
+          "face_texture_ratio": 0.9907,
+          "landmark_drift_max": 0.0038,
+          "face_ssim_min": 0.9999,
+          "skin_delta_e_max": 6.5833,
+          "face_fine_texture_worst": 0.9907,
+          "face_mid_texture_worst": 0.9888,
+          "composite": 1.2189
+        },
+        "auto \u2212 white_balance": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.2013,
+          "faces_evaluated": 1,
+          "face_sim_min": 1.0,
+          "face_sim_mean": 1.0,
+          "face_texture_ratio": 1.0,
+          "landmark_drift_max": 0.0,
+          "face_ssim_min": 1.0,
+          "skin_delta_e_max": 0.0,
+          "face_fine_texture_worst": 1.0,
+          "face_mid_texture_worst": 1.0,
+          "composite": 1.4
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": -Infinity,
+        "d_ssim": -0.0001,
+        "d_delta_e": 4.813
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_woman_x2",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.66,gains=[0.7785, 1.0, 1.0671]]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.66,gains=[0.7785, 1.0, 1.0671]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 1,
+      "flags": [
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "x2_candidates": {
+        "lanczos": {
+          "psnr": 31.7013,
+          "ssim": 0.9577,
+          "delta_e": 1.2174,
+          "texture_ratio": 0.5396,
+          "structure_change": 0.1127,
+          "blockiness": 0.0269,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9901,
+          "face_sim_mean": 0.9901,
+          "face_texture_ratio": 0.5373,
+          "landmark_drift_max": 0.0087,
+          "face_ssim_min": 0.9563,
+          "skin_delta_e_max": 0.8782,
+          "face_fine_texture_worst": 0.5377,
+          "face_mid_texture_worst": 0.9503,
+          "studio_review_flags": []
+        },
+        "swinir_x2": {
+          "psnr": 31.9776,
+          "ssim": 0.9658,
+          "delta_e": 1.1702,
+          "texture_ratio": 1.1041,
+          "structure_change": 0.0594,
+          "blockiness": 0.1314,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9934,
+          "face_sim_mean": 0.9934,
+          "face_texture_ratio": 1.0088,
+          "landmark_drift_max": 0.0035,
+          "face_ssim_min": 0.9687,
+          "skin_delta_e_max": 0.7861,
+          "face_fine_texture_worst": 1.0045,
+          "face_mid_texture_worst": 0.9923,
+          "studio_review_flags": []
+        },
+        "realesrgan_x2plus": {
+          "psnr": 27.1947,
+          "ssim": 0.909,
+          "delta_e": 3.06,
+          "texture_ratio": 0.9891,
+          "structure_change": 0.1693,
+          "blockiness": 0.0275,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9306,
+          "face_sim_mean": 0.9306,
+          "face_texture_ratio": 0.9222,
+          "landmark_drift_max": 0.0093,
+          "face_ssim_min": 0.9116,
+          "skin_delta_e_max": 2.632,
+          "face_fine_texture_worst": 0.9233,
+          "face_mid_texture_worst": 1.0722,
+          "studio_review_flags": []
+        },
+        "realesrgan_x4plus": {
+          "psnr": 29.7111,
+          "ssim": 0.9404,
+          "delta_e": 2.6098,
+          "texture_ratio": 0.9763,
+          "structure_change": 0.1171,
+          "blockiness": 0.018,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9521,
+          "face_sim_mean": 0.9521,
+          "face_texture_ratio": 0.9025,
+          "landmark_drift_max": 0.0057,
+          "face_ssim_min": 0.9428,
+          "skin_delta_e_max": 2.0869,
+          "face_fine_texture_worst": 0.8993,
+          "face_mid_texture_worst": 0.9887,
+          "studio_review_flags": []
+        },
+        "realesr_general_x4v3": {
+          "psnr": 28.6547,
+          "ssim": 0.9359,
+          "delta_e": 2.7122,
+          "texture_ratio": 1.0596,
+          "structure_change": 0.1364,
+          "blockiness": 0.027,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9518,
+          "face_sim_mean": 0.9518,
+          "face_texture_ratio": 1.0098,
+          "landmark_drift_max": 0.0103,
+          "face_ssim_min": 0.9355,
+          "skin_delta_e_max": 2.323,
+          "face_fine_texture_worst": 1.0104,
+          "face_mid_texture_worst": 1.0915,
+          "studio_review_flags": []
+        },
+        "realplksr_nomos2_x4": {
+          "psnr": 28.8358,
+          "ssim": 0.944,
+          "delta_e": 2.481,
+          "texture_ratio": 1.1358,
+          "structure_change": 0.0989,
+          "blockiness": 0.0415,
+          "faces_evaluated": 1,
+          "face_sim_min": 0.9742,
+          "face_sim_mean": 0.9742,
+          "face_texture_ratio": 1.1626,
+          "landmark_drift_max": 0.0087,
+          "face_ssim_min": 0.9459,
+          "skin_delta_e_max": 2.0323,
+          "face_fine_texture_worst": 1.1582,
+          "face_mid_texture_worst": 1.0468,
+          "studio_review_flags": []
+        }
+      }
+    },
+    {
+      "item": "syn_set5_baby_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 28.8221,
+          "ssim": 0.9918,
+          "delta_e": 4.5396,
+          "texture_ratio": 1.0241,
+          "structure_change": 0.0152,
+          "blockiness": 0.09,
+          "composite": 0.8812
+        },
+        "auto": {
+          "psnr": 28.8221,
+          "ssim": 0.9918,
+          "delta_e": 4.5396,
+          "texture_ratio": 1.0241,
+          "structure_change": 0.0152,
+          "blockiness": 0.09,
+          "composite": 0.8812
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_baby_jpeg_q20",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=20]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=20] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 31.3899,
+          "ssim": 0.9061,
+          "delta_e": 3.3058,
+          "texture_ratio": 0.7222,
+          "structure_change": 0.2995,
+          "blockiness": 0.7545,
+          "composite": 0.7971
+        },
+        "auto": {
+          "psnr": 33.3331,
+          "ssim": 0.9272,
+          "delta_e": 2.4464,
+          "texture_ratio": 0.4352,
+          "structure_change": 0.2443,
+          "blockiness": 0.0664,
+          "composite": 0.7563
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 31.3899,
+          "ssim": 0.9061,
+          "delta_e": 3.3058,
+          "texture_ratio": 0.7222,
+          "structure_change": 0.2995,
+          "blockiness": 0.7545,
+          "composite": 0.7971
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 1.943,
+        "d_ssim": 0.0211,
+        "d_delta_e": -0.859
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_set5_baby_oversharp_r1",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 31.185,
+          "ssim": 0.9284,
+          "delta_e": 1.9296,
+          "texture_ratio": 2.239,
+          "structure_change": 0.0633,
+          "blockiness": 0.0572,
+          "composite": 0.7786
+        },
+        "auto": {
+          "psnr": 31.185,
+          "ssim": 0.9284,
+          "delta_e": 1.9296,
+          "texture_ratio": 2.239,
+          "structure_change": 0.0633,
+          "blockiness": 0.0572,
+          "composite": 0.7786
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_baby_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0521,
+          "composite": 1.0
+        },
+        "auto": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0521,
+          "composite": 1.0
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": NaN,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_bird_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 32.6064,
+          "ssim": 0.9945,
+          "delta_e": 2.5199,
+          "texture_ratio": 1.0402,
+          "structure_change": 0.0095,
+          "blockiness": 0.0453,
+          "composite": 0.9251
+        },
+        "auto": {
+          "psnr": 32.6064,
+          "ssim": 0.9945,
+          "delta_e": 2.5199,
+          "texture_ratio": 1.0402,
+          "structure_change": 0.0095,
+          "blockiness": 0.0453,
+          "composite": 0.9251
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_bird_green_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 32.9698,
+          "ssim": 0.9951,
+          "delta_e": 3.366,
+          "texture_ratio": 1.0687,
+          "structure_change": 0.0093,
+          "blockiness": 0.0421,
+          "composite": 0.91
+        },
+        "auto": {
+          "psnr": 32.9698,
+          "ssim": 0.9951,
+          "delta_e": 3.366,
+          "texture_ratio": 1.0687,
+          "structure_change": 0.0093,
+          "blockiness": 0.0421,
+          "composite": 0.91
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_set5_bird_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "oversmoothed"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": [
+        "Image appears previously smoothed: Faithful mode will not synthesise texture. Balanced (GAN) can add plausible texture \u2013 labelled as such."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0188,
+          "composite": 1.0
+        },
+        "auto": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0188,
+          "composite": 1.0
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": NaN,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_mcm_13_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=90] \u2192 white_balance[classical:neutral_cast|strength=0.49,gains=[0.8948, 1.0, 1.1823]]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=90] \u2192 white_balance[classical:neutral_cast|strength=0.49,gains=[0.8948, 1.0, 1.1823]] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 29.6594,
+          "ssim": 0.9845,
+          "delta_e": 4.0674,
+          "texture_ratio": 0.9196,
+          "structure_change": 0.0394,
+          "blockiness": 0.2228,
+          "composite": 0.8767
+        },
+        "auto": {
+          "psnr": 25.2569,
+          "ssim": 0.9868,
+          "delta_e": 6.9644,
+          "texture_ratio": 0.6695,
+          "structure_change": 0.0551,
+          "blockiness": 0.1446,
+          "composite": 0.7686
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 25.2255,
+          "ssim": 0.9845,
+          "delta_e": 7.0015,
+          "texture_ratio": 0.9188,
+          "structure_change": 0.0395,
+          "blockiness": 0.2215,
+          "composite": 0.816
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 29.7861,
+          "ssim": 0.9868,
+          "delta_e": 3.9963,
+          "texture_ratio": 0.6699,
+          "structure_change": 0.055,
+          "blockiness": 0.1449,
+          "composite": 0.8302
+        }
+      },
+      "auto_rank_composite": 4,
+      "auto_vs_input": {
+        "d_psnr": -4.402,
+        "d_ssim": 0.0023,
+        "d_delta_e": 2.897
+      },
+      "n_candidates": 4
+    },
+    {
+      "item": "syn_mcm_13_green_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=90]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=90] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 31.0186,
+          "ssim": 0.9848,
+          "delta_e": 6.929,
+          "texture_ratio": 0.9494,
+          "structure_change": 0.0384,
+          "blockiness": 0.2206,
+          "composite": 0.8439
+        },
+        "auto": {
+          "psnr": 31.2619,
+          "ssim": 0.9875,
+          "delta_e": 6.8954,
+          "texture_ratio": 0.6925,
+          "structure_change": 0.055,
+          "blockiness": 0.1454,
+          "composite": 0.7976
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 31.0186,
+          "ssim": 0.9848,
+          "delta_e": 6.929,
+          "texture_ratio": 0.9494,
+          "structure_change": 0.0384,
+          "blockiness": 0.2206,
+          "composite": 0.8439
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 0.243,
+        "d_ssim": 0.0027,
+        "d_delta_e": -0.034
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_mcm_13_jpeg_q20",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "screenshot",
+      "issues_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "jpeg_artifacts",
+        "low_resolution"
+      ],
+      "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=30]",
+      "auto_default": "faithful \u00d72: jpeg_cleanup[model:fbcnn_color|qf=30] \u2192 upscale[classical:lanczos|scale=2.0]",
+      "checks": {},
+      "faces": 0,
+      "flags": [
+        "Text/UI image processed by JPEG cleanup: verify glyph legibility."
+      ],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 32.6284,
+          "ssim": 0.9338,
+          "delta_e": 2.5891,
+          "texture_ratio": 0.6014,
+          "structure_change": 0.5018,
+          "blockiness": 1.3216,
+          "composite": 0.7773
+        },
+        "auto": {
+          "psnr": 35.7819,
+          "ssim": 0.9602,
+          "delta_e": 1.8205,
+          "texture_ratio": 0.4392,
+          "structure_change": 0.4402,
+          "blockiness": 0.0682,
+          "composite": 0.7715
+        },
+        "auto \u2212 jpeg_cleanup": {
+          "psnr": 32.6284,
+          "ssim": 0.9338,
+          "delta_e": 2.5891,
+          "texture_ratio": 0.6014,
+          "structure_change": 0.5018,
+          "blockiness": 1.3216,
+          "composite": 0.7773
+        }
+      },
+      "auto_rank_composite": 3,
+      "auto_vs_input": {
+        "d_psnr": 3.154,
+        "d_ssim": 0.0264,
+        "d_delta_e": -0.769
+      },
+      "n_candidates": 3
+    },
+    {
+      "item": "syn_mcm_13_hdr_local_contrast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 25.5079,
+          "ssim": 0.8991,
+          "delta_e": 4.029,
+          "texture_ratio": 1.8101,
+          "structure_change": 0.0792,
+          "blockiness": 0.1018,
+          "composite": 0.7429
+        },
+        "auto": {
+          "psnr": 25.5079,
+          "ssim": 0.8991,
+          "delta_e": 4.029,
+          "texture_ratio": 1.8101,
+          "structure_change": 0.0792,
+          "blockiness": 0.1018,
+          "composite": 0.7429
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_mcm_13_oversharp_r1",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "oversharpened"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 32.3893,
+          "ssim": 0.924,
+          "delta_e": 1.8335,
+          "texture_ratio": 2.2788,
+          "structure_change": 0.076,
+          "blockiness": 0.0601,
+          "composite": 0.7786
+        },
+        "auto": {
+          "psnr": 32.3893,
+          "ssim": 0.924,
+          "delta_e": 1.8335,
+          "texture_ratio": 2.2788,
+          "structure_change": 0.076,
+          "blockiness": 0.0601,
+          "composite": 0.7786
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_mcm_13_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution"
+      ],
+      "actionable_pred": [
+        "low_resolution"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0143,
+          "composite": 1.0
+        },
+        "auto": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0143,
+          "composite": 1.0
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": NaN,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_mcm_17_cool_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "underexposed"
+      ],
+      "actionable_pred": [
+        "color_cast",
+        "low_resolution",
+        "underexposed"
+      ],
+      "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.55,gains=[0.8178, 1.0, 1.6815]] \u2192 exposure[classical:levels|ev=0.48,black=0.0,white=1.0,gamma=1.0]",
+      "auto_default": "faithful \u00d72: white_balance[classical:neutral_cast|strength=0.55,gains=[0.8178, 1.0, 1.6815]] \u2192 exposure[classical:levels|ev=0.48,black=0.0,white=1.0,gamma=1.0] \u2192 upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 30.1719,
+          "ssim": 0.9904,
+          "delta_e": 3.2752,
+          "texture_ratio": 1.0237,
+          "structure_change": 0.0093,
+          "blockiness": 0.0192,
+          "composite": 0.9052
+        },
+        "auto": {
+          "psnr": 22.6935,
+          "ssim": 0.9729,
+          "delta_e": 6.7058,
+          "texture_ratio": 1.1967,
+          "structure_change": 0.0188,
+          "blockiness": 0.0201,
+          "composite": 0.7935
+        },
+        "auto \u2212 white_balance": {
+          "psnr": 26.3827,
+          "ssim": 0.9735,
+          "delta_e": 4.5588,
+          "texture_ratio": 1.1869,
+          "structure_change": 0.0169,
+          "blockiness": 0.0188,
+          "composite": 0.8412
+        },
+        "auto \u2212 exposure": {
+          "psnr": 25.3775,
+          "ssim": 0.9894,
+          "delta_e": 5.8077,
+          "texture_ratio": 1.0331,
+          "structure_change": 0.0107,
+          "blockiness": 0.02,
+          "composite": 0.8473
+        }
+      },
+      "auto_rank_composite": 4,
+      "auto_vs_input": {
+        "d_psnr": -7.478,
+        "d_ssim": -0.0175,
+        "d_delta_e": 3.431
+      },
+      "n_candidates": 4
+    },
+    {
+      "item": "syn_mcm_17_green_cast",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "underexposed"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "underexposed"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {},
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 30.7886,
+          "ssim": 0.9905,
+          "delta_e": 3.0725,
+          "texture_ratio": 1.0598,
+          "structure_change": 0.0102,
+          "blockiness": 0.0198,
+          "composite": 0.9054
+        },
+        "auto": {
+          "psnr": 30.7886,
+          "ssim": 0.9905,
+          "delta_e": 3.0725,
+          "texture_ratio": 1.0598,
+          "structure_change": 0.0102,
+          "blockiness": 0.0198,
+          "composite": 0.9054
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": 0.0,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    },
+    {
+      "item": "syn_mcm_17_oversharp_r1",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "underexposed"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "underexposed"
+      ],
+      "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr|blend=0.61]",
+      "auto_default": "faithful \u00d72: denoise[model:scunet_real_psnr|blend=0.61] \u2192 upscale[model:swinir_x2]",
+      "checks": {
+        "forbid_kinds": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": 28.1753,
+          "ssim": 0.91,
+          "delta_e": 2.8392,
+          "texture_ratio": 2.1549,
+          "structure_change": 0.0596,
+          "blockiness": 0.0101,
+          "composite": 0.7514
+        },
+        "auto": {
+          "psnr": 28.6891,
+          "ssim": 0.9286,
+          "delta_e": 3.0519,
+          "texture_ratio": 1.8016,
+          "structure_change": 0.051,
+          "blockiness": 0.0127,
+          "composite": 0.7863
+        },
+        "auto \u2212 denoise": {
+          "psnr": 28.1753,
+          "ssim": 0.91,
+          "delta_e": 2.8392,
+          "texture_ratio": 2.1549,
+          "structure_change": 0.0596,
+          "blockiness": 0.0101,
+          "composite": 0.7514
+        },
+        "auto[denoise\u2192drunet_color]": {
+          "psnr": 28.8594,
+          "ssim": 0.9367,
+          "delta_e": 2.6704,
+          "texture_ratio": 1.6044,
+          "structure_change": 0.06,
+          "blockiness": 0.0153,
+          "composite": 0.8127
+        },
+        "auto[denoise\u2192nlmeans]": {
+          "psnr": 28.0266,
+          "ssim": 0.9073,
+          "delta_e": 3.0831,
+          "texture_ratio": 2.1048,
+          "structure_change": 0.0846,
+          "blockiness": 0.0101,
+          "composite": 0.7471
+        }
+      },
+      "auto_rank_composite": 2,
+      "auto_vs_input": {
+        "d_psnr": 0.514,
+        "d_ssim": 0.0186,
+        "d_delta_e": 0.213
+      },
+      "n_candidates": 5
+    },
+    {
+      "item": "syn_mcm_17_clean",
+      "category": "synthetic_holdout",
+      "synthetic": true,
+      "content_truth": "photo",
+      "content_pred": "photo",
+      "issues_pred": [
+        "color_cast",
+        "low_resolution",
+        "underexposed"
+      ],
+      "actionable_pred": [
+        "low_resolution",
+        "underexposed"
+      ],
+      "auto_x1": "No enhancement needed (no-op)",
+      "auto_default": "faithful \u00d72: upscale[model:swinir_x2]",
+      "checks": {
+        "no_restoration": true
+      },
+      "faces": 0,
+      "flags": [],
+      "neighbourhood": {
+        "noop": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0146,
+          "composite": 1.0
+        },
+        "auto": {
+          "psnr": Infinity,
+          "ssim": 1.0,
+          "delta_e": 0.0,
+          "texture_ratio": 1.0,
+          "structure_change": 0.0,
+          "blockiness": 0.0146,
+          "composite": 1.0
+        }
+      },
+      "auto_rank_composite": 1,
+      "auto_vs_input": {
+        "d_psnr": NaN,
+        "d_ssim": 0.0,
+        "d_delta_e": 0.0
+      },
+      "n_candidates": 2
+    }
+  ]
+}
