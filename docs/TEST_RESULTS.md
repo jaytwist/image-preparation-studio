@@ -150,7 +150,7 @@ Visual inspection (contact sheets) agrees: all Real-ESRGAN outputs show plastic 
 RealPLKSR raises contrast/saturation. **RealPLKSR evades every automatic signal in all sets**; it remains
 Manual-only and any GAN/"balanced" output goes to the Review Queue by policy. Faces under ~140 px (held-out Set5
 "head" at ×0.5) are not detected, so identity cannot be assessed on very small images.
-Re-run of both face sets with the final thresholds: **pending** (running).
+Re-run of both face sets with the final thresholds (*post-hoc*: these sets informed the fixes), all 17 faces detected: faithful upscalers 0/17 flagged · legitimate FBCNN cleanup **0/17** (was 7/9) · Real-ESRGAN ×2plus 17/17 · beauty filter 16/17 · RealPLKSR 2/17 · Real-ESRGAN general v3 0/17 (on these large, clear faces it changed little: similarity ≥ 0.985).
 
 ## 6. Defects found by testing and fixed (all re-tested)
 
