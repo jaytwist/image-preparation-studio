@@ -1,0 +1,31 @@
+{
+  "ops": [
+    {
+      "kind": "upscale",
+      "method": "classical:nearest",
+      "params": {
+        "scale": 2
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "native defaults"
+    }
+  ],
+  "mode": "faithful",
+  "target_scale": 2,
+  "created_by": "preset:screenshot_upscale_x2_exact",
+  "rationale": [
+    "Sample: pixel-exact \u00d72 (no invented glyph detail)"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "d439de8f047f2fa1"
+}

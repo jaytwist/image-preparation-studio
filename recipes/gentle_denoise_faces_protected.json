@@ -1,0 +1,32 @@
+{
+  "ops": [
+    {
+      "kind": "denoise",
+      "method": "model:drunet_color",
+      "params": {
+        "sigma": 6,
+        "face_protect": 0.5
+      },
+      "blend": 1.0,
+      "mask": "protect_faces",
+      "enabled": true,
+      "strength": null,
+      "why": "gentle native \u03c3=6"
+    }
+  ],
+  "mode": "faithful",
+  "target_scale": 1.0,
+  "created_by": "preset:gentle_denoise_faces_protected",
+  "rationale": [
+    "Sample: low-\u03c3 DRUNet, faces blended 50% toward input"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "3e454223dc53cc2a"
+}

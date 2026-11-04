@@ -1,0 +1,31 @@
+{
+  "ops": [
+    {
+      "kind": "jpeg_cleanup",
+      "method": "model:fbcnn_color",
+      "params": {
+        "qf": 60
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "moderate cleanup for UI captures"
+    }
+  ],
+  "mode": "faithful",
+  "target_scale": 1.0,
+  "created_by": "preset:screenshot_jpeg_cleanup",
+  "rationale": [
+    "Sample: FBCNN qf 60; verify glyphs"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "43ee647de749fed3"
+}

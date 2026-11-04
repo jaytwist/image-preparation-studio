@@ -1,0 +1,53 @@
+{
+  "ops": [
+    {
+      "kind": "jpeg_cleanup",
+      "method": "model:fbcnn_color",
+      "params": {
+        "qf": 35
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "old phone JPEG (adjust qf to the file)"
+    },
+    {
+      "kind": "white_balance",
+      "method": "classical:neutral_cast",
+      "params": {
+        "strength": 0.5
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "half-strength neutral-axis WB"
+    },
+    {
+      "kind": "upscale",
+      "method": "model:swinir_x2",
+      "params": {},
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "native defaults"
+    }
+  ],
+  "mode": "faithful",
+  "target_scale": 2,
+  "created_by": "preset:faithful_old_phone_x2",
+  "rationale": [
+    "Sample: JPEG cleanup -> gentle WB -> faithful SwinIR x2"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "a4714646e69dd131"
+}

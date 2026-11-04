@@ -19,3 +19,7 @@ __pycache__/
 .ips_data/
 fixtures/corpus/
 fixtures/_downloads/
+reports/eval/visual/
+reports/eval/_tmp_outputs/
+reports/eval/*.sqlite*
+reports/*.log

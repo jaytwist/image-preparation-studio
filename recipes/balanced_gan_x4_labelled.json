@@ -1,0 +1,29 @@
+{
+  "ops": [
+    {
+      "kind": "upscale",
+      "method": "model:realesrgan_x4plus",
+      "params": {},
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": "native defaults"
+    }
+  ],
+  "mode": "balanced",
+  "target_scale": 4,
+  "created_by": "preset:balanced_gan_x4_labelled",
+  "rationale": [
+    "Sample: GAN \u00d74 \u2014 synthesises texture; outputs go to Review"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "1ed59965b64b471a"
+}

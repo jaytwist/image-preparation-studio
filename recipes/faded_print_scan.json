@@ -1,0 +1,46 @@
+{
+  "ops": [
+    {
+      "kind": "white_balance",
+      "method": "classical:neutral_cast",
+      "params": {
+        "strength": 0.6
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": ""
+    },
+    {
+      "kind": "exposure",
+      "method": "classical:levels",
+      "params": {
+        "black": 0.1,
+        "white": 0.9,
+        "ev": 0.0,
+        "gamma": 1.0
+      },
+      "blend": 1.0,
+      "mask": null,
+      "enabled": true,
+      "strength": null,
+      "why": ""
+    }
+  ],
+  "mode": "faithful",
+  "target_scale": 1.0,
+  "created_by": "preset:faded_print_scan",
+  "rationale": [
+    "Sample: WB + levels for faded prints"
+  ],
+  "confidence": 1.0,
+  "flags": [],
+  "no_op": false,
+  "predicted_seconds": null,
+  "outside_fast_profile": false,
+  "quality_override": false,
+  "content_class": "",
+  "schema": 2,
+  "hash": "d3dcc0289e76ccba"
+}

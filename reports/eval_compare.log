@@ -7,3 +7,5 @@
 [upscale_x2] portrait_x2        realesr_general_x4v3     psnr 28.40 ssim 0.9243 ΔE 2.55 tex 0.94 face 0.930 t 1.2s
 [upscale_x2] portrait_x2        realplksr_nomos2_x4      psnr 28.01 ssim 0.8820 ΔE 2.59 tex 0.97 face 0.960 t 9.2s
 [upscale_x2] group_x2           lanczos                  psnr 36.98 ssim 0.9782 ΔE 0.73 tex 0.59 face 0.986 t 0.1s
+[upscale_x2] group_x2           swinir_x2                psnr 37.51 ssim 0.9823 ΔE 0.71 tex 0.94 face 0.984 t 316.1s
+[upscale_x2] group_x2           realesrgan_x2plus        psnr 29.71 ssim 0.9361 ΔE 2.50 tex 1.20 face 0.883 t 69.2s
