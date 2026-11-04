@@ -57,7 +57,7 @@ if ($Bench)       { & $Py tools\bench.py; exit $LASTEXITCODE }
 if ($BenchQuick)  { & $Py tools\bench.py --quick; exit $LASTEXITCODE }
 if ($PrivacyAudit){ & $Py tools\privacy_audit.py; exit $LASTEXITCODE }
 if ($Test) {
-  if (-not (Test-Path "fixtures\corpus\manifest.json")) { & $Py -m ips.eval.fixtures }
+  if (-not (Test-Path "fixtures\corpus\manifest.json")) { & $Py -m ips.eval.fixtures --fetch }
   & $Py -m pytest -q; exit $LASTEXITCODE
 }
 if ($Cli -and $Cli.Count -gt 0) { & $Py -m ips.cli @Cli; exit $LASTEXITCODE }

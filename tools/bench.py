@@ -107,7 +107,10 @@ def main() -> int:
     rate: dict[str, list[float]] = {}
     for mp in sizes:
         path = make_input(mp, tmp)
-        src = st.inspect(path, record=False)
+        t_ci = time.perf_counter()
+        st.inspect(path, record=False)        # warm-up: loads face/QF models once (reported as cold inspect)
+        cold_inspect = time.perf_counter() - t_ci
+        src = st.inspect(path, record=False)  # measured inspect (models resident)
         for n in names:
             r = R[n].clone()
             pred = predict_seconds(r, src.image.width, src.image.height, dev.kind, dev.name, st.profile)
@@ -135,8 +138,9 @@ def main() -> int:
                     import torch
                     torch.cuda.synchronize()
                     vram.append(torch.cuda.max_memory_allocated() / 2**20)
-                total = time.perf_counter() - t0 + src.timings_ms.get("diagnose", 0) / 1000 \
-                    + src.timings_ms.get("decode", 0) / 1000
+                # job = inspect (hash, metadata, decode, diagnose; model loads excluded) + process + export
+                inspect_s = sum(src.timings_ms.get(k, 0) for k in ("hash", "metadata", "decode", "diagnose")) / 1000
+                total = time.perf_counter() - t0 + inspect_s
                 load = o.timings_ms.get("model_load_total_ms", 0) / 1000
                 (totals if i == 0 else warms).append(total)
                 loads.append(load)
@@ -144,6 +148,7 @@ def main() -> int:
             p95 = warm[min(len(warm) - 1, int(round(0.95 * (len(warm) - 1))))]
             row = {"route": n, "route_key": route_key(r), "mp": mp, "in_size": [src.image.width, src.image.height],
                    "cold_s": round(totals[0], 3), "cold_load_s": round(loads[0], 3),
+                   "first_inspect_s_incl_face_qf_model_load": round(cold_inspect, 3),
                    "warm_p50_s": round(statistics.median(warm), 3), "warm_p95_s": round(p95, 3),
                    "warm_max_s": round(max(warm), 3), "peak_vram_mb": round(max(vram), 1) if vram else None,
                    "within_budget": p95 <= BUDGET_SECONDS}

@@ -163,7 +163,8 @@ class Studio:
         rec = SourceRecord(path=p, sha256=sha, image=img, md=md, summary=summary, diag=dg, assessment=a,
                            dhash=dhash(img.rgb), rel_dir=rel_dir,
                            timings_ms={"hash": (t1 - t0) * 1e3, "metadata": (t2 - t1) * 1e3,
-                                       "decode": (t3 - t2) * 1e3, "diagnose": (t4 - t3) * 1e3,
+                                       "decode": (t3 - t2) * 1e3,
+                                       "diagnose": (t4 - t3) * 1e3 - sum(load_ms.values()),
                                        **{f"model_load_{k}": v for k, v in load_ms.items()}})
         if record:
             st = p.stat()

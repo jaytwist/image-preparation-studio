@@ -459,6 +459,45 @@ def build(out: Path | None = None) -> Path:
     return out
 
 
+RAW = "https://raw.githubusercontent.com"
+PUBLIC_ASSETS = {
+    "t1.jpg": f"{RAW}/deepinsight/insightface/master/python-package/insightface/data/images/t1.jpg",
+    "Tom_Hanks_54745.png": f"{RAW}/deepinsight/insightface/master/python-package/insightface/data/images/Tom_Hanks_54745.png",
+    "children-alpha.png": f"{RAW}/xinntao/Real-ESRGAN/master/inputs/children-alpha.png",
+    "tree_alpha_16bit.png": f"{RAW}/xinntao/Real-ESRGAN/master/inputs/tree_alpha_16bit.png",
+    "iss030e122639.NEF": f"{RAW}/letmaik/rawpy/main/test/iss030e122639.NEF",
+    "AdobeCompat-v4.icc": f"{RAW}/saucecontrol/Compact-ICC-Profiles/master/profiles/AdobeCompat-v4.icc",
+    "DisplayP3-v4.icc": f"{RAW}/saucecontrol/Compact-ICC-Profiles/master/profiles/DisplayP3-v4.icc",
+    "ProPhoto-v4.icc": f"{RAW}/saucecontrol/Compact-ICC-Profiles/master/profiles/ProPhoto-v4.icc",
+    "DSCN0010_gps.jpg": f"{RAW}/ianare/exif-samples/master/jpg/gps/DSCN0010.jpg",
+    "portrait_6.jpg": f"{RAW}/ianare/exif-samples/master/jpg/orientation/portrait_6.jpg",
+    "Canon_40D.jpg": f"{RAW}/ianare/exif-samples/master/jpg/Canon_40D.jpg",
+    **{f"mcmaster/{i}.tif": f"{RAW}/JingyunLiang/SwinIR/main/testsets/McMaster/{i}.tif" for i in (1, 5, 9, 13, 17)},
+    **{f"realsr/{n}": f"{RAW}/JingyunLiang/SwinIR/main/testsets/RealSRSet+5images/{n}" for n in (
+        "oldphoto2.png", "oldphoto3.png", "oldphoto6.png", "Lincoln.png", "ppt3.png", "comic1.png",
+        "dped_crop00061.png", "0030.jpg", "ADE_val_00000114.jpg")},
+}
+
+
+def fetch_public_assets() -> int:
+    """User-directed download of the public test images used by the corpus (setup step, not runtime)."""
+    import urllib.request
+    n = 0
+    for rel, url in PUBLIC_ASSETS.items():
+        dest = DL / rel
+        if dest.is_file() and dest.stat().st_size:
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r:
+                dest.write_bytes(r.read())
+            n += 1
+            print("fetched", rel)
+        except Exception as e:
+            print("could not fetch", rel, e)
+    return n
+
+
 def _add_iptc_xmp(path: Path) -> None:
     import pyexiv2
     from ..core.metadata import EXIV2_LOCK
@@ -479,5 +518,8 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--out")
+    ap.add_argument("--fetch", action="store_true", help="download public test assets first")
     a = ap.parse_args()
+    if a.fetch:
+        fetch_public_assets()
     build(Path(a.out) if a.out else None)

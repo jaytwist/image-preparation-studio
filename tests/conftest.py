@@ -22,9 +22,26 @@ def _isolated_env(tmp_path_factory):
     yield
 
 
+class CorpusDir:
+    """``corpus / "rel/path"`` returns the Path, or skips the test if that optional asset is absent
+    (public test images are fetched with ``python -m ips.eval.fixtures --fetch``)."""
+
+    def __init__(self, root: Path):
+        self.root = root
+
+    def __truediv__(self, rel: str) -> Path:
+        p = self.root / rel
+        if not p.exists():
+            pytest.skip(f"optional test asset missing: {rel} (run: python -m ips.eval.fixtures --fetch)")
+        return p
+
+    def __fspath__(self) -> str:
+        return str(self.root)
+
+
 @pytest.fixture(scope="session")
 def corpus():
-    return CORPUS
+    return CorpusDir(CORPUS)
 
 
 @pytest.fixture(scope="session")
