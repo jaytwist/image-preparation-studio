@@ -284,7 +284,8 @@ def auto_accuracy(out: Path) -> dict[str, Any]:
                 scores["auto"] = dict(scores["noop"])
             best = max(scores, key=lambda k: scores[k]["composite"])
             route_rows.append({"item": it["id"], "auto": r1.summary(), "best": best,
-                               "auto_rank": sorted(scores, key=lambda k: -scores[k]["composite"]).index("auto") + 1,
+                               "auto_rank": 1 + sum(v["composite"] > scores["auto"]["composite"] + 1e-9
+                                                    for v in scores.values()),
                                "n_candidates": len(scores),
                                "regret": round(scores[best]["composite"] - scores["auto"]["composite"], 4),
                                "scores": scores})
