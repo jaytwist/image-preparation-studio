@@ -15,3 +15,4 @@
 [upscale_x2] ui_x2              lanczos                  psnr 22.94 ssim 0.8742 ΔE 1.74 tex 0.39 face nan t 0.0s
 [upscale_x2] ui_x2              nearest                  psnr 22.41 ssim 0.8926 ΔE 1.48 tex 0.63 face nan t 0.0s
 [upscale_x2] ui_x2              swinir_x2                psnr 23.56 ssim 0.9126 ΔE 1.36 tex 0.90 face nan t 73.8s
+[upscale_x2] ui_x2              realesrgan_x2plus        psnr 22.00 ssim 0.8880 ΔE 2.48 tex 0.70 face nan t 28.8s
