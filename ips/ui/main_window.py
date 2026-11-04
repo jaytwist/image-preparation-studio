@@ -215,9 +215,14 @@ class MainWindow(QMainWindow):
 
         def probe(progress, cancel):
             from ..backends.comfy.client import ComfyClient
-            return ComfyClient(s.comfy_url, timeout=2).status()
+            c = ComfyClient(s.comfy_url, timeout=2)
+            st = c.status()
+            st.models = c.upscale_models() if st.available else []  # type: ignore[attr-defined]
+            return st
 
         def done(st):
+            from . import recipe_editor
+            recipe_editor.EXTRA_METHODS["upscale"] = [f"comfy:upscale:{m}" for m in getattr(st, "models", [])]
             txt = (f"ComfyUI {st.version or ''} connected (queue {st.queue_running}+{st.queue_pending}, "
                    f"free {st.vram_free_mb} MB)" if st.available else "ComfyUI: not reachable")
             self.backend_lbl.setText(getattr(self, "_base_status", "") + " · " + txt)

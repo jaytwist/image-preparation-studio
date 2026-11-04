@@ -14,11 +14,15 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout
 from ..backends.registry import MODELS
 from ..core.recipes import CLASSICAL_PARAMS, METHODS, OP_KINDS, Operation, Recipe, default_op, map_strength
 
+EXTRA_METHODS: dict[str, list[str]] = {}   # e.g. {"upscale": ["comfy:upscale:<model file>"]} when ComfyUI is up
+
 MASKS = [("none", None), ("protect faces", "protect_faces"), ("faces only", "faces_only"),
          ("protect text/UI", "protect_text")]
 
 
 def method_label(m: str) -> str:
+    if m.startswith("comfy:"):
+        return f"ComfyUI: {m.split(':', 2)[2]} · external (character unverified)"
     if m.startswith("model:"):
         info = MODELS.get(m.split(":", 1)[1])
         if not info:
@@ -54,7 +58,7 @@ class OpRow(QFrame):
         top.addWidget(rm)
         lay.addLayout(top)
         self.method = QComboBox()
-        for m in METHODS.get(op.kind, [op.method]):
+        for m in METHODS.get(op.kind, [op.method]) + EXTRA_METHODS.get(op.kind, []):
             if m.startswith("model:") and MODELS.get(m.split(":", 1)[1]) and \
                     MODELS[m.split(":", 1)[1]].status == "reject":
                 continue

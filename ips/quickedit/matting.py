@@ -24,6 +24,8 @@ class Matting:
         with cls._lock:
             if model_id not in cls._sessions:
                 import onnxruntime as ort
+                from ..privacy import disable_runtime_telemetry
+                disable_runtime_telemetry()
                 info = MODELS[model_id]
                 if not info.installed:
                     raise FileNotFoundError(f"Matting model missing: {info.file}")

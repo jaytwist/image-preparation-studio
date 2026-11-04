@@ -151,3 +151,20 @@ def test_cancel_only_own_prompts(fake):
     assert c.cancel(pid) == "interrupted (own running prompt)"
     posts = [x for x in fake.calls if x[0] == "POST" and x[1] == "/interrupt"]
     assert len(posts) == 1 and json.loads(posts[0][2])["prompt_id"] == pid
+
+
+def test_pipeline_comfy_route(fake):
+    from ips.core.pipeline import Pipeline
+    from ips.core.recipes import Operation, Recipe
+    from ips.settings import Settings
+    s = Settings.load()
+    s.comfy_enabled, s.comfy_url = True, fake.url
+    s.save()
+    try:
+        r = Recipe(ops=[Operation("upscale", "comfy:upscale:4x_test.pth")], target_scale=2.0)
+        res = Pipeline(backend=object()).run(np.zeros((4, 4, 3), np.float32), None, r, [], identity_check=False)
+        assert res.rgb.shape == (8, 8, 3)
+        assert any("ComfyUI" in w for w in res.warnings)
+    finally:
+        s.comfy_enabled = False
+        s.save()

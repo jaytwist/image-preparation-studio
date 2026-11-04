@@ -92,6 +92,19 @@ class Pipeline:
             self._fa = FaceAnalyzer.get()
         return self._fa
 
+    def _run_comfy(self, op: Operation, img: np.ndarray, cancel) -> np.ndarray:
+        from ..backends.comfy.client import ComfyClient
+        from ..settings import Settings
+        st = Settings.load()
+        if not st.comfy_enabled:
+            raise RuntimeError("ComfyUI routes are disabled in Settings")
+        kind, name = op.method.split(":", 2)[1:]
+        if kind != "upscale":
+            raise ValueError(f"Unsupported ComfyUI route {op.method}")
+        from ..backends.direct import GPU_LOCK
+        with GPU_LOCK:  # never run a Studio GPU model and a Studio ComfyUI job at the same time
+            return ComfyClient(st.comfy_url).upscale_with_model(img, name, st.comfy_vram_min_free_mb, cancel=cancel)
+
     # ------------------------------------------------------------------ main
     def run(self, rgb: np.ndarray, alpha: np.ndarray | None, recipe: Recipe, faces: list[Face] | None = None, *,
             cancel: Callable[[], bool] | None = None, progress: Callable[[str, float], None] | None = None,
@@ -137,6 +150,16 @@ class Pipeline:
                         h0, w0 = inp.shape[:2]
                         out = cops.resize_to(out, int(round(w0 * eff)), int(round(h0 * eff)))
                     _ = want
+            elif op.method.startswith("comfy:"):
+                out = self._run_comfy(op, inp, cancel)
+                if op.kind == "upscale":
+                    remaining = recipe.target_scale / scale
+                    sc = out.shape[1] / inp.shape[1]
+                    if remaining < sc - 1e-6:
+                        h0, w0 = inp.shape[:2]
+                        out = cops.resize_to(out, int(round(w0 * remaining)), int(round(h0 * remaining)))
+                warnings.append(f"{op.method}: ran on local ComfyUI (8-bit PNG transfer; model character "
+                                "not benchmarked by Studio)")
             else:
                 out = _apply_classical(op, inp)
             if op.kind == "geometry":

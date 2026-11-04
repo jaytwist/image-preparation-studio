@@ -38,6 +38,8 @@ class FaceAnalyzer:
 
     def __init__(self, root: Path | None = None):
         import onnxruntime as ort
+        from ..privacy import disable_runtime_telemetry
+        disable_runtime_telemetry()
         root = root or (models_dir() / "buffalo_l")
         self.det = self.rec = None
         self.name = "haar-cascade"

@@ -64,6 +64,8 @@ class Operation:
         return self.method.split(":", 1)[1] if self.method.startswith("model:") else None
 
     def label(self) -> str:
+        if self.method.startswith("comfy:"):
+            return "ComfyUI · " + self.method.split(":", 2)[2]
         if self.model_id:
             from ..backends.registry import MODELS
             m = MODELS.get(self.model_id)
