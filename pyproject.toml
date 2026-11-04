@@ -1,0 +1,38 @@
+[project]
+name = "image-preparation-studio"
+version = "0.9.0rc1"
+description = "Local, offline-first image preparation studio: faithful Smart Auto restoration, Quick Edit, Batch, provenance."
+requires-python = ">=3.11,<3.14"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "numpy>=1.26",
+  "pillow>=10.3",
+  "pillow-heif>=0.16",
+  "opencv-python-headless>=4.9",
+  "tifffile>=2024.1",
+  "imagecodecs>=2024.1",
+  "pyexiv2>=2.12",
+  "rawpy>=0.21",
+  "scikit-image>=0.22",
+  "onnxruntime>=1.17",  # Windows GPU: replace with onnxruntime-gpu (run.ps1 does this)
+  "torch>=2.7",         # Windows RTX 50xx: CUDA 12.8+ wheels (run.ps1 installs from the PyTorch index)
+  "spandrel>=0.4",
+  "PySide6>=6.6",
+  "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-qt>=4.4", "pytest-timeout>=2.3"]
+
+[project.scripts]
+ips = "ips.cli:main"
+ips-studio = "ips.app:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 600
+markers = [
+  "models: requires downloaded model weights",
+  "slow: slow on CPU",
+  "gpu: requires CUDA GPU",
+]

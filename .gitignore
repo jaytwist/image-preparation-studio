@@ -1,0 +1,21 @@
+# Never commit weights, personal images, outputs, or local state
+.venv/
+models/
+outputs/
+reports/local/
+fixtures/real/
+*.pth
+*.pt
+*.onnx
+*.safetensors
+*.ckpt
+*.zip
+__pycache__/
+*.pyc
+.pytest_cache/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+.ips_data/
+fixtures/corpus/
+fixtures/_downloads/
