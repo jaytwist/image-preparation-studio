@@ -1,0 +1,201 @@
+{
+  "summary": {
+    "lanczos": {
+      "n": 3,
+      "flag_rate": 0.0,
+      "sim_median": 0.9997
+    },
+    "swinir_x2": {
+      "n": 3,
+      "flag_rate": 0.0,
+      "sim_median": 0.9997
+    },
+    "realesrgan_x2plus": {
+      "n": 3,
+      "flag_rate": 1.0,
+      "sim_median": 0.786
+    },
+    "realesr_general_x4v3": {
+      "n": 3,
+      "flag_rate": 0.0,
+      "sim_median": 0.9974
+    },
+    "realplksr_nomos2_x4": {
+      "n": 3,
+      "flag_rate": 0.0,
+      "sim_median": 0.9984
+    },
+    "beauty_filter_1x": {
+      "n": 3,
+      "flag_rate": 1.0,
+      "sim_median": 0.9879
+    },
+    "fbcnn_on_q30_1x": {
+      "n": 3,
+      "flag_rate": 0.667,
+      "sim_median": 0.9522
+    }
+  },
+  "detail": {
+    "lanczos": [
+      {
+        "face": "0599",
+        "flagged": false,
+        "sim": 0.9998183250427246,
+        "flags": []
+      },
+      {
+        "face": "0763",
+        "flagged": false,
+        "sim": 0.9996470212936401,
+        "flags": []
+      },
+      {
+        "face": "0885",
+        "flagged": false,
+        "sim": 0.9997006058692932,
+        "flags": []
+      }
+    ],
+    "swinir_x2": [
+      {
+        "face": "0599",
+        "flagged": false,
+        "sim": 0.9996870756149292,
+        "flags": []
+      },
+      {
+        "face": "0763",
+        "flagged": false,
+        "sim": 0.9993033409118652,
+        "flags": []
+      },
+      {
+        "face": "0885",
+        "flagged": false,
+        "sim": 0.9996942281723022,
+        "flags": []
+      }
+    ],
+    "realesrgan_x2plus": [
+      {
+        "face": "0599",
+        "flagged": true,
+        "sim": 0.9225430488586426,
+        "flags": [
+          "face 1: identity embedding similarity 0.923 < 0.98 (upscaled output)",
+          "face 1: possible invented fine detail (fine-texture \u00d72.71)"
+        ]
+      },
+      {
+        "face": "0763",
+        "flagged": true,
+        "sim": 0.7860373258590698,
+        "flags": [
+          "face 1: identity embedding similarity 0.786 < 0.98 (upscaled output)",
+          "face 1: possible invented fine detail (fine-texture \u00d76.50)"
+        ]
+      },
+      {
+        "face": "0885",
+        "flagged": true,
+        "sim": 0.7718093395233154,
+        "flags": [
+          "face 1: identity embedding similarity 0.772 < 0.98 (upscaled output)",
+          "face 1: possible invented fine detail (fine-texture \u00d713.29)"
+        ]
+      }
+    ],
+    "realesr_general_x4v3": [
+      {
+        "face": "0599",
+        "flagged": false,
+        "sim": 0.9983539581298828,
+        "flags": []
+      },
+      {
+        "face": "0763",
+        "flagged": false,
+        "sim": 0.9973702430725098,
+        "flags": []
+      },
+      {
+        "face": "0885",
+        "flagged": false,
+        "sim": 0.9969504475593567,
+        "flags": []
+      }
+    ],
+    "realplksr_nomos2_x4": [
+      {
+        "face": "0599",
+        "flagged": false,
+        "sim": 0.9984245896339417,
+        "flags": []
+      },
+      {
+        "face": "0763",
+        "flagged": false,
+        "sim": 0.9974943995475769,
+        "flags": []
+      },
+      {
+        "face": "0885",
+        "flagged": false,
+        "sim": 0.9984005093574524,
+        "flags": []
+      }
+    ],
+    "beauty_filter_1x": [
+      {
+        "face": "0599",
+        "flagged": true,
+        "sim": 0.9930109977722168,
+        "flags": [
+          "face 1: landmark geometry drift 0.063 IOD > 0.06",
+          "face 1: possible skin smoothing / beautification (mid-texture \u00d70.87, fine-texture \u00d70.25)"
+        ]
+      },
+      {
+        "face": "0763",
+        "flagged": true,
+        "sim": 0.9878871440887451,
+        "flags": [
+          "face 1: possible skin smoothing / beautification (mid-texture \u00d70.83, fine-texture \u00d70.14)"
+        ]
+      },
+      {
+        "face": "0885",
+        "flagged": true,
+        "sim": 0.9671828150749207,
+        "flags": [
+          "face 1: possible skin smoothing / beautification (mid-texture \u00d70.73, fine-texture \u00d70.22)"
+        ]
+      }
+    ],
+    "fbcnn_on_q30_1x": [
+      {
+        "face": "0599",
+        "flagged": true,
+        "sim": 0.9420944452285767,
+        "flags": [
+          "face 1: possible skin smoothing / beautification (skin texture \u00d70.64 vs non-face \u00d70.75: selective \u00d70.85)"
+        ]
+      },
+      {
+        "face": "0763",
+        "flagged": false,
+        "sim": 0.9522126317024231,
+        "flags": []
+      },
+      {
+        "face": "0885",
+        "flagged": true,
+        "sim": 0.972536027431488,
+        "flags": [
+          "face 1: possible skin smoothing / beautification (skin texture \u00d70.68 vs non-face \u00d70.84: selective \u00d70.82)"
+        ]
+      }
+    ]
+  }
+}

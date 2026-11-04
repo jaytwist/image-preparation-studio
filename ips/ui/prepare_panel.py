@@ -312,6 +312,8 @@ class PreparePanel(QWidget):
                            f"{(fd.get('landmark_drift_iod') or 0):.3f} IOD · SSIM {(fd.get('region_ssim') or 0):.3f} · "
                            f"texture ×{(fd.get('fine_texture_ratio') or 0):.2f}/{(fd.get('mid_texture_ratio') or 0):.2f}"
                            if es is not None else f"Face {fd['index'] + 1}: {', '.join(fd.get('flags', [])) or 'ok'}")
+            for n in identity.get("notes", []):
+                out.append(f"<span style='color:#90a4ae'>ⓘ {html.escape(n)}</span>")
             out.append(f"<span style='color:#8a8f98'>{html.escape(identity.get('note', ''))}</span>")
         self.flags.setText("<br>".join(out) if out else "<span style='color:#81c784'>No review flags.</span>")
 
