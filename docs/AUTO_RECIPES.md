@@ -38,7 +38,7 @@ ComfyUI, `parameters` A1111), JPEG quantisation tables → IJG quality estimate.
 
 | Issue | Trigger (key thresholds) | Confidence logic |
 |---|---|---|
-| jpeg_artifacts | blockiness 0.12→0.70 and/or quant-table q 88→45 | metadata+pixels agree 0.9; metadata only 0.5 (severity halved); pixels only 0.6 |
+| jpeg_artifacts | blockiness 0.12→0.70 and/or quant-table q 88→45; ignored for lossless files with > 50 % exact-flat pixels (cannot survive JPEG) | metadata+pixels agree 0.9; metadata only 0.5 (severity halved); pixels only 0.6 |
 | noise | σ_luma (discounted by blocking) 2.2→7.0 | 0.7; 0.9 at ISO ≥ 1600 |
 | grain intent | chroma/luma noise < 0.45 and (AI source, edit software or ISO ≤ 400) | preserved in Faithful unless severity ≥ 0.75 |
 | blur_soft / blur_motion | Crete 0.42→0.65; anisotropy > 0.55 = motion | 0.55 (flag only; no automatic deblur) |
@@ -54,7 +54,7 @@ ComfyUI, `parameters` A1111), JPEG quantisation tables → IJG quality estimate.
 | Order | Operation | Rule | Model / parameters | Strength mapping |
 |---|---|---|---|---|
 | 1 | jpeg_cleanup | jpeg severity ≥ 0.15 | FBCNN, **qf = FBCNN blind prediction** (fallback: quant-table q, +10 if unconfirmed); screenshots +10 (gentler) + legibility flag | native QF |
-| 2 | denoise | noise ≥ 0.12, not grain intent | photo → SCUNet real-PSNR, post-blend 0.55+0.45·sev; scan/AI → DRUNet σ = 0.8/0.7×estimate; faces present → 40–50 % face-region protection | SCUNet: post-blend (labelled); DRUNet: native σ |
+| 2 | denoise | noise ≥ 0.12, not grain intent | photo → SCUNet real-PSNR, post-blend 0.55+0.45·sev; scan/AI → DRUNet σ = 1.0× per-channel estimate; faces present → 40–50 % face-region protection | SCUNet: post-blend (labelled); DRUNet: native σ |
 | 3 | white_balance | photo/scan, cast ≥ 0.2, confidence ≥ 0.6, not warm intent | consensus gains, strength min(0.8, 0.45+0.4·sev)×(1−dominance), luminance preserved | native |
 | 4 | exposure | underexposed ≥ 0.2 → EV (bounded so p99 stays unclipped, ≤ +1.2); faded ≥ 0.25 → black = 0.8·p1, white = p99+0.02 | levels | native |
 | 5 | upscale | scale policy: explicit, AI/Video target long edge, or ×2 when long side < 1024 (setting) | photo/AI → SwinIR ×2 (+Lanczos for remainder); screenshot → Lanczos, pixel art → nearest; Balanced → Real-ESRGAN | model scale; exact target by area/Lanczos resize |

@@ -122,8 +122,8 @@ class Harness:
                     scale = 2.0 if task == "upscale_x2" else 4.0
                     cands = cand_upscale(scale, it["content"] == "screenshot")
                 elif task == "restore_noise":
-                    sig = diagnostics.diagnose(src).features["noise_sigma_luma"]
-                    cands = cand_denoise(sig * 0.8)
+                    feats = diagnostics.diagnose(src).features
+                    cands = cand_denoise(feats.get("noise_sigma_rgb", feats["noise_sigma_luma"]))
                 else:
                     qf = self.backend.predict_jpeg_qf(src) or 50
                     cands = cand_jpeg(int(round(qf)))

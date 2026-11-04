@@ -134,7 +134,9 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
             ops.append(op)
             confs.append(n.confidence)
         elif models_ok and _installed("drunet_color"):
-            sigma = round(max(1.0, a.features.get("noise_sigma_luma", 3.0) * (0.8 if cls == "scan" else 0.7)), 1)
+            base_sigma = a.features.get("noise_sigma_rgb", a.features.get("noise_sigma_luma", 3.0))
+            # σ = 1.0 × measured: on the Gaussian-noise fixture 1.0× beat 0.8× on PSNR and SSIM (TEST_RESULTS)
+            sigma = round(max(1.0, base_sigma), 1)
             op = default_op("denoise", "model:drunet_color")
             op.params["sigma"] = sigma
             op.why = f"Noise {n.level} ({n.evidence}) on {cls} → DRUNet with native σ={sigma} (conservative)"

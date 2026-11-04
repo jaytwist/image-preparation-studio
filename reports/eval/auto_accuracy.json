@@ -1,0 +1,805 @@
+{
+  "diagnosis": {
+    "per_issue": {
+      "jpeg_artifacts": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.8,
+        "recall": 1.0
+      },
+      "noise": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.667
+      },
+      "color_cast": {
+        "tp": 2,
+        "fp": 3,
+        "fn": 0,
+        "precision": 0.4,
+        "recall": 1.0
+      },
+      "faded": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "oversharpened": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.5
+      },
+      "oversmoothed": {
+        "tp": 1,
+        "fp": 3,
+        "fn": 0,
+        "precision": 0.25,
+        "recall": 1.0
+      },
+      "low_resolution": {
+        "tp": 7,
+        "fp": 10,
+        "fn": 0,
+        "precision": 0.412,
+        "recall": 1.0
+      }
+    },
+    "content_accuracy": 0.95,
+    "items": [
+      {
+        "item": "oldphone_astronaut",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "color_cast",
+          "jpeg_artifacts",
+          "low_resolution",
+          "noise"
+        ],
+        "pred_issues": [
+          "color_cast",
+          "jpeg_artifacts",
+          "low_resolution"
+        ],
+        "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=35] \u2192 white_balance[classical:neutral_cast|strength=0.39,gains=[0.9377, 1.0, 1.0434]]",
+        "checks": {}
+      },
+      {
+        "item": "oldphone_group",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "jpeg_artifacts",
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "jpeg_artifacts",
+          "low_resolution"
+        ],
+        "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=28]",
+        "checks": {}
+      },
+      {
+        "item": "dslr_iso6400",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "noise"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "noise"
+        ],
+        "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr]",
+        "checks": {}
+      },
+      {
+        "item": "dslr_16bit_p3",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "noise"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "noise"
+        ],
+        "auto_x1": "faithful \u00d71: denoise[model:scunet_real_psnr]",
+        "checks": {}
+      },
+      {
+        "item": "dslr_clean",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [],
+        "pred_issues": [
+          "color_cast",
+          "low_resolution"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "no_op": true
+        }
+      },
+      {
+        "item": "portrait_clean",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [],
+        "pred_issues": [
+          "low_resolution"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "no_op": true
+        }
+      },
+      {
+        "item": "portrait_x2",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "oversmoothed"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {}
+      },
+      {
+        "item": "portrait_x4",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "oversmoothed"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {}
+      },
+      {
+        "item": "group_x2",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "low_resolution"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {}
+      },
+      {
+        "item": "group_x4",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "oversmoothed"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {}
+      },
+      {
+        "item": "ui_clean",
+        "truth_content": "screenshot",
+        "pred_content": "screenshot",
+        "truth_issues": [],
+        "pred_issues": [
+          "low_resolution"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "no_op": true
+        }
+      },
+      {
+        "item": "ui_jpeg",
+        "truth_content": "screenshot",
+        "pred_content": "screenshot",
+        "truth_issues": [
+          "jpeg_artifacts"
+        ],
+        "pred_issues": [
+          "jpeg_artifacts",
+          "low_resolution"
+        ],
+        "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=51]",
+        "checks": {}
+      },
+      {
+        "item": "ui_x2",
+        "truth_content": "screenshot",
+        "pred_content": "screenshot",
+        "truth_issues": [
+          "low_resolution"
+        ],
+        "pred_issues": [
+          "jpeg_artifacts",
+          "low_resolution"
+        ],
+        "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=19]",
+        "checks": {}
+      },
+      {
+        "item": "ai_scene",
+        "truth_content": "ai_generated",
+        "pred_content": "ai_generated",
+        "truth_issues": [],
+        "pred_issues": [],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "no_op": true
+        }
+      },
+      {
+        "item": "ai_portrait",
+        "truth_content": "ai_generated",
+        "pred_content": "ai_generated",
+        "truth_issues": [],
+        "pred_issues": [
+          "blur_soft"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "no_op": true
+        }
+      },
+      {
+        "item": "ai_portrait_jpeg",
+        "truth_content": "ai_generated",
+        "pred_content": "photo",
+        "truth_issues": [
+          "jpeg_artifacts"
+        ],
+        "pred_issues": [
+          "jpeg_artifacts"
+        ],
+        "auto_x1": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=59]",
+        "checks": {}
+      },
+      {
+        "item": "edited_oversharp",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "oversharpened"
+        ],
+        "pred_issues": [
+          "color_cast",
+          "low_resolution",
+          "oversharpened"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "forbid_kinds": true
+        }
+      },
+      {
+        "item": "edited_oversmooth",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "oversmoothed"
+        ],
+        "pred_issues": [
+          "low_resolution",
+          "oversmoothed"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "forbid_kinds": true
+        }
+      },
+      {
+        "item": "edited_hdr",
+        "truth_content": "photo",
+        "pred_content": "photo",
+        "truth_issues": [
+          "oversharpened"
+        ],
+        "pred_issues": [
+          "color_cast",
+          "low_resolution"
+        ],
+        "auto_x1": "No enhancement needed (no-op)",
+        "checks": {
+          "forbid_kinds": true
+        }
+      },
+      {
+        "item": "scan_faded",
+        "truth_content": "scan",
+        "pred_content": "scan",
+        "truth_issues": [
+          "color_cast",
+          "faded"
+        ],
+        "pred_issues": [
+          "color_cast",
+          "faded",
+          "low_resolution"
+        ],
+        "auto_x1": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.46,gains=[0.9305, 1.0, 1.0792]] \u2192 exposure[classical:levels|ev=0.0,black=0.104,white=0.743,gamma=1.0]",
+        "checks": {}
+      }
+    ]
+  },
+  "routing": {
+    "items": [
+      {
+        "item": "oldphone_astronaut",
+        "auto": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=35] \u2192 white_balance[classical:neutral_cast|strength=0.39,gains=[0.9377, 1.0, 1.0434]]",
+        "best": "auto",
+        "auto_rank": 1,
+        "n_candidates": 4,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.0727,
+            "ssim": 0.9037,
+            "psnr": 26.97,
+            "delta_e": 5.17,
+            "face_sim_min": 0.8491
+          },
+          "auto": {
+            "composite": 1.1018,
+            "ssim": 0.9467,
+            "psnr": 30.02,
+            "delta_e": 3.64,
+            "face_sim_min": 0.8595
+          },
+          "auto \u2212 jpeg_cleanup": {
+            "composite": 1.0896,
+            "ssim": 0.9038,
+            "psnr": 28.2,
+            "delta_e": 4.33,
+            "face_sim_min": 0.8484
+          },
+          "auto \u2212 white_balance": {
+            "composite": 1.0805,
+            "ssim": 0.9466,
+            "psnr": 28.23,
+            "delta_e": 4.6,
+            "face_sim_min": 0.8584
+          }
+        }
+      },
+      {
+        "item": "oldphone_group",
+        "auto": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=28]",
+        "best": "auto",
+        "auto_rank": 1,
+        "n_candidates": 3,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.5428,
+            "ssim": 0.9308,
+            "psnr": 28.8,
+            "delta_e": 4.02,
+            "face_sim_min": 0.6672
+          },
+          "auto": {
+            "composite": 0.5667,
+            "ssim": 0.9624,
+            "psnr": 31.78,
+            "delta_e": 2.67,
+            "face_sim_min": 0.7001
+          },
+          "auto \u2212 jpeg_cleanup": {
+            "composite": 0.5428,
+            "ssim": 0.9308,
+            "psnr": 28.8,
+            "delta_e": 4.02,
+            "face_sim_min": 0.6672
+          }
+        }
+      },
+      {
+        "item": "dslr_iso6400",
+        "auto": "faithful \u00d71: denoise[model:scunet_real_psnr]",
+        "best": "auto",
+        "auto_rank": 1,
+        "n_candidates": 5,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.4787,
+            "ssim": 0.5529,
+            "psnr": 25.47,
+            "delta_e": 4.18,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.8304,
+            "ssim": 0.916,
+            "psnr": 32.51,
+            "delta_e": 1.79,
+            "face_sim_min": NaN
+          },
+          "auto \u2212 denoise": {
+            "composite": 0.4787,
+            "ssim": 0.5529,
+            "psnr": 25.47,
+            "delta_e": 4.18,
+            "face_sim_min": NaN
+          },
+          "auto[denoise\u2192drunet_color]": {
+            "composite": 0.5613,
+            "ssim": 0.6266,
+            "psnr": 26.99,
+            "delta_e": 3.29,
+            "face_sim_min": NaN
+          },
+          "auto[denoise\u2192nlmeans]": {
+            "composite": 0.5024,
+            "ssim": 0.6045,
+            "psnr": 24.62,
+            "delta_e": 4.5,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "dslr_16bit_p3",
+        "auto": "faithful \u00d71: denoise[model:scunet_real_psnr]",
+        "best": "auto[denoise\u2192drunet_color]",
+        "auto_rank": 2,
+        "n_candidates": 5,
+        "regret": 0.0777,
+        "scores": {
+          "noop": {
+            "composite": 0.759,
+            "ssim": 0.8457,
+            "psnr": 29.46,
+            "delta_e": 3.13,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.7998,
+            "ssim": 0.9204,
+            "psnr": 28.05,
+            "delta_e": 3.45,
+            "face_sim_min": NaN
+          },
+          "auto \u2212 denoise": {
+            "composite": 0.759,
+            "ssim": 0.8457,
+            "psnr": 29.46,
+            "delta_e": 3.13,
+            "face_sim_min": NaN
+          },
+          "auto[denoise\u2192drunet_color]": {
+            "composite": 0.8775,
+            "ssim": 0.924,
+            "psnr": 31.97,
+            "delta_e": 2.48,
+            "face_sim_min": NaN
+          },
+          "auto[denoise\u2192nlmeans]": {
+            "composite": 0.7819,
+            "ssim": 0.8581,
+            "psnr": 28.05,
+            "delta_e": 3.66,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "dslr_clean",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.9729,
+            "ssim": 0.997,
+            "psnr": 43.26,
+            "delta_e": 0.99,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.9729,
+            "ssim": 0.997,
+            "psnr": 43.26,
+            "delta_e": 0.99,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "portrait_clean",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.3,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": 1.0
+          },
+          "auto": {
+            "composite": 1.3,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": 1.0
+          }
+        }
+      },
+      {
+        "item": "ui_clean",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.0,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 1.0,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "ui_jpeg",
+        "auto": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=51]",
+        "best": "auto",
+        "auto_rank": 1,
+        "n_candidates": 3,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.8837,
+            "ssim": 0.9505,
+            "psnr": 31.24,
+            "delta_e": 1.9,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.963,
+            "ssim": 0.9932,
+            "psnr": 35.66,
+            "delta_e": 1.03,
+            "face_sim_min": NaN
+          },
+          "auto \u2212 jpeg_cleanup": {
+            "composite": 0.8837,
+            "ssim": 0.9505,
+            "psnr": 31.24,
+            "delta_e": 1.9,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "ai_scene",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.0,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 1.0,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "ai_portrait",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.3,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": 1.0
+          },
+          "auto": {
+            "composite": 1.3,
+            "ssim": 1.0,
+            "psnr": Infinity,
+            "delta_e": 0.0,
+            "face_sim_min": 1.0
+          }
+        }
+      },
+      {
+        "item": "ai_portrait_jpeg",
+        "auto": "faithful \u00d71: jpeg_cleanup[model:fbcnn_color|qf=59]",
+        "best": "noop",
+        "auto_rank": 3,
+        "n_candidates": 3,
+        "regret": 0.0021,
+        "scores": {
+          "noop": {
+            "composite": 1.2343,
+            "ssim": 0.9797,
+            "psnr": 37.35,
+            "delta_e": 1.66,
+            "face_sim_min": 0.9943
+          },
+          "auto": {
+            "composite": 1.2322,
+            "ssim": 0.9873,
+            "psnr": 40.12,
+            "delta_e": 1.25,
+            "face_sim_min": 0.9953
+          },
+          "auto \u2212 jpeg_cleanup": {
+            "composite": 1.2343,
+            "ssim": 0.9797,
+            "psnr": 37.35,
+            "delta_e": 1.66,
+            "face_sim_min": 0.9943
+          }
+        }
+      },
+      {
+        "item": "edited_oversharp",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.6088,
+            "ssim": 0.7789,
+            "psnr": 23.62,
+            "delta_e": 4.41,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.6088,
+            "ssim": 0.7789,
+            "psnr": 23.62,
+            "delta_e": 4.41,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "edited_oversmooth",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 1.0955,
+            "ssim": 0.8955,
+            "psnr": 30.45,
+            "delta_e": 2.44,
+            "face_sim_min": 0.8327
+          },
+          "auto": {
+            "composite": 1.0955,
+            "ssim": 0.8955,
+            "psnr": 30.45,
+            "delta_e": 2.44,
+            "face_sim_min": 0.8327
+          }
+        }
+      },
+      {
+        "item": "edited_hdr",
+        "auto": "No enhancement needed (no-op)",
+        "best": "noop",
+        "auto_rank": 1,
+        "n_candidates": 2,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.566,
+            "ssim": 0.7946,
+            "psnr": 17.92,
+            "delta_e": 9.29,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.566,
+            "ssim": 0.7946,
+            "psnr": 17.92,
+            "delta_e": 9.29,
+            "face_sim_min": NaN
+          }
+        }
+      },
+      {
+        "item": "scan_faded",
+        "auto": "faithful \u00d71: white_balance[classical:neutral_cast|strength=0.46,gains=[0.9305, 1.0, 1.0792]] \u2192 exposure[classical:levels|ev=0.0,black=0.104,white=0.743,gamma=1.0]",
+        "best": "auto",
+        "auto_rank": 1,
+        "n_candidates": 4,
+        "regret": 0.0,
+        "scores": {
+          "noop": {
+            "composite": 0.701,
+            "ssim": 0.9088,
+            "psnr": 20.25,
+            "delta_e": 8.56,
+            "face_sim_min": NaN
+          },
+          "auto": {
+            "composite": 0.8052,
+            "ssim": 0.9678,
+            "psnr": 24.54,
+            "delta_e": 7.15,
+            "face_sim_min": NaN
+          },
+          "auto \u2212 white_balance": {
+            "composite": 0.783,
+            "ssim": 0.9677,
+            "psnr": 23.59,
+            "delta_e": 8.41,
+            "face_sim_min": NaN
+          },
+          "auto \u2212 exposure": {
+            "composite": 0.7053,
+            "ssim": 0.9082,
+            "psnr": 20.41,
+            "delta_e": 8.28,
+            "face_sim_min": NaN
+          }
+        }
+      }
+    ],
+    "top1_rate": 0.867,
+    "mean_regret": 0.0053
+  },
+  "user_corrections": {
+    "n": 0,
+    "note": "user preference records (real-world), separate from the objective synthetic benchmark"
+  }
+}

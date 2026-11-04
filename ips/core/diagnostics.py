@@ -350,6 +350,9 @@ def diagnose(rgb: np.ndarray, *, bit_depth: int = 8, has_alpha: bool = False,
         halo.append(halo_index(yc))
         tex.append(texture_ratio(yc))
     feats["noise_sigma_luma"] = float(np.median(sig_l))
+    # per-RGB-channel σ (what DRUNet's noise map means); luma averaging hides independent channel noise
+    feats["noise_sigma_rgb"] = float(np.median([np.mean([noise_sigma(rc[..., c]) for c in range(3)])
+                                                for rc in rgb_crops]))
     feats["noise_sigma_chroma"] = float(np.median(sig_c))
     feats["blockiness"] = float(np.median(blk))
     feats["blur_crete"] = float(np.median(blur))

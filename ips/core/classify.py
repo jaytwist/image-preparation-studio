@@ -159,8 +159,14 @@ def assess(diag: Diagnostics, meta: dict[str, Any], *, source_format: str = "", 
             a.issues.append(Issue("jpeg_artifacts", round(sev, 3), conf_j,
                                   f"JPEG quality≈{q} (quant tables), blockiness {blk:.2f}: {src}"))
     elif pix_sev >= 0.15:
-        a.issues.append(Issue("jpeg_artifacts", round(pix_sev, 3), 0.65,
-                              f"8×8 blocking {blk:.2f} in a {fmt or 'non-JPEG'} file: previously JPEG-compressed"))
+        if f.get("flat_fraction", 0) > 0.5:
+            # exact-flat 3×3 regions cannot survive JPEG quantisation: a lossless image that still has them
+            # was never JPEG-compressed; the 8-px periodicity comes from the content (UI grid/rows).
+            ev.append(f"8-px periodic structure ({blk:.2f}) ignored: {f['flat_fraction']:.0%} exact-flat pixels "
+                      "prove the image was never JPEG-compressed")
+        else:
+            a.issues.append(Issue("jpeg_artifacts", round(pix_sev, 3), 0.65,
+                                  f"8×8 blocking {blk:.2f} in a {fmt or 'non-JPEG'} file: previously JPEG-compressed"))
 
     nl, nc = f.get("noise_sigma_luma", 0.0), f.get("noise_sigma_chroma", 0.0)
     # noise estimates are inflated by JPEG blocking; discount when blocking is strong
