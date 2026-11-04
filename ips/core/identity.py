@@ -175,6 +175,7 @@ class IdentityReport:
 SIM_REVIEW = 0.80
 LANDMARK_REVIEW = 0.06
 SMOOTHING_REVIEW = 0.60
+FINE_SMOOTHING_REVIEW = 0.60
 INVENTED_REVIEW = 1.80
 SKIN_DE_REVIEW = 6.0
 
@@ -241,9 +242,13 @@ def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
             fd.flags.append(f"identity embedding similarity {fd.embedding_similarity:.3f} < {SIM_REVIEW}")
         if fd.landmark_drift_iod is not None and fd.landmark_drift_iod > LANDMARK_REVIEW:
             fd.flags.append(f"landmark geometry drift {fd.landmark_drift_iod:.3f} IOD > {LANDMARK_REVIEW}")
-        smooth_thr = SMOOTHING_REVIEW * (0.75 if denoise_applied else 1.0)
-        if fd.mid_texture_ratio is not None and fd.mid_texture_ratio < smooth_thr:
-            fd.flags.append(f"possible skin smoothing / beautification (mid-texture ×{fd.mid_texture_ratio:.2f})")
+        # beautification removes fine skin texture first; denoising legitimately removes fine noise, so the
+        # fine-texture threshold is relaxed when a denoise op ran (mid-band texture must still survive).
+        fine_thr = FINE_SMOOTHING_REVIEW * (0.6 if denoise_applied else 1.0)
+        if (fd.mid_texture_ratio is not None and fd.mid_texture_ratio < SMOOTHING_REVIEW) or \
+                (fd.fine_texture_ratio is not None and fd.fine_texture_ratio < fine_thr):
+            fd.flags.append(f"possible skin smoothing / beautification (fine-texture ×{fd.fine_texture_ratio:.2f}, "
+                            f"mid-texture ×{fd.mid_texture_ratio:.2f})")
         if fd.fine_texture_ratio is not None and fd.fine_texture_ratio > INVENTED_REVIEW:
             fd.flags.append(f"possible invented fine detail (fine-texture ×{fd.fine_texture_ratio:.2f})")
         if fd.skin_delta_e is not None and fd.skin_delta_e > SKIN_DE_REVIEW:

@@ -127,7 +127,10 @@ def recolor(rgb: np.ndarray, mask: np.ndarray, target_rgb: tuple[float, float, f
         L_new = np.clip(L + match_lightness * (t[0] - l_mean), 0, 100)
     lab2 = np.dstack([L_new, a_new, b_new]).astype(np.float32)
     out = np.clip(cv2.cvtColor(lab2, cv2.COLOR_LAB2RGB), 0, 1)
-    return cops.blend(rgb, out, m * float(strength))
+    w = m * float(strength)
+    res = cops.blend(rgb, out, w)
+    # pixels outside the (visible) selection stay bit-identical
+    return np.where((w > 1.0 / 1024)[..., None], res, rgb).astype(np.float32)
 
 
 # ----------------------------------------------------------------------------- remove / inpaint

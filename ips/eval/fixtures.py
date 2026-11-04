@@ -381,7 +381,7 @@ def build(out: Path | None = None) -> Path:
                   notes=f"children composited on {k} background; GT alpha from Real-ESRGAN test asset")
     # recolor seeds: astronaut's orange suit sleeve region and the flag
     C.add(id="recolor_suit", category="recolor", path="portrait/astronaut_clean.png", content="photo", task="recolor",
-          seeds=[[120, 420]], target="#2f6fd6", notes="recolor orange/white suit area at seed")
+          seeds=[[150, 450]], target="#2f6fd6", notes="recolor the orange suit at seed")
     C.add(id="recolor_coffee_cup", category="recolor", path=C.png("recolor/coffee.png", c), content="photo",
           task="recolor", seeds=[[300, 50]], target="#c0392b", notes="recolor background/saucer region at seed")
 

@@ -24,9 +24,8 @@ CANONICAL_ORDER = {k: i for i, k in enumerate(OP_KINDS)}
 
 METHODS: dict[str, list[str]] = {
     "jpeg_cleanup": ["model:fbcnn_color", "model:swinir_car_q30", "model:swinir_car_q10"],
-    "denoise": ["model:scunet_real_psnr", "model:drunet_color", "classical:nlmeans", "model:swinir_dn15",
-                "model:restormer_real_dn"],
-    "deblur": ["model:restormer_defocus", "classical:unsharp_deconv"],
+    "denoise": ["model:scunet_real_psnr", "model:drunet_color", "classical:nlmeans", "model:swinir_dn15"],
+    "deblur": ["classical:unsharp_deconv"],
     "white_balance": ["classical:neutral_cast"],
     "exposure": ["classical:levels"],
     "tone": ["classical:contrast_saturation"],

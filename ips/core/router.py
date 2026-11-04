@@ -154,7 +154,7 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
         b = a.issue(code)
         if b and b.severity >= 0.5:
             flags.append(f"{'Motion' if code == 'blur_motion' else 'Defocus/soft'} blur ({b.evidence}): faithful "
-                         "deblurring is not automatic; Restormer defocus is available in Manual (prototype).")
+                         "deblurring is not automatic; Manual offers classical halo-free deconvolution sharpening.")
             confs.append(0.6)
 
     # ---------------------------------------------------------------- colour

@@ -263,7 +263,7 @@ def estimate_straighten_angle(rgb: np.ndarray, max_angle: float = 10.0) -> float
     if lines is None:
         return None
     devs, weights = [], []
-    for x1, y1, x2, y2 in lines[:, 0]:
+    for x1, y1, x2, y2 in np.asarray(lines).reshape(-1, 4):
         ang = math.degrees(math.atan2(y2 - y1, x2 - x1))
         for ref in (0, 90, -90, 180, -180):
             d = ang - ref
