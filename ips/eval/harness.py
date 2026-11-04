@@ -385,7 +385,7 @@ def write_auto_md(rep: dict[str, Any], path: Path) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["compare", "auto", "learn", "real"])
+    ap.add_argument("cmd", choices=["compare", "auto", "learn", "real", "holdout"])
     ap.add_argument("--tasks", default=",".join(TASKS))
     ap.add_argument("--out", default=str(PROJECT_ROOT / "reports" / "eval"))
     a = ap.parse_args()
@@ -402,6 +402,8 @@ def main() -> int:
         h = Harness(out)
         real = h.real_world()
         (out / "real_world.json").write_text(json.dumps(real, indent=2), "utf-8")
+    elif a.cmd == "holdout":
+        _holdout_main(out)
     elif a.cmd == "auto":
         rep = auto_accuracy(out)
         (out / "auto_accuracy.json").write_text(json.dumps(rep, indent=2, default=str), "utf-8")
@@ -413,3 +415,147 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# ----------------------------------------------------------------------------- held-out evaluation
+
+def holdout_eval(out: Path, frozen_commit: str) -> dict[str, Any]:
+    """Evaluate the frozen router on the held-out set (ips/eval/holdout.py). No tuning happens here."""
+    from ..core.db import DB
+    from ..core.engine import Studio
+    from ..core.identity import compare_faces
+    from ..core.recipes import METHODS
+    from ..settings import Settings
+    root = PROJECT_ROOT / "fixtures" / "holdout"
+    man = json.loads((root / "manifest.json").read_text())["items"]
+    s = Settings()
+    s.output_root = str(out / "_tmp_outputs")
+    st = Studio(s, DB(out / "_holdout.sqlite"))
+    h = Harness(out)
+    h.items = {i["id"]: i for i in man}
+    global CORPUS
+    saved, CORPUS = CORPUS, root
+    rows, diag, ident = [], [], []
+    counts = {k: {"tp": 0, "fp": 0, "fn": 0} for k in ISSUES}
+    try:
+        for it in man:
+            src = st.inspect(root / it["path"], record=False)
+            a = src.assessment
+            r1 = st.auto_recipe(src, st.request(scale=1))
+            r_def = st.auto_recipe(src, st.request())
+            kinds = {o.kind for o in r1.ops if o.enabled}
+            exp, checks = it.get("expect", {}), {}
+            if exp.get("no_restoration"):
+                checks["no_restoration"] = not (kinds - {"upscale"})
+            if exp.get("no_op_x1"):
+                checks["no_op_x1"] = r1.no_op
+            if exp.get("forbid_kinds"):
+                checks["forbid_kinds"] = not (kinds & set(exp["forbid_kinds"]))
+            row = {"item": it["id"], "category": it["category"], "synthetic": it.get("synthetic", True),
+                   "content_truth": it["content"], "content_pred": a.content_class,
+                   "issues_pred": sorted(i.code for i in a.issues if i.severity >= 0.15),
+                   "actionable_pred": sorted(i.code for i in a.issues if i.severity >= 0.15 and i.confidence >= 0.6),
+                   "auto_x1": r1.summary(), "auto_default": r_def.summary(), "checks": checks,
+                   "faces": len(src.diag.faces), "flags": r1.flags}
+            if it.get("synthetic", True) and "truth_issues" in it and it.get("task") is None:
+                truth = set(it.get("truth_issues", []))
+                pred = set(row["actionable_pred"]) - {"low_resolution"}
+                for k in ISSUES:
+                    if k == "low_resolution":
+                        continue
+                    if k in pred and k in truth:
+                        counts[k]["tp"] += 1
+                    elif k in pred:
+                        counts[k]["fp"] += 1
+                    elif k in truth:
+                        counts[k]["fn"] += 1
+            # ground truth: neighbourhood with raw metrics
+            if it.get("gt") and it.get("task") is None:
+                gt = h.load(it["gt"])
+                gt_faces = h.fa.detect(gt) if it.get("faces") else []
+                neigh = {"noop": Recipe(no_op=True), "auto": r1}
+                for i, op in enumerate(r1.ops):
+                    ab = r1.clone()
+                    ab.ops = [o for j, o in enumerate(ab.ops) if j != i]
+                    neigh[f"auto − {op.kind}"] = ab
+                    for alt in METHODS.get(op.kind, []):
+                        if alt == op.method or alt in ("model:swinir_dn15", "model:swinir_car_q10", "model:swinir_car_q30"):
+                            continue
+                        if alt.startswith("model:") and (not MODELS[alt[6:]].installed or MODELS[alt[6:]].status == "reject"):
+                            continue
+                        sub = r1.clone()
+                        sub.ops[i] = default_op(op.kind, alt)
+                        neigh[f"auto[{op.kind}→{alt.split(':', 1)[1]}]"] = sub
+                sc = {}
+                for name, rr in neigh.items():
+                    o, _, _ = h.run_recipe(src.image.rgb, rr)
+                    m = M.full_reference(o, gt)
+                    m.update(M.face_identity(o, gt, gt_faces, h.fa))
+                    if it["content"] == "screenshot":
+                        m.update(M.text_fidelity(o, gt))
+                    m["composite"] = M.composite(m)
+                    sc[name] = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in m.items()}
+                if r1.no_op:
+                    sc["auto"] = dict(sc["noop"])
+                a_s = sc["auto"]
+                row["neighbourhood"] = sc
+                row["auto_rank_composite"] = 1 + sum(v["composite"] > a_s["composite"] + 1e-9 for v in sc.values())
+                row["auto_vs_input"] = {"d_psnr": round(a_s["psnr"] - sc["noop"]["psnr"], 3),
+                                        "d_ssim": round(a_s["ssim"] - sc["noop"]["ssim"], 4),
+                                        "d_delta_e": round(a_s["delta_e"] - sc["noop"]["delta_e"], 3)}
+                row["n_candidates"] = len(sc)
+            # ×2 identity regression on unseen faces
+            if it.get("task") == "x2":
+                gt = h.load(it["gt"])
+                gt_faces = h.fa.detect(gt)
+                res = {}
+                for name, rr in cand_upscale(2.0, False).items():
+                    o, secs, _ = h.run_recipe(src.image.rgb, rr)
+                    m = M.full_reference(o, gt)
+                    m.update(M.face_identity(o, gt, gt_faces, h.fa))
+                    rep = compare_faces(src.image.rgb, o, src.diag.faces, h.fa)
+                    m["studio_review_flags"] = rep.flags
+                    res[name] = {k: (round(v, 4) if isinstance(v, float) else v) for k, v in m.items()}
+                row["x2_candidates"] = res
+                h.contact_sheet(f"holdout_x2__{it['id']}", gt, {k: M.match(h.run_recipe(src.image.rgb, v)[0], gt)
+                                                                for k, v in cand_upscale(2.0, False).items()}, gt_faces)
+            # no ground truth: run Auto ×1 and record identity signals vs source + a review sheet
+            if not it.get("gt") and not r1.no_op:
+                o, secs, _ = h.run_recipe(src.image.rgb, r1)
+                rep = compare_faces(src.image.rgb, o, src.diag.faces, h.fa) if src.diag.faces else None
+                row["identity_vs_source"] = rep.to_json() if rep else None
+                ident.append(row["item"])
+                h.contact_sheet(f"holdout_auto__{it['id']}", src.image.rgb, {"Auto ×1": o}, src.diag.faces)
+            rows.append(row)
+            print(f"[holdout] {it['id']:42s} {a.content_class:12s} {r1.summary()[:70]:70s} "
+                  f"{row.get('auto_rank_composite', '')}/{row.get('n_candidates', '')} {checks}", flush=True)
+    finally:
+        CORPUS = saved
+    gt_rows = [r for r in rows if "auto_rank_composite" in r]
+    syn = [r for r in rows if r["synthetic"]]
+    rep = {"frozen_commit": frozen_commit, "n_items": len(rows),
+           "content_accuracy": round(sum(r["content_pred"] == r["content_truth"] for r in rows) / max(1, len(rows)), 3),
+           "content_accuracy_by_category": {c: round(np.mean([r["content_pred"] == r["content_truth"] for r in rows
+                                                              if r["category"] == c]), 3)
+                                            for c in sorted({r["category"] for r in rows})},
+           "expectation_checks": {"passed": sum(all(r["checks"].values()) for r in rows if r["checks"]),
+                                  "total": sum(1 for r in rows if r["checks"]),
+                                  "failed_items": [r["item"] for r in rows if r["checks"] and not all(r["checks"].values())]},
+           "diagnosis_actionable": {k: {**v, "precision": round(v["tp"] / max(1, v["tp"] + v["fp"]), 3),
+                                        "recall": round(v["tp"] / max(1, v["tp"] + v["fn"]), 3)}
+                                    for k, v in counts.items() if k != "low_resolution"},
+           "routing": {"n": len(gt_rows), "top1_rate": round(np.mean([r["auto_rank_composite"] == 1 for r in gt_rows]), 3)
+                       if gt_rows else None,
+                       "auto_not_worse_than_input_ssim": int(sum(r["auto_vs_input"]["d_ssim"] >= -0.002 for r in gt_rows)),
+                       "auto_not_worse_than_input_delta_e": int(sum(r["auto_vs_input"]["d_delta_e"] <= 0.1 for r in gt_rows))},
+           "no_ground_truth_reviewed_by_sheet": ident, "synthetic_items": len(syn), "items": rows}
+    return rep
+
+
+def _holdout_main(out: Path) -> None:
+    import subprocess
+    commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
+                            cwd=PROJECT_ROOT).stdout.strip()
+    rep = holdout_eval(out, commit)
+    (out / "holdout_results.json").write_text(json.dumps(rep, indent=2, default=str), "utf-8")
+    print(json.dumps({k: v for k, v in rep.items() if k != "items"}, indent=2, default=str))
