@@ -8,7 +8,7 @@ WINDOWS_VALIDATION.md for the 10-step procedure that closes this gap.
 * **Import**: JPEG/PNG/TIFF/WebP/BMP, 16-bit PNG/TIFF, alpha, HEIC (8-bit), camera RAW (developed via
   LibRaw, e.g. Nikon NEF), CMYK→RGB; EXIF orientation applied; corrupt/empty/mislabelled files fail
   individually with a clear reason. Sources are read-only (hash verified unchanged in tests).
-* **Smart Auto**: metadata + pixel diagnostics, content classes, issue severities with evidence and
+* **Smart Auto** (white balance is automatic only for scans; reported/offered in Manual for photos): metadata + pixel diagnostics, content classes, issue severities with evidence and
   confidence, FBCNN blind-QF verification of JPEG quality, three-estimator colour-cast consensus,
   intent preservation (grain, warm light, toned monochrome, AI style), no-op outcome, rationale text,
   review flags, deterministic recipe hash, learning from corrections (opt-in derivation).
@@ -51,8 +51,12 @@ WINDOWS_VALIDATION.md for the 10-step procedure that closes this gap.
 * HEIC is 8-bit (no HDR gain maps); RAW is developed with camera WB; MakerNotes are not carried.
 * Face detection may miss very small faces (< ~16 px at 640-px detector scale) in large group photos.
 * InsightFace weights are non-commercial research licensed (optional; Haar fallback).
-* The GitHub push from the build session was refused (Claude GitHub App not installed on the repo);
-  see TEST_RESULTS.md for how the code was delivered.
+* Held-out validation (66 unseen items) showed Auto generalises less well than on the tuning set (ranked-first
+  47 % vs 87 %); JPEG cleanup generalised, automatic white balance did not and was removed for photos (post-hoc).
+* RealPLKSR beautification is not caught by automatic identity signals; it is Manual-only and always reviewed.
+* After JPEG/denoise, skin-texture loss is reported as a note, not a review flag (cannot be separated from cleanup).
+* Faces smaller than ~140 px are not detected, so identity is not assessed on very small images.
+* Work was paused before GPU validation; see docs/RESTART.md.
 
 ## Changelog
 * 0.9.0rc1 — first release candidate (this document).
