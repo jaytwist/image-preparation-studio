@@ -43,7 +43,10 @@ jobs:
         run: .\.venv\Scripts\python.exe -m pytest -q -rs --junitxml=reports\junit_windows.xml
       - name: App launch smoke test
         shell: pwsh
-        run: .\run.ps1 -Smoke
+        run: .\run.ps1 -Smoke -Yes
+      - name: Desktop shortcut creation
+        shell: pwsh
+        run: .\run.ps1 -Shortcut
       - name: Privacy audit (no outbound connections)
         shell: pwsh
         run: .\run.ps1 -PrivacyAudit

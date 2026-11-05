@@ -98,7 +98,12 @@ def main() -> int:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--verify", action="store_true")
+    ap.add_argument("--missing", action="store_true", help="print missing model ids; exit 1 if any are missing")
     a = ap.parse_args()
+    if a.missing:
+        miss = [m.id for m in MODELS.values() if m.status != "reject" and not m.installed]
+        print(", ".join(miss))
+        return 1 if miss else 0
     if a.list or not (a.models or a.all or a.verify):
         for m in MODELS.values():
             print(f"{m.id:24s} {m.status:9s} {m.character:10s} {'installed' if m.installed else 'missing':9s} "

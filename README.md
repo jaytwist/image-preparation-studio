@@ -13,19 +13,17 @@ Priorities, in order: **identity/source fidelity → restoration quality → spe
 
 ## Install & launch (Windows)
 
-Requirements: Windows 10/11, Python 3.11–3.13 (python.org installer with the `py` launcher), an NVIDIA
-driver that supports CUDA 12.8 (RTX 50-series needs it). Nothing outside this folder is changed.
+1. Install **Python 3.12** from python.org (default options; the `py` launcher is enough, PATH is optional).
+2. Get the code into a folder, e.g. `C:\Users\Jay\ImagePrepStudio`:
+   `git clone https://github.com/jaytwist/image-preparation-studio.git C:\Users\Jay\ImagePrepStudio`
+   (or on GitHub: **Code → Download ZIP** and extract it there).
+3. **Double-click `run.cmd`.** The first run creates `.venv\` in that folder, installs PyTorch (CUDA 12.8 build for
+   RTX 50-series) and the pinned dependencies, asks once whether to download the model weights (~1.4 GB, official
+   GitHub releases, SHA-256 checked), then opens the app. Later runs open the app directly.
+4. Optional: `run.cmd -Shortcut` puts an "Image Preparation Studio" shortcut on the desktop.
 
-```bat
-git clone https://github.com/jaytwist/image-preparation-studio.git
-cd image-preparation-studio
-run.cmd -FetchModels
-run.cmd
-```
-
-First run creates `.venv\` here, installs PyTorch (CUDA 12.8 build) and pinned dependencies.
-`-FetchModels` downloads the model weights from their GitHub releases and verifies SHA-256 (≈1.4 GB;
-user-directed, one time). After that the app runs fully offline.
+Nothing outside the project folder is changed (apart from app data in `%LOCALAPPDATA%\ImagePreparationStudio`
+and your chosen output folder); ComfyUI and NH Maker 2 are never touched. After setup the app runs offline.
 
 | Command | What it does |
 |---|---|
