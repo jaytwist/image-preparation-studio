@@ -28,6 +28,8 @@ class RouteRequest:
     device_name: str = ""
     allow_models: bool = True            # False when torch/weights unavailable
     look: str = "enhanced"               # natural | enhanced | vivid  (visible, non-generative enhancement)
+    generative: dict[str, Any] | None = None  # Generative Recovery params (prompt, strength, turbo, face_reference,
+    #                                           long_edge); used only when mode == "generative"
 
 
 # Non-generative "look" enhancement applied on top of defect repair. Global photometric + local-contrast +
@@ -82,6 +84,8 @@ def choose_scale(a: Assessment, req: RouteRequest, rationale: list[str]) -> floa
 def route(a: Assessment, req: RouteRequest, width: int, height: int,
           profile: FastProfile | None = None) -> Recipe:
     a.features["_w"], a.features["_h"] = width, height
+    if req.mode == "generative":
+        return route_generative(a, req, width, height)
     rat: list[str] = []
     flags: list[str] = []
     ops: list[Operation] = []
@@ -377,3 +381,54 @@ def _apply_perf(r: Recipe, width: int, height: int, req: RouteRequest, profile: 
                            f"{r.predicted_seconds:.1f} s).")
         if r.predicted_seconds and r.predicted_seconds > BUDGET_SECONDS:
             r.rationale.append("Prior estimate exceeds 15 s on this device (informational; not a certified result).")
+
+
+def route_generative(a: Assessment, req: RouteRequest, width: int, height: int) -> Recipe:
+    """Generative Recovery: one Qwen-Image 2.1 edit pass on the user's ComfyUI (explicit user choice).
+
+    Not a Faithful route: the model redraws the image. It is labelled generative in XMP, always identity-checked,
+    always sent to Review, and runs outside the 15 s contract (explicit choice = Quality Override)."""
+    from ..backends.comfy import qwen
+    g = dict(req.generative or {})
+    cls = a.content_class
+    rat = [f"Content: {cls} (confidence {a.content_confidence:.2f}).",
+           "Generative Recovery requested: Qwen-Image 2.1 (image edit) on your local ComfyUI redraws the whole image "
+           "from your prompt, conditioned on the source. Detail it adds is synthesised, not recovered."]
+    long_side = max(width, height)
+    long_edge = int(g.get("long_edge") or 2048)
+    if req.scale != "auto":
+        scale = float(req.scale)
+    elif req.target_long_edge:
+        scale = max(1.0, req.target_long_edge / max(1, long_side))
+    else:
+        scale = max(1.0, long_edge / max(1, long_side))
+    # model works up to ~2048² (4 MP) total; larger targets are generated at the cap and resized (Lanczos)
+    res = qwen.resolution_for(width, height, scale)
+    rat.append(f"Output ×{scale:.2f} ({int(round(width * scale))}×{int(round(height * scale))}); model generates at a "
+               f"{res}² pixel budget{' (model cap; remainder by Lanczos)' if res * res < width * height * scale * scale * 0.95 else ''}.")
+    op = default_op("generative")
+    preset = "ai_image" if cls == "ai_generated" else ("old_phone" if long_side < 1600 else "photo")
+    op.params.update(prompt=(g.get("prompt") or "").strip() or qwen.PRESETS[preset],
+                     negative=(g.get("negative") or "").strip() or qwen.DEFAULT_NEGATIVE,
+                     strength=float(g.get("strength", 1.0)), turbo=bool(g.get("turbo", False)),
+                     face_reference=bool(g.get("face_reference", True)), resolution=res)
+    if g.get("seed") is not None:
+        op.params["seed"] = int(g["seed"])
+    op.why = (f"Qwen-Image 2.1{' Turbo' if op.params['turbo'] else ''} edit, native denoise "
+              f"{op.params['strength']:.2f}, prompt: {'custom' if g.get('prompt') else 'preset ' + preset}")
+    rat.append(op.why)
+    faces = int(a.features.get("face_count", 0))
+    flags = ["Generative Recovery: content is synthesised by Qwen-Image 2.1 — not a faithful restoration. "
+             "Always reviewed; labelled generative in XMP."]
+    if faces:
+        if op.params["face_reference"]:
+            rat.append(f"{faces} face(s): the largest face is passed as <image2> with an identity instruction.")
+        flags.append(f"{faces} face(s): identity signals (ArcFace, landmarks, skin) are measured against the source.")
+    if cls == "screenshot":
+        flags.append("Text/UI image: a generative model can rewrite glyphs — verify every word.")
+    r = Recipe(ops=[op], mode="generative", target_scale=round(scale, 4), created_by="auto", rationale=rat,
+               flags=flags, content_class=cls, quality_override=True, outside_fast_profile=True,
+               confidence=round(float(a.content_confidence), 3))
+    r.rationale.append("Outside the 15 s contract by design (diffusion model; typically tens of seconds to minutes "
+                       "on the local GPU, not yet measured on this machine).")
+    return r

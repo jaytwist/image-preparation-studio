@@ -178,8 +178,14 @@ class Studio:
 
     # ------------------------------------------------------------------ auto
     def request(self, mode: str | None = None, scale: float | str = "auto", target_long_edge: int | None = None,
-                quality_override: bool | None = None, look: str | None = None) -> RouteRequest:
+                quality_override: bool | None = None, look: str | None = None,
+                generative: dict | None = None) -> RouteRequest:
+        st = self.settings
+        gen = generative if generative is not None else {
+            "prompt": st.qwen_prompt, "strength": st.qwen_strength, "turbo": st.qwen_turbo,
+            "face_reference": st.qwen_face_reference, "long_edge": st.qwen_long_edge}
         return RouteRequest(mode=mode or self.settings.default_mode, scale=scale, target_long_edge=target_long_edge,
+                            generative=gen,
                             look=look or getattr(self.settings, "default_look", "enhanced"),
                             upscale_low_res_auto=self.settings.upscale_low_res_auto,
                             quality_override=self.settings.quality_override_default if quality_override is None
@@ -320,6 +326,8 @@ class Studio:
                 "diagnostics": o.source.diag.to_json(), "auto_recipe": o.auto_recipe.to_json(),
                 "recipe": o.recipe.to_json(), "identity": o.result.identity if o.result else None,
                 "guard_actions": o.result.guard_actions if o.result else [],
+                "warnings": o.result.warnings if o.result else [],
+                "engine_provenance": o.result.provenance if o.result else [],
                 "device": self.device.__dict__,
                 "outputs": [{"kind": x.kind, "profile": x.profile, "path": str(x.path), "sha256": x.sha256,
                              "size": [x.width, x.height], "bits": x.bits, "metadata_audit": x.audit}

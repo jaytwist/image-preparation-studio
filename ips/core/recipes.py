@@ -17,10 +17,12 @@ from typing import Any
 RECIPE_SCHEMA = 2
 
 # kind -> ordered list of methods. "model:<id>" methods run neural nets; others are classical.
-OP_KINDS = ("geometry", "jpeg_cleanup", "denoise", "deblur", "white_balance", "exposure", "tone", "upscale",
+OP_KINDS = ("geometry", "generative", "jpeg_cleanup", "denoise", "deblur", "white_balance", "exposure", "tone", "upscale",
             "sharpen")
 
 CANONICAL_ORDER = {k: i for i, k in enumerate(OP_KINDS)}
+
+QWEN_METHOD = "comfy:generative:qwen_image_2.1"
 
 METHODS: dict[str, list[str]] = {
     "jpeg_cleanup": ["model:fbcnn_color", "model:swinir_car_q30", "model:swinir_car_q10"],
@@ -33,7 +35,12 @@ METHODS: dict[str, list[str]] = {
                 "model:realesrgan_x4plus", "model:realesr_general_x4v3", "model:realplksr_nomos2_x4"],
     "sharpen": ["classical:halo_free_unsharp"],
     "geometry": ["classical:crop_rotate"],
+    # Generative Recovery: runs on the user's local ComfyUI (Qwen-Image 2.1 edit). Output contains synthesised content.
+    "generative": [QWEN_METHOD],
 }
+
+QWEN_DEFAULTS: dict[str, Any] = {"prompt": "", "negative": "", "strength": 1.0, "resolution": 0, "steps": 25,
+                                 "cfg": 1.0, "turbo": False, "face_reference": True, "seed": 20261105}
 
 CLASSICAL_PARAMS: dict[str, dict[str, Any]] = {
     "classical:nlmeans": {"h": 6.0, "h_color": 6.0},
@@ -66,7 +73,8 @@ class Operation:
 
     def label(self) -> str:
         if self.method.startswith("comfy:"):
-            return "ComfyUI · " + self.method.split(":", 2)[2]
+            name = self.method.split(":", 2)[2]
+            return ("Qwen-Image 2.1 (ComfyUI, generative)" if self.kind == "generative" else "ComfyUI · " + name)
         if self.model_id:
             from ..backends.registry import MODELS
             m = MODELS.get(self.model_id)
@@ -105,8 +113,9 @@ class Recipe:
     @property
     def is_generative(self) -> bool:
         from ..backends.registry import MODELS
-        return any(o.enabled and o.model_id and MODELS.get(o.model_id) and
-                   MODELS[o.model_id].character == "generative" for o in self.ops)
+        return any(o.enabled and ((o.model_id and MODELS.get(o.model_id) and
+                                   MODELS[o.model_id].character == "generative") or o.kind == "generative")
+                   for o in self.ops)
 
     @property
     def uses_external(self) -> bool:
@@ -166,6 +175,10 @@ def map_strength(method: str, strength: int) -> tuple[dict[str, Any], float, str
     if method == "model:drunet_color":
         sigma = round(50 * s, 1)
         return {"sigma": sigma}, 1.0, f"native: DRUNet σ={sigma} (strength {strength} → 50·s)"
+    if method == QWEN_METHOD:
+        base = {"strength": round(max(0.05, s), 2)}
+        return base, 1.0, (f"native: Qwen-Image 2.1 denoise {base['strength']:.2f} from the encoded source latent "
+                           "(1.0 = full redraw, lower keeps more of the original structure)")
     if method == "model:realesr_general_x4v3":
         return {"denoise_strength": round(s, 2)}, 1.0, f"native: DNI weight {s:.2f} between general/wdn weights"
     if method.startswith("model:"):
@@ -204,6 +217,10 @@ def default_op(kind: str, method: str | None = None, strength: int | None = None
         from ..backends.registry import MODELS
         m = MODELS.get(method.split(":", 1)[1])
         base = m.native_defaults() if m else {}
+        base.update(params)
+        params = base
+    elif method == QWEN_METHOD:
+        base = dict(QWEN_DEFAULTS)
         base.update(params)
         params = base
     else:

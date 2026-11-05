@@ -83,6 +83,20 @@ Not applied to screenshots/UI or toned monochrome; clarity halved on previously 
 images get 85 % vibrance. Measured identity (ArcFace vs source): portrait 0.992 / 0.985, AI characters
 0.982–0.99 / 0.964–0.982 (Enhanced / Vivid), no identity or geometry flags.
 
+## 4c. Generative Recovery (explicit mode, Qwen-Image 2.1 on the user's ComfyUI)
+Never chosen by Auto. Selectable only when ComfyUI is enabled and `TextEncodeQwenImage21`, `QwenImage21Cache` and
+a `qwen_image_2.1*` diffusion model + `qwen3vl` text encoder + Qwen VAE are present (read-only `/object_info`).
+
+| Item | Rule |
+|---|---|
+| Recipe | one op `generative` / `comfy:generative:qwen_image_2.1`; Look layer not applied |
+| Output size | Scale Auto → long edge `qwen_long_edge` (2048); model pixel budget `resolution` = √(w·h)·scale, 512–2048, ×32; final exact size by Lanczos |
+| Prompt | user text, else preset by content: `old_phone` (long side < 1600 px; the user's prompt), `photo`, `ai_image` |
+| Strength (native) | 1.0 = official template (empty latent; edit driven by reference latents + prompt). < 1.0 = img2img from the VAE-encoded source with KSampler denoise = strength (Turbo: official 8-step sigmas truncated at strength) |
+| Identity | largest face crop (×1.6 box, ≥ 512 px) as `<image2>` with an explicit "identical face" instruction; ArcFace/landmark/skin signals vs source afterwards; no automatic fidelity guard (user chose redraw) |
+| Labelling | XMP `ips:Generative=True` + DigitalSourceType; Review Queue always; engine provenance (files, seed, strength, prompt id) in the recipe sidecar |
+| Contract | outside the 15 s Fast Profile by design (explicit Quality Override) |
+
 ## 5. Learning from corrections
 Exports record `accepted_auto` or `manual_export` with the auto and final recipe and features.
 `python -m ips.eval.harness learn` aggregates per (content class, op kind); kinds the user removes in

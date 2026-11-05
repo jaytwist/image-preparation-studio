@@ -28,6 +28,7 @@ class ProcessResult:
     guard_actions: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     peak_vram_mb: float | None = None
+    provenance: list[dict[str, Any]] = field(default_factory=list)   # external/generative engine details
 
     @property
     def review_flags(self) -> list[str]:
@@ -75,6 +76,27 @@ def _region_mask(spec: str, h: int, w: int, scale: float) -> np.ndarray:
     return cops.feather(m, max(2.0, 0.02 * max(h, w)))
 
 
+def face_reference(img: np.ndarray, faces: list[Face] | None, min_side: int = 512) -> np.ndarray | None:
+    """Padded crop of the largest face (identity anchor for generative models), upsampled to >= *min_side*."""
+    if not faces:
+        return None
+    f = max(faces, key=lambda x: (x.box[2] - x.box[0]) * (x.box[3] - x.box[1]))
+    x0, y0, x1, y1 = (float(v) for v in f.box)
+    h, w = img.shape[:2]
+    cx, cy, side = (x0 + x1) / 2, (y0 + y1) / 2, max(x1 - x0, y1 - y0) * 1.6
+    if side < 24:
+        return None
+    a0, b0 = int(max(0, cx - side / 2)), int(max(0, cy - side / 2))
+    a1, b1 = int(min(w, cx + side / 2)), int(min(h, cy + side / 2))
+    crop = img[b0:b1, a0:a1]
+    if crop.size == 0:
+        return None
+    k = max(1.0, min_side / max(1, min(crop.shape[:2])))
+    if k > 1.0:
+        crop = cops.resize_to(crop, int(round(crop.shape[1] * k)), int(round(crop.shape[0] * k)))
+    return np.ascontiguousarray(crop)
+
+
 class Pipeline:
     def __init__(self, backend=None, face_analyzer=None):
         self._backend = backend
@@ -94,18 +116,42 @@ class Pipeline:
             self._fa = FaceAnalyzer.get()
         return self._fa
 
-    def _run_comfy(self, op: Operation, img: np.ndarray, cancel) -> np.ndarray:
+    def _run_comfy(self, op: Operation, img: np.ndarray, cancel, faces: list[Face] | None = None,
+                   provenance: list[dict[str, Any]] | None = None) -> np.ndarray:
         from ..backends.comfy.client import ComfyClient
         from ..settings import Settings
         st = Settings.load()
         if not st.comfy_enabled:
             raise RuntimeError("ComfyUI routes are disabled in Settings")
         kind, name = op.method.split(":", 2)[1:]
-        if kind != "upscale":
-            raise ValueError(f"Unsupported ComfyUI route {op.method}")
         from ..backends.direct import GPU_LOCK
-        with GPU_LOCK:  # never run a Studio GPU model and a Studio ComfyUI job at the same time
-            return ComfyClient(st.comfy_url).upscale_with_model(img, name, st.comfy_vram_min_free_mb, cancel=cancel)
+        client = ComfyClient(st.comfy_url)
+        if kind == "upscale":
+            with GPU_LOCK:  # never run a Studio GPU model and a Studio ComfyUI job at the same time
+                return client.upscale_with_model(img, name, st.comfy_vram_min_free_mb, cancel=cancel)
+        if kind == "generative":
+            from ..backends.comfy import qwen
+            p = op.params
+            face = face_reference(img, faces) if p.get("face_reference", True) and faces else None
+            res = int(p.get("resolution") or qwen.resolution_for(img.shape[1], img.shape[0], 1.0))
+            # release Studio's own GPU models first so the diffusion model has the VRAM (never touches others')
+            from ..backends import direct
+            if direct._BACKEND is not None:
+                try:
+                    direct._BACKEND.unload_all()
+                except Exception:
+                    pass
+            with GPU_LOCK:
+                out, prov = client.qwen_edit(img, p.get("prompt") or qwen.DEFAULT_PROMPT, face=face,
+                                             turbo=bool(p.get("turbo")), strength=float(p.get("strength", 1.0)),
+                                             resolution=res, steps=int(p.get("steps", 25)),
+                                             cfg=float(p.get("cfg", 1.0)), negative=p.get("negative") or None,
+                                             seed=p.get("seed"), min_free_mb=st.comfy_vram_min_free_mb,
+                                             cancel=cancel)
+            if provenance is not None:
+                provenance.append(prov)
+            return out
+        raise ValueError(f"Unsupported ComfyUI route {op.method}")
 
     # ------------------------------------------------------------------ main
     def run(self, rgb: np.ndarray, alpha: np.ndarray | None, recipe: Recipe, faces: list[Face] | None = None, *,
@@ -116,6 +162,7 @@ class Pipeline:
         timings: dict[str, float] = {}
         loads: dict[str, float] = {}
         warnings: list[str] = []
+        prov: list[dict[str, Any]] = []
         src_for_identity = rgb
         cur = rgb
         scale = 1.0
@@ -153,8 +200,19 @@ class Pipeline:
                         out = cops.resize_to(out, int(round(w0 * eff)), int(round(h0 * eff)))
                     _ = want
             elif op.method.startswith("comfy:"):
-                out = self._run_comfy(op, inp, cancel)
-                if op.kind == "upscale":
+                out = self._run_comfy(op, inp, cancel, faces, prov)
+                if op.kind == "generative":
+                    # Qwen generates on a ×32 pixel budget: map back to the exact requested geometry
+                    remaining = recipe.target_scale / scale
+                    h0, w0 = inp.shape[:2]
+                    tw_, th_ = int(round(w0 * remaining)), int(round(h0 * remaining))
+                    ar_in, ar_out = w0 / h0, out.shape[1] / out.shape[0]
+                    if abs(ar_out / ar_in - 1) > 0.02:
+                        warnings.append(f"Generative output aspect {ar_out:.3f} vs source {ar_in:.3f}: resized to the "
+                                        "source framing (check edges).")
+                    if (out.shape[1], out.shape[0]) != (tw_, th_):
+                        out = cops.resize_to(out, tw_, th_)
+                elif op.kind == "upscale":
                     remaining = recipe.target_scale / scale
                     sc = out.shape[1] / inp.shape[1]
                     if remaining < sc - 1e-6:
@@ -162,8 +220,9 @@ class Pipeline:
                         out = cops.resize_to(out, int(round(w0 * remaining)), int(round(h0 * remaining)))
                 warnings.append(f"{op.method}: ran on local ComfyUI (8-bit PNG transfer; model character "
                                 "not benchmarked by Studio)")
-                recipe.flags.append(f"External ComfyUI model {op.method.split(':', 2)[2]}: identity/texture behaviour "
-                                    "not benchmarked — review faces and text.")
+                if op.kind != "generative":
+                    recipe.flags.append(f"External ComfyUI model {op.method.split(':', 2)[2]}: identity/texture "
+                                        "behaviour not benchmarked — review faces and text.")
             else:
                 out = _apply_classical(op, inp)
             if op.kind == "geometry":
@@ -205,7 +264,7 @@ class Pipeline:
             import cv2
             alpha = np.clip(cv2.resize(alpha, (tw, th), interpolation=cv2.INTER_CUBIC), 0, 1).astype(np.float32)
         res = ProcessResult(rgb=cur, alpha=alpha, recipe=recipe, timings_ms=timings, model_load_ms=loads,
-                            warnings=warnings)
+                            warnings=warnings, provenance=prov)
         # identity signals + fidelity guard
         uses_model = any(o.model_id for o in ops_list)
         if identity_check and faces and ops_list:   # any change to a face is checked, not only model ops

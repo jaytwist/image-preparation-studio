@@ -227,6 +227,9 @@ class MainWindow(QMainWindow):
         s = self.studio.settings
         if not s.comfy_enabled:
             self.backend_lbl.setText(getattr(self, "_base_status", "") + " · ComfyUI: disabled")
+            for panel in (self.prepare, getattr(self, "batch", None)):
+                if panel is not None and hasattr(panel, "set_generative_available"):
+                    panel.set_generative_available(False, "Enable ComfyUI in Settings to use Qwen-Image 2.1.")
             return
 
         def probe(progress, cancel):
@@ -234,11 +237,22 @@ class MainWindow(QMainWindow):
             c = ComfyClient(s.comfy_url, timeout=2)
             st = c.status()
             st.models = c.upscale_models() if st.available else []  # type: ignore[attr-defined]
+            st.qwen = (None, "ComfyUI not reachable")  # type: ignore[attr-defined]
+            if st.available:
+                from ..backends.comfy import qwen
+                m, why = qwen.detect(c, turbo=False)
+                mt, _ = qwen.detect(c, turbo=True)
+                found = [x.unet for x in (m, mt) if x]
+                st.qwen = (bool(found), ", ".join(found) if found else why)  # type: ignore[attr-defined]
             return st
 
         def done(st):
             from . import recipe_editor
             recipe_editor.EXTRA_METHODS["upscale"] = [f"comfy:upscale:{m}" for m in getattr(st, "models", [])]
+            ok, why = getattr(st, "qwen", (None, ""))
+            for panel in (self.prepare, self.batch):
+                if hasattr(panel, "set_generative_available"):
+                    panel.set_generative_available(bool(ok), why)
             txt = (f"ComfyUI {st.version or ''} connected (queue {st.queue_running}+{st.queue_pending}, "
                    f"free {st.vram_free_mb} MB)" if st.available else "ComfyUI: not reachable")
             self.backend_lbl.setText(getattr(self, "_base_status", "") + " · " + txt)

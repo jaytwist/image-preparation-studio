@@ -89,8 +89,14 @@ psutil-based) guard this.
 ## D11. Scope decisions
 * Generative Recovery (SeedVR2, SUPIR, Qwen/FLUX edits) is **not** in v1 Auto; weights are on Hugging
   Face (unreachable from the build container) and VRAM/latency on 16 GB is incompatible with the 15 s
-  contract per published figures. They can be used through the user's own ComfyUI as labelled
-  external routes later.
+  contract per published figures.
+* **D11a (rc3): Qwen-Image 2.1 as an explicit Generative Recovery mode.** User request after Faithful/Enhanced
+  results were judged too subtle; the user already runs Qwen-Image 2.1 in ComfyUI. Studio builds the official
+  template graph itself (no workflow files written into ComfyUI), uploads to `temp`, tracks only its own prompt.
+  Strength is a native parameter (denoise), the user's prompt is the default for old phone photos, and a face crop is
+  passed as `<image2>` because negative prompts alone do not reliably stop beautification. Guard-rails: generative
+  XMP label, identity signals, Review Queue, never selected by Auto. Alternative considered: SeedVR2 (restoration-
+  specific, fewer prompt-driven changes) — not chosen because it is not installed on the user's ComfyUI.
 * Restormer rejected for v1 (needs spandrel_extra_arches with restrictive architecture licences).
 * Face restoration networks (CodeFormer/GFPGAN) excluded: generative face replacement conflicts with
   priority 1.

@@ -47,7 +47,8 @@ WINDOWS_VALIDATION.md for the 10-step procedure that closes this gap.
   conservative and will miss some genuine casts (e.g. a cast in a scene dominated by the same hue).
 * Balanced (GAN) upscalers visibly smooth skin on the portrait benchmark; they are never Auto-default
   in Faithful mode and always go to Review.
-* No automatic deblurring; Restormer rejected for v1. No generative recovery (SeedVR2/SUPIR/Qwen/FLUX).
+* No automatic deblurring; Restormer rejected for v1. Generative recovery only via Qwen-Image 2.1 on the user's
+  ComfyUI (explicit mode; output quality/identity/time unmeasured until run on the RTX 5070 Ti). No SeedVR2/SUPIR/FLUX.
 * HEIC is 8-bit (no HDR gain maps); RAW is developed with camera WB; MakerNotes are not carried.
 * Face detection may miss very small faces (< ~16 px at 640-px detector scale) in large group photos.
 * InsightFace weights are non-commercial research licensed (optional; Haar fallback).
@@ -59,5 +60,9 @@ WINDOWS_VALIDATION.md for the 10-step procedure that closes this gap.
 * Work was paused before GPU validation; see docs/RESTART.md.
 
 ## Changelog
+* 0.9.0rc3 — **Generative Recovery with Qwen-Image 2.1** on the local ComfyUI (Prepare + Batch + CLI `--mode generative`):
+  prompt presets (the user's old-phone prompt is the default), native redraw strength, Turbo, face reference,
+  generative labelling, identity check and Review. Graph validated against real ComfyUI 0.44; generation itself not yet
+  run (needs the user's GPU). Prepare side panel no longer clips at 1500 px width.
 * 0.9.0rc2 — Look levels (Enhanced default, Vivid, Natural) after user feedback that repair-only results were barely visible; live Before/After preview in Batch; identity check now runs for every operation on faces; real-ComfyUI v0.44 integration fixes; one-click `run.cmd` setup.
 * 0.9.0rc1 — first release candidate (this document).

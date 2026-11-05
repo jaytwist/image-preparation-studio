@@ -11,7 +11,7 @@ from PySide6.QtCore import QRectF, Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QDialog, QFileDialog, QHBoxLayout, QInputDialog,
                                QLabel, QListWidget, QListWidgetItem, QMessageBox, QProgressBar, QPushButton,
-                               QScrollArea, QSplitter, QVBoxLayout, QWidget)
+                               QPlainTextEdit, QScrollArea, QSlider, QSplitter, QVBoxLayout, QWidget)
 
 from ..core.engine import SourceRecord, Studio
 from ..core.imageio import SUPPORTED_EXTS, icc_description
@@ -106,14 +106,18 @@ class PreparePanel(QWidget):
         self.mode = QComboBox()
         self.mode.addItem("Faithful (default)", "faithful")
         self.mode.addItem("Balanced (GAN texture – can smooth skin/alter faces; always reviewed)", "balanced")
-        self.mode.addItem("Generative Recovery (not available in v1)", "generative")
-        self.mode.model().item(2).setEnabled(False)
+        self.mode.addItem("Generative · Qwen-Image 2.1 (ComfyUI)", "generative")
+        self.mode.setItemData(2, "Redraws the image with Qwen-Image 2.1 on your local ComfyUI. Labelled generative, "
+                                 "identity-checked, always reviewed.", Qt.ItemDataRole.ToolTipRole)
+        self.set_generative_available(False, "Enable ComfyUI in Settings; Qwen-Image 2.1 models are detected there.")
+        self.mode.currentIndexChanged.connect(self._mode_changed)
         row.addWidget(self.mode, 2)
         self.scale = QComboBox()
         for lab, v in (("Scale: Auto", "auto"), ("×1", 1), ("×2", 2), ("×4", 4)):
             self.scale.addItem(lab, v)
         row.addWidget(self.scale, 1)
         sl.addLayout(row)
+        sl.addWidget(self._build_generative_box())
         self.look = QComboBox()
         for lab, v in [("Look: Enhanced (visible, non-generative)", "enhanced"), ("Look: Vivid (strong)", "vivid"),
                          ("Look: Natural (repair defects only)", "natural")]:
@@ -123,7 +127,11 @@ class PreparePanel(QWidget):
                              "sharpening. No generative model; faces are identity-checked.")
         self.look.activated.connect(lambda _i: self.src is not None and self.run_auto())
         sl.addWidget(self.look)
-        self.override = QCheckBox("Quality Override (allow jobs outside the measured 15 s Fast Profile)")
+        for cb in (self.mode, self.look, self.gen_preset):
+            cb.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+            cb.setMinimumContentsLength(18)
+        self.override = QCheckBox("Quality Override (beyond 15 s Fast Profile)")
+        self.override.setToolTip("Allow jobs outside the measured 15 s Fast Profile (never reduces quality silently).")
         self.override.setChecked(self.studio.settings.quality_override_default)
         sl.addWidget(self.override)
         row = QHBoxLayout()
@@ -287,7 +295,100 @@ class PreparePanel(QWidget):
 
     def _request(self):
         return self.studio.request(mode=self.mode.currentData(), scale=self.scale.currentData(),
-                                   quality_override=self.override.isChecked(), look=self.look.currentData())
+                                   quality_override=self.override.isChecked(), look=self.look.currentData(),
+                                   generative=self.generative_params())
+
+    # ------------------------------------------------------------------ Generative Recovery (Qwen-Image 2.1)
+    def _build_generative_box(self) -> QWidget:
+        from ..backends.comfy import qwen
+        st = self.studio.settings
+        box = QWidget()
+        gl = QVBoxLayout(box)
+        gl.setContentsMargins(0, 0, 0, 0)
+        row = QHBoxLayout()
+        self.gen_preset = QComboBox()
+        self.gen_preset.addItem("Prompt: Auto by content (old phone / photo / AI image)", "")
+        for k, lab in (("old_phone", "Old phone photo"), ("photo", "Photo"), ("ai_image", "AI image / character")):
+            self.gen_preset.addItem("Prompt: " + lab, k)
+        self.gen_preset.addItem("Prompt: Custom (edit below)", "custom")
+        row.addWidget(self.gen_preset, 2)
+        self.gen_turbo = QCheckBox("Turbo (8 steps)")
+        self.gen_turbo.setChecked(st.qwen_turbo)
+        self.gen_turbo.setToolTip("Uses the qwen_image_2.1 *turbo* diffusion model with the official 8-step schedule.")
+        row.addWidget(self.gen_turbo)
+        gl.addLayout(row)
+        self.gen_prompt = QPlainTextEdit()
+        self.gen_prompt.setPlaceholderText("Preset prompt is used. Choose 'Custom' or type here to override.")
+        self.gen_prompt.setPlainText(st.qwen_prompt)
+        self.gen_prompt.setMaximumHeight(96)
+        self.gen_preset.setCurrentIndex(self.gen_preset.count() - 1 if st.qwen_prompt else 0)
+        def pick(_i):
+            k = self.gen_preset.currentData()
+            if k != "custom":
+                self.gen_prompt.setPlainText(qwen.PRESETS.get(k, "") if k else "")
+        self.gen_preset.activated.connect(pick)
+
+        def edited():
+            k = self.gen_preset.currentData()
+            t = self.gen_prompt.toPlainText().strip()
+            if k != "custom" and t and t != qwen.PRESETS.get(k, ""):
+                self.gen_preset.setCurrentIndex(self.gen_preset.count() - 1)
+        self.gen_prompt.textChanged.connect(edited)
+        gl.addWidget(self.gen_prompt)
+        row = QHBoxLayout()
+        self.gen_strength_lbl = QLabel()
+        self.gen_strength = QSlider(Qt.Orientation.Horizontal)
+        self.gen_strength.setRange(10, 100)
+        self.gen_strength.setValue(int(round(st.qwen_strength * 100)))
+        self.gen_strength.setToolTip("Native model parameter: denoise from the encoded source latent. 100 = full redraw "
+                                     "(official template); lower keeps more of the original structure and identity.")
+        self.gen_strength.valueChanged.connect(
+            lambda v: self.gen_strength_lbl.setText(f"Redraw strength {v / 100:.2f} (native denoise)"))
+        self.gen_strength.valueChanged.emit(self.gen_strength.value())
+        row.addWidget(self.gen_strength_lbl)
+        row.addWidget(self.gen_strength, 1)
+        gl.addLayout(row)
+        self.gen_face = QCheckBox("Face reference (identity anchor)")
+        self.gen_face.setToolTip("Sends a crop of the largest face as <image2> with an instruction to keep it identical.")
+        self.gen_face.setChecked(st.qwen_face_reference)
+        gl.addWidget(self.gen_face)
+        note = QLabel("Runs on your ComfyUI (localhost), outside the 15 s contract. Output is synthesised, labelled "
+                      "generative, identity-checked and always sent to Review. Batch uses these settings too.")
+        note.setWordWrap(True)
+        note.setStyleSheet("color:#8a8f98; font-size:11px")
+        gl.addWidget(note)
+        box.setVisible(False)
+        self._gen_box = box
+        return box
+
+    def _mode_changed(self, _i=None) -> None:
+        gen = self.mode.currentData() == "generative"
+        self._gen_box.setVisible(gen)
+        if hasattr(self, "look"):
+            self.look.setVisible(not gen)   # the Look layer does not apply to generative output
+
+    def generative_params(self) -> dict:
+        """Current Generative Recovery settings (persisted so Batch and the next session use them)."""
+        st = self.studio.settings
+        custom = self.gen_prompt.toPlainText().strip()   # empty = preset chosen by content class
+        g = {"prompt": custom, "strength": self.gen_strength.value() / 100.0, "turbo": self.gen_turbo.isChecked(),
+             "face_reference": self.gen_face.isChecked(), "long_edge": st.qwen_long_edge}
+        if (st.qwen_prompt, st.qwen_strength, st.qwen_turbo, st.qwen_face_reference) != \
+                (g["prompt"], g["strength"], g["turbo"], g["face_reference"]):
+            st.qwen_prompt, st.qwen_strength, st.qwen_turbo, st.qwen_face_reference = \
+                g["prompt"], g["strength"], g["turbo"], g["face_reference"]
+            try:
+                st.save()
+            except Exception:
+                pass
+        return g
+
+    def set_generative_available(self, ok: bool, why: str = "") -> None:
+        item = self.mode.model().item(2)
+        item.setEnabled(bool(ok))
+        item.setToolTip("Qwen-Image 2.1 found on your ComfyUI: " + why if ok else why)
+        if not ok and self.mode.currentData() == "generative":
+            self.mode.setCurrentIndex(0)
 
     def _show_assessment(self, r: Recipe):
         a = self.src.assessment

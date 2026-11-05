@@ -30,7 +30,8 @@ TEST_RESULTS.md. Status: **Adopt** (Auto-eligible) · **Prototype/Baseline** (Ma
 |---|---|---|
 | SeedVR2 3B/7B (ComfyUI node; official `comfyorg/comfyui_seedvr2`, community `numz`) | Weights on Hugging Face (Apache-2.0 per model card; node code MIT). Author reports ≥18 GB VRAM for 3B and ~1022 s for 20 images on an RTX 4090 at batch 1 — incompatible with the 15 s contract on 16 GB. HF unreachable from build container: **not executed**. | Prototype via user's ComfyUI later; never Fast Auto |
 | SUPIR | Model declared **non-commercial use only**; SDXL-based, heavy, generative. Not executed. | Reject for default; possible labelled Generative Recovery |
-| Qwen Image 2.1, FLUX 3 Klein | Not verifiable from the build container (HF blocked; no local copy). Editing/generation models, generative by nature. | Not integrated; would be ComfyUI-routed labelled edits |
+| Qwen-Image 2.1 (image edit; Standard + Turbo) | Runs on the user's ComfyUI (≥ 0.37; graph validated against 0.44). Weights not available in the build container: **quality, identity and time unmeasured**. Generative by nature. | **Integrated** as explicit Generative Recovery mode (labelled, always reviewed); never Auto |
+| FLUX 3 Klein | Not verifiable from the build container (HF blocked; no local copy). | Not integrated |
 | CodeFormer / GFPGAN | Face *replacement* networks; CodeFormer weights S-Lab non-commercial. Conflicts with identity priority. | Reject |
 
 ## Applications / pipelines reviewed

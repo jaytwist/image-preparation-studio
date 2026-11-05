@@ -74,10 +74,14 @@ class JobManager:
                      target_long_edge: int | None = None, quality_override: bool = False,
                      look: str | None = None) -> int:
         files = enumerate_inputs(inputs, recursive)
+        st = self.studio.settings
         settings = {"profiles": list(profiles), "mode": mode or self.studio.settings.default_mode, "scale": scale,
                     "target_long_edge": target_long_edge, "quality_override": quality_override,
                     "inputs": [str(x) for x in inputs], "recursive": recursive,
-                    "look": look or getattr(self.studio.settings, "default_look", "enhanced")}
+                    "look": look or getattr(self.studio.settings, "default_look", "enhanced"),
+                    # snapshot so a resumed batch uses the same prompt/strength even if Settings change later
+                    "generative": {"prompt": st.qwen_prompt, "strength": st.qwen_strength, "turbo": st.qwen_turbo,
+                                   "face_reference": st.qwen_face_reference, "long_edge": st.qwen_long_edge}}
         bid = self.db.insert("batches", {"name": name, "root": ";".join(str(x) for x in inputs),
                                          "output_root": self.studio.settings.output_root, "settings_json": settings,
                                          "state": "open", "created": time.time()})
@@ -194,7 +198,8 @@ class JobManager:
         bname = f"Batch/{brow['name']}" if brow else f"Batch/{batch_id}"
         req = self.studio.request(mode=bs.get("mode"), scale=bs.get("scale", "auto"),
                                   target_long_edge=bs.get("target_long_edge"),
-                                  quality_override=bs.get("quality_override", False), look=bs.get("look"))
+                                  quality_override=bs.get("quality_override", False), look=bs.get("look"),
+                                  generative=bs.get("generative"))
         profiles = tuple(bs.get("profiles", ["archive"]))
         prefetched: dict[int, Future] = {}
         seen_sha: dict[str, int] = {r["source_sha256"]: r["id"] for r in self.db.query(

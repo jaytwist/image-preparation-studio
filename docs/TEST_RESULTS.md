@@ -169,6 +169,23 @@ container — not the user's install, which was unreachable. `IPS_COMFY_URL=… 
 
 Not covered: the user's own ComfyUI build, its custom nodes, GPU VRAM contention with NH Maker 2 on the RTX 5070 Ti.
 
+### 5e. Qwen-Image 2.1 Generative Recovery (graph level only — no generation was run)
+The Qwen-Image 2.1 weights (~20 GB, Hugging Face) cannot be fetched into the build container and would not run on
+its CPU, so **image quality, identity preservation and run time of this route are unmeasured**. What was verified:
+
+| Check | Result |
+|---|---|
+| Graph built from the official Comfy-Org templates (`image_qwen_image_2_1_image_edit`, `…_turbo_…`) | ✅ unit tests (links resolve, sigma truncation, face reference wiring) |
+| Node source read (`comfy_extras/nodes_qwen.py`, ComfyUI 0.44): `TextEncodeQwenImage21.latent` is an **empty** latent | led to fix 17 |
+| Real ComfyUI 0.44 `/prompt` validation, 4 variants (Standard/Turbo × full redraw / img2img + face reference), model files named as in the template (dummy contents) | ✅ all accepted; execution stops only at weight loading (dummy files) |
+| Negative control: invalid combo value / missing image → rejected (HTTP 400) | ✅ |
+| Detection reads `/object_info` only; picks the int8 files on a list with unrelated models | ✅ (fake + real server) |
+| End-to-end pipeline against the fake server: exact output geometry, provenance, 2 uploads (source + face), no `/interrupt`/`/free` | ✅ |
+| Router: one op, labelled generative (XMP), always Review, explicit Quality Override; UI controls feed the request | ✅ |
+
+To run a real generation on the user's PC: `IPS_COMFY_URL=http://127.0.0.1:8188 IPS_QWEN_RUN=1 pytest tests/test_comfy_real.py -k qwen -s`
+(add `IPS_QWEN_TURBO=1` for Turbo); it prints the time and the engine provenance.
+
 ## 6. Defects found by testing and fixed (all re-tested)
 
 | # | Found by | Defect | Fix |
@@ -189,6 +206,9 @@ Not covered: the user's own ComfyUI build, its custom nodes, GPU VRAM contention
 | 14 | held-out review | no-ground-truth sheets labelled the source "ground truth" | relabelled |
 | 15 | real ComfyUI v0.44 | model list parsed from the new typed COMBO format as single characters (fake server used the old format) | both formats parsed; fake server updated |
 | 16 | real ComfyUI v0.44 | outputs of external ComfyUI models were not sent to the Review Queue | external models always reviewed + flagged |
+| 17 | ComfyUI 0.44 node source | Qwen "strength" < 1 would have denoised an **empty** latent (the encoder's latent output is zeros), not the photo | strength < 1 VAE-encodes the source, pre-sized to the node's ×32 grid; 1.0 = official template |
+| 18 | real ComfyUI 0.44 | two-image prompts must use `<image1>`/`<image2>` tags (template rules) | face-reference prompts tagged; single-image prompt sent unchanged |
+| 19 | UI screenshot | long combo/checkbox labels widened the Prepare side panel past the window (Turbo, Cancel, Open folder cut off) | compact labels + tooltips; combos no longer size to their longest item |
 
 ## 7. Performance (not the acceptance measurement)
 

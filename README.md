@@ -5,7 +5,7 @@ that diagnoses each image from metadata *and* pixels, applies only the faithful 
 none), shows an aligned Before/After, lets you take over in Manual, does lightweight Quick Edits, runs
 batches with per-image recipes, and exports organised, traceable outputs with audited metadata.
 
-> **Release status: 0.9.0rc1 — Windows GPU Validation Pending.** Built and tested on CPU in a Linux
+> **Release status: 0.9.0rc3 — Windows GPU Validation Pending.** Built and tested on CPU in a Linux
 > container. The 15 s performance contract, RTX 5070 Ti VRAM use and the real Windows desktop have
 > not been measured yet. See [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md) for what was verified and how.
 
@@ -63,8 +63,11 @@ model) · **Vivid** (stronger) · **Natural** (repair measured defects only). Ba
 finished item.
 
 Modes: **Faithful** (default; regression-trained models, no synthesised texture, fidelity guard on
-faces) · **Balanced** (GAN upscalers that synthesise texture; always routed to Review) · Generative
-Recovery (not in v1).
+faces) · **Balanced** (GAN upscalers that synthesise texture; always routed to Review) · **Generative**
+(Qwen-Image 2.1 on your local ComfyUI: redraws the image from a prompt — default is an old-phone-photo
+enhancement prompt — with a native *redraw strength*, optional Turbo and a face crop as identity reference;
+labelled generative, identity-checked, always reviewed). Enable ComfyUI in Settings; the mode unlocks when the
+Qwen-Image 2.1 nodes and model files are found.
 
 ## Where results go
 

@@ -57,6 +57,8 @@ class BatchPanel(QWidget):
         self.mode = QComboBox()
         self.mode.addItem("Faithful", "faithful")
         self.mode.addItem("Balanced (GAN)", "balanced")
+        self.mode.addItem("Generative · Qwen-Image 2.1 (ComfyUI; prompt/strength from Prepare)", "generative")
+        self.set_generative_available(False, "Enable ComfyUI in Settings; Qwen-Image 2.1 models are detected there.")
         row.addWidget(self.mode)
         self.scale = QComboBox()
         for lab, v in (("Scale: Auto per image", "auto"), ("×1", 1), ("×2", 2), ("×4", 4)):
@@ -353,3 +355,10 @@ class BatchPanel(QWidget):
     def shutdown(self):
         self.timer.stop()
         self.jm.shutdown()
+
+    def set_generative_available(self, ok: bool, why: str = "") -> None:
+        item = self.mode.model().item(2)
+        item.setEnabled(bool(ok))
+        item.setToolTip(why)
+        if not ok and self.mode.currentData() == "generative":
+            self.mode.setCurrentIndex(0)

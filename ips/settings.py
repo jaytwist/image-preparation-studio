@@ -32,6 +32,12 @@ class Settings:
     comfy_enabled: bool = False
     comfy_url: str = "http://127.0.0.1:8188"
     comfy_vram_min_free_mb: int = 4000
+    # Generative Recovery (Qwen-Image 2.1 on the local ComfyUI). Prompt "" = built-in preset for the content class.
+    qwen_prompt: str = ""
+    qwen_strength: float = 1.0           # native denoise from the encoded source latent
+    qwen_turbo: bool = False
+    qwen_face_reference: bool = True     # pass the largest face crop as <image2> to anchor identity
+    qwen_long_edge: int = 2048           # output long edge (model limit ≈ 4 MP)
     recursive_import: bool = True
     auto_run_on_open: bool = True        # Prepare tab runs Smart Auto immediately after import
 

@@ -177,3 +177,30 @@ def test_batch_and_gallery(win, qtbot, corpus, tmp_path):
     g.approval.setCurrentIndex(2)
     assert g.grid.count() >= 1
     shot(win, "08_gallery")
+
+
+def test_generative_mode_controls(win, qtbot):
+    """Generative Recovery is disabled until Qwen-Image 2.1 is detected; its controls feed the route request."""
+    from ips.core.classify import Assessment
+    from ips.core.router import route
+    p = win.prepare
+    item = p.mode.model().item(p.mode.findData("generative"))
+    assert not item.isEnabled()
+    p.set_generative_available(True, "qwen_image_2.1_int8_convrot.safetensors")
+    win.batch.set_generative_available(True, "ok")
+    assert item.isEnabled() and win.batch.mode.model().item(2).isEnabled()
+    p.mode.setCurrentIndex(p.mode.findData("generative"))
+    assert p._gen_box.isVisibleTo(p)
+    p.gen_strength.setValue(55)
+    p.gen_prompt.setPlainText("Enhance this photo. Do not change the face.")
+    p.gen_turbo.setChecked(True)
+    req = p._request()
+    a = Assessment(content_class="photo", content_scores={}, content_confidence=0.9)
+    r = route(a, req, 800, 600)
+    op = r.ops[0]
+    assert op.kind == "generative" and op.params["strength"] == 0.55 and op.params["turbo"]
+    assert op.params["prompt"] == "Enhance this photo. Do not change the face."
+    assert win.studio.settings.qwen_strength == 0.55, "persisted for Batch"
+    shot(win, "prepare_generative")
+    p.set_generative_available(False, "ComfyUI not reachable")
+    assert p.mode.currentData() == "faithful"

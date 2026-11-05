@@ -199,7 +199,7 @@ class ComfyClient:
                 entry = h[prompt_id]
                 st = entry.get("status", {})
                 if st.get("status_str") == "error":
-                    raise ComfyError(f"ComfyUI execution error: {st.get('messages')}")
+                    raise ComfyError("ComfyUI execution error: " + _exec_error(st.get("messages")))
                 if st.get("completed", True) and entry.get("outputs"):
                     return entry
             if time.time() - t0 > timeout_s:
@@ -230,6 +230,48 @@ class ComfyClient:
         if not out:
             raise ComfyError("ComfyUI returned no image")
         return out[0]
+
+
+    def qwen_edit(self, rgb: np.ndarray, prompt: str, *, face: np.ndarray | None = None, turbo: bool = False,
+                  strength: float = 1.0, resolution: int = 1024, steps: int = 25, cfg: float = 1.0,
+                  negative: str | None = None, seed: int | None = None, min_free_mb: int = 4000,
+                  cancel: Callable[[], bool] | None = None, timeout_s: float = 1800.0) -> tuple[np.ndarray, dict]:
+        """Generative Recovery with Qwen-Image 2.1 on the user's ComfyUI. Returns (image, provenance)."""
+        from . import qwen
+        models, why = qwen.detect(self, turbo=turbo)
+        if models is None:
+            raise ComfyError(why)
+        self.wait_until_free(min_free_mb, cancel=cancel, max_wait_s=600)
+        rw, rh = qwen.ref_size(rgb.shape[1], rgb.shape[0], resolution)
+        if (rw, rh) != (rgb.shape[1], rgb.shape[0]):  # pre-size to the node's grid (one Lanczos resample, done here)
+            from ...core.ops import resize_to
+            rgb = resize_to(rgb, rw, rh)
+        img_name = self.upload_temp(rgb, uuid.uuid4().hex[:8])
+        face_name = self.upload_temp(face, uuid.uuid4().hex[:8] + "_face") if face is not None else None
+        wf = qwen.build(models, img_name, prompt, face=face_name, negative=negative or qwen.DEFAULT_NEGATIVE,
+                        resolution=resolution, strength=strength, steps=steps, cfg=cfg, seed=seed)
+        pid = self.submit(wf)
+        entry = self.wait_result(pid, timeout_s=timeout_s, cancel=cancel)
+        out = self.fetch_images(entry)
+        if not out:
+            raise ComfyError("ComfyUI returned no image")
+        prov = {"engine": "Qwen-Image 2.1" + (" Turbo" if turbo else ""), "unet": models.unet, "clip": models.clip,
+                "vae": models.vae, "strength": strength, "resolution": resolution,
+                "steps": None if turbo else steps, "seed": wf["13"]["inputs"]["noise_seed"] if turbo else wf["8"]["inputs"]["seed"],
+                "face_reference": face is not None, "prompt_id": pid}
+        return out[0], prov
+
+
+def _exec_error(messages: Any) -> str:
+    """Readable summary of ComfyUI's status messages (node + exception), instead of the raw event list."""
+    try:
+        for kind, d in messages or []:
+            if kind == "execution_error":
+                return (f"node {d.get('node_id')} ({d.get('node_type')}): {d.get('exception_type', '').split('.')[-1]}: "
+                        f"{str(d.get('exception_message', '')).strip()}")
+    except (TypeError, ValueError):
+        pass
+    return str(messages)[:500]
 
 
 def _combo_options(spec: Any) -> list[str]:

@@ -136,7 +136,8 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def common(p):
-        p.add_argument("--mode", default=None, choices=["faithful", "balanced"])
+        p.add_argument("--mode", default=None, choices=["faithful", "balanced", "generative"],
+                       help="generative = Qwen-Image 2.1 on the local ComfyUI (Settings → ComfyUI must be enabled)")
         p.add_argument("--scale", default="auto")
         p.add_argument("--target-long-edge", type=int, default=None)
         p.add_argument("--quality-override", action="store_true")

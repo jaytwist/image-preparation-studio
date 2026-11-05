@@ -156,3 +156,47 @@ def test_ui_lists_comfy_models(qtbot, tmp_path):
     qtbot.waitUntil(lambda: "ComfyUI" in w.backend_lbl.text() and "connected" in w.backend_lbl.text(), timeout=30000)
     assert f"comfy:upscale:{MODEL}" in recipe_editor.EXTRA_METHODS.get("upscale", [])
     w.batch.shutdown()
+
+
+# ----------------------------------------------------------------------------- Qwen-Image 2.1 (Generative Recovery)
+
+def _qwen_or_skip(turbo=False):
+    from ips.backends.comfy import qwen
+    from ips.backends.comfy.client import ComfyClient
+    c = ComfyClient(URL)
+    m, why = qwen.detect(c, turbo=turbo)
+    if m is None:
+        pytest.skip(why)
+    return c, m
+
+
+@pytest.mark.parametrize("turbo", [False, True])
+def test_qwen_graphs_pass_real_server_validation(turbo):
+    """Every graph Studio can build is accepted by the real /prompt validator (node names, inputs, links, combos).
+    Without IPS_QWEN_RUN=1 the prompt is withdrawn right after acceptance, so no 20 GB model load is triggered."""
+    from ips.backends.comfy import qwen
+    from ips.backends.comfy.client import ComfyError
+    c, m = _qwen_or_skip(turbo)
+    src = c.upload_temp(np.zeros((480, 640, 3), np.float32), "qsrc")
+    face = c.upload_temp(np.zeros((512, 512, 3), np.float32), "qface")
+    for strength, f in ((1.0, None), (0.6, face)):
+        pid = c.submit(qwen.build(m, src, "test", face=f, strength=strength, resolution=1120, seed=1))
+        assert pid
+        try:
+            c.cancel(pid)
+        except ComfyError:
+            pass  # already finished (e.g. failed at weight load on a test server)
+
+
+@pytest.mark.skipif(not os.environ.get("IPS_QWEN_RUN"), reason="set IPS_QWEN_RUN=1 to run a real Qwen generation")
+def test_qwen_real_generation():
+    from ips.core.imageio import load_image
+    c, _ = _qwen_or_skip(os.environ.get("IPS_QWEN_TURBO") == "1")
+    src = load_image(Path(__file__).parent.parent / "fixtures" / "corpus" / "portrait_clean.png").rgb \
+        if (Path(__file__).parent.parent / "fixtures" / "corpus" / "portrait_clean.png").exists() \
+        else np.random.default_rng(0).random((384, 512, 3)).astype(np.float32)
+    t0 = time.time()
+    out, prov = c.qwen_edit(src, "Enhance this photo: sharper, cleaner, natural colours. Do not change anything else.",
+                            turbo=os.environ.get("IPS_QWEN_TURBO") == "1", strength=0.6, resolution=1024, seed=1)
+    print("qwen seconds", round(time.time() - t0, 1), prov)
+    assert out.ndim == 3 and out.shape[2] == 3 and out.std() > 0.01
