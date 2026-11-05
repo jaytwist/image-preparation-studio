@@ -178,8 +178,9 @@ class Studio:
 
     # ------------------------------------------------------------------ auto
     def request(self, mode: str | None = None, scale: float | str = "auto", target_long_edge: int | None = None,
-                quality_override: bool | None = None) -> RouteRequest:
+                quality_override: bool | None = None, look: str | None = None) -> RouteRequest:
         return RouteRequest(mode=mode or self.settings.default_mode, scale=scale, target_long_edge=target_long_edge,
+                            look=look or getattr(self.settings, "default_look", "enhanced"),
                             upscale_low_res_auto=self.settings.upscale_low_res_auto,
                             quality_override=self.settings.quality_override_default if quality_override is None
                             else quality_override, device_kind=self.device.kind, device_name=self.device.name,

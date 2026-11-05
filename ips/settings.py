@@ -16,6 +16,7 @@ class Settings:
     max_cached_models: int = 3
     unload_idle_minutes: int = 5         # release GPU memory for other apps when Studio is idle (0 = never)
     default_mode: str = "faithful"
+    default_look: str = "enhanced"       # natural | enhanced | vivid
     upscale_low_res_auto: bool = True
     identity_check: bool = True
     fidelity_guard: bool = True

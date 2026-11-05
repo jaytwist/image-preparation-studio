@@ -160,6 +160,13 @@ def test_batch_and_gallery(win, qtbot, corpus, tmp_path):
     b.filter.setCurrentIndex(2)  # Failed
     b.refresh()
     assert b.table.rowCount() == 4
+    # live Before/After preview follows finished items and shows the restored master
+    _wait(qtbot, lambda: b.preview.after is not None, 60_000)
+    assert b.preview.before is not None and "Restored Master" in b.preview.labels[1]
+    b.filter.setCurrentIndex(0)
+    b.refresh()
+    b.table.selectRow(0)
+    qtbot.waitUntil(lambda: b._preview_job is not None, timeout=10_000)
     shot(win, "07_batch")
     g = win.gallery
     win.tabs.setCurrentWidget(g)

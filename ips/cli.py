@@ -30,7 +30,7 @@ def _studio(args):
 def cmd_inspect(args) -> int:
     st = _studio(args)
     src = st.inspect(args.file, record=False)
-    r = st.auto_recipe(src, st.request(mode=args.mode, scale=_scale(args.scale)))
+    r = st.auto_recipe(src, st.request(mode=args.mode, scale=_scale(args.scale), look=args.look))
     out = {"file": str(src.path), "sha256": src.sha256, "format": src.image.source_format,
            "size": [src.image.width, src.image.height], "bit_depth": src.image.bit_depth,
            "metadata": src.summary, "assessment": src.assessment.to_json(), "timings_ms": src.timings_ms,
@@ -50,7 +50,7 @@ def cmd_prepare(args) -> int:
     st = _studio(args)
     profiles = tuple(p.strip() for p in args.profiles.split(",") if p.strip())
     req = st.request(mode=args.mode, scale=_scale(args.scale), target_long_edge=args.target_long_edge,
-                     quality_override=args.quality_override)
+                     quality_override=args.quality_override, look=args.look)
     rc = 0
     for f, rel in enumerate_inputs(args.inputs, recursive=True):
         try:
@@ -77,7 +77,7 @@ def cmd_batch(args) -> int:
         profiles = tuple(p.strip() for p in args.profiles.split(",") if p.strip())
         bid = jm.create_batch(args.name or time.strftime("%Y%m%d-%H%M%S"), args.inputs, profiles=profiles,
                               mode=args.mode, scale=_scale(args.scale), target_long_edge=args.target_long_edge,
-                              quality_override=args.quality_override)
+                              quality_override=args.quality_override, look=args.look)
     print(f"batch {bid}")
     jm.start(bid)
     try:
@@ -140,6 +140,7 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--scale", default="auto")
         p.add_argument("--target-long-edge", type=int, default=None)
         p.add_argument("--quality-override", action="store_true")
+        p.add_argument("--look", choices=["natural", "enhanced", "vivid"], default=None)
 
     p = sub.add_parser("inspect")
     p.add_argument("file")

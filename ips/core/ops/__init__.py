@@ -88,6 +88,21 @@ def contrast_saturation(rgb: np.ndarray, contrast: float = 0.0, saturation: floa
     return np.clip(out, 0, 1).astype(np.float32)
 
 
+def clarity(rgb: np.ndarray, amount: float = 0.5, clip: float = 2.0, tiles: int = 8, **_) -> np.ndarray:
+    """Local contrast ("clarity") on CIE lightness only: CLAHE on L at 16-bit precision, blended by *amount*.
+    Hue and chroma are untouched, geometry is untouched (no resampling)."""
+    if amount <= 0:
+        return rgb
+    lab = cv2.cvtColor(rgb.astype(np.float32), cv2.COLOR_RGB2LAB)
+    L = lab[..., 0]
+    h, w = L.shape
+    t = max(2, int(round(tiles * max(h, w) / 1024))) if max(h, w) > 1024 else tiles
+    l16 = np.clip(L / 100.0 * 65535.0, 0, 65535).astype(np.uint16)
+    eq = cv2.createCLAHE(clipLimit=float(clip), tileGridSize=(t, t)).apply(l16).astype(np.float32) / 65535.0 * 100.0
+    lab[..., 0] = np.clip(L + float(amount) * (eq - L), 0, 100)
+    return np.clip(cv2.cvtColor(lab, cv2.COLOR_LAB2RGB), 0, 1).astype(np.float32)
+
+
 # ----------------------------------------------------------------------------- detail
 
 def halo_free_unsharp(rgb: np.ndarray, amount: float = 0.35, radius: float = 1.0, threshold: float = 0.01,

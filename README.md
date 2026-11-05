@@ -58,6 +58,10 @@ Linux/macOS: `./run.sh` (CPU or CUDA torch from PyPI).
 * **Outputs** — search/filter by kind, approval, batch, model; sort; approve/reject; open folder;
   export selected (never overwrites).
 
+Look: **Enhanced** (default — visible tone, local contrast, vibrance and halo-free sharpening, no generative
+model) · **Vivid** (stronger) · **Natural** (repair measured defects only). Batch shows a live Before/After of each
+finished item.
+
 Modes: **Faithful** (default; regression-trained models, no synthesised texture, fidelity guard on
 faces) · **Balanced** (GAN upscalers that synthesise texture; always routed to Review) · Generative
 Recovery (not in v1).

@@ -27,6 +27,18 @@ class RouteRequest:
     device_kind: str = "cpu"
     device_name: str = ""
     allow_models: bool = True            # False when torch/weights unavailable
+    look: str = "enhanced"               # natural | enhanced | vivid  (visible, non-generative enhancement)
+
+
+# Non-generative "look" enhancement applied on top of defect repair. Global photometric + local-contrast +
+# halo-clamped sharpening only: no resampling of facial geometry, no texture synthesis.
+LOOKS: dict[str, dict[str, float]] = {
+    "natural": {},
+    "enhanced": {"contrast": 0.20, "vibrance": 0.30, "saturation": 0.03, "clarity": 0.70, "clarity_clip": 2.5,
+                 "sharpen": 0.85, "upscale_below": 1536, "face_protect": 0.35},
+    "vivid": {"contrast": 0.32, "vibrance": 0.48, "saturation": 0.08, "clarity": 1.0, "clarity_clip": 3.2,
+              "sharpen": 1.2, "upscale_below": 2048, "face_protect": 0.3},
+}
 
 
 def _installed(model_id: str) -> bool:
@@ -58,8 +70,10 @@ def choose_scale(a: Assessment, req: RouteRequest, rationale: list[str]) -> floa
         s = float(req.scale)
         rationale.append(f"Scale ×{s:g} requested explicitly.")
         return s
-    if req.upscale_low_res_auto and long_side and long_side < THRESHOLDS["lowres_long_side"]:
-        rationale.append(f"Source long side {long_side}px < {int(THRESHOLDS['lowres_long_side'])}px: Auto proposes ×2.")
+    below = int(LOOKS.get(req.look, {}).get("upscale_below", THRESHOLDS["lowres_long_side"]))
+    below = max(below, int(THRESHOLDS["lowres_long_side"]))
+    if req.upscale_low_res_auto and long_side and long_side < below:
+        rationale.append(f"Source long side {long_side}px < {below}px ({req.look} look): Auto proposes ×2.")
         return 2.0
     rationale.append("Resolution adequate: no upscale (×1).")
     return 1.0
@@ -215,6 +229,33 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
     if o:
         flags.append(f"Clipped highlights ({o.evidence}): detail there cannot be faithfully recovered.")
 
+    # ---------------------------------------------------------------- look (visible enhancement)
+    L = LOOKS.get(req.look, {})
+    if L and cls != "screenshot" and "toned_monochrome" not in a.intents:
+        tag = f"{req.look.title()} look"
+        p1, p99, p50 = a.features.get("luma_p1", 0), a.features.get("luma_p99", 1), a.features.get("luma_p50", 0.5)
+        if not any(o.kind == "exposure" for o in ops) and (p1 > 0.02 or p99 < 0.97):
+            op = default_op("exposure", "classical:levels")
+            op.params.update(black=round(min(0.06, p1 * 0.8), 3), white=round(max(0.88, min(1.0, p99 + 0.015)), 3),
+                             gamma=round(1.06 if p50 < 0.35 else 0.97 if p50 > 0.65 else 1.0, 3))
+            op.why = f"{tag}: tonal range stretch (black {op.params['black']}, white {op.params['white']})"
+            ops.append(op)
+        op = default_op("tone", "classical:contrast_saturation")
+        op.params.update(contrast=L["contrast"], vibrance=L["vibrance"] * (0.85 if "style" in a.intents else 1.0),
+                         saturation=L["saturation"])
+        op.why = (f"{tag}: contrast +{L['contrast']}, vibrance +{op.params['vibrance']:.2f} (skin hues protected)")
+        ops.append(op)
+        amt = L["clarity"] * (0.5 if a.issue("oversharpened") else 1.0)
+        op = default_op("tone", "classical:clarity")
+        op.params.update(amount=round(amt, 2), clip=L["clarity_clip"])
+        if faces:
+            op.mask, op.params["face_protect"] = "protect_faces", L["face_protect"]
+        op.why = f"{tag}: local contrast {amt:.2f} on lightness only" + (
+            f"; faces {int(L['face_protect'] * 100)}% protected" if faces else "")
+        ops.append(op)
+        rat.append(f"{tag} requested: visible, non-generative enhancement (tone, local contrast, vibrance, "
+                   "halo-free sharpening). Switch Look to Natural for defect repair only.")
+
     # ---------------------------------------------------------------- upscale
     scale = choose_scale(a, req, rat)
     if scale > 1.0:
@@ -225,6 +266,16 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
     if a.issue("oversharpened"):
         rat.append(f"Previously oversharpened ({a.issue('oversharpened').evidence}): no sharpening added. Halos "
                    "cannot be removed faithfully.")
+    elif L and cls != "screenshot":
+        mp_out = width * height * scale * scale / 1e6
+        op = default_op("sharpen", "classical:halo_free_unsharp")
+        op.params.update(amount=round(L["sharpen"] + 0.3 * a.severity("blur_soft"), 2),
+                         radius=1.0 if mp_out <= 4 else 1.4, threshold=0.012)
+        if faces:
+            op.mask, op.params["face_protect"] = "protect_faces", L["face_protect"]
+        op.why = (f"{req.look.title()} look: halo-clamped detail sharpening amount {op.params['amount']} "
+                  f"(cannot overshoot local min/max)")
+        ops.append(op)
     elif cls in ("photo", "scan") and a.severity("blur_soft") >= 0.25 and not suppressed("sharpen"):
         op = default_op("sharpen", "classical:halo_free_unsharp", strength=int(20 + 20 * a.severity("blur_soft")))
         op.why = "Mild softness → halo-clamped luminance unsharp (cannot create overshoot)"
@@ -232,7 +283,7 @@ def route(a: Assessment, req: RouteRequest, width: int, height: int,
     if a.issue("oversmoothed"):
         flags.append("Image appears previously smoothed: Faithful mode will not synthesise texture. "
                      "Balanced (GAN) can add plausible texture – labelled as such.")
-    if "style" in a.intents:
+    if "style" in a.intents and not L:
         rat.append("AI-generated/stylised source: colour, tone and grain left as authored.")
 
     r = Recipe(ops=ops, mode=req.mode, target_scale=scale, created_by="auto", rationale=rat, flags=flags,

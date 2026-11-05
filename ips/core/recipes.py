@@ -28,7 +28,7 @@ METHODS: dict[str, list[str]] = {
     "deblur": ["classical:unsharp_deconv"],
     "white_balance": ["classical:neutral_cast"],
     "exposure": ["classical:levels"],
-    "tone": ["classical:contrast_saturation"],
+    "tone": ["classical:contrast_saturation", "classical:clarity"],
     "upscale": ["model:swinir_x2", "classical:lanczos", "classical:nearest", "model:realesrgan_x2plus",
                 "model:realesrgan_x4plus", "model:realesr_general_x4v3", "model:realplksr_nomos2_x4"],
     "sharpen": ["classical:halo_free_unsharp"],
@@ -41,6 +41,7 @@ CLASSICAL_PARAMS: dict[str, dict[str, Any]] = {
     "classical:neutral_cast": {"strength": 0.7},
     "classical:levels": {"ev": 0.0, "black": 0.0, "white": 1.0, "gamma": 1.0},
     "classical:contrast_saturation": {"contrast": 0.0, "saturation": 0.0, "vibrance": 0.0},
+    "classical:clarity": {"amount": 0.5, "clip": 2.0, "tiles": 8},
     "classical:lanczos": {"scale": 2.0},
     "classical:nearest": {"scale": 2},
     "classical:halo_free_unsharp": {"amount": 0.35, "radius": 1.0, "threshold": 0.01},
@@ -186,6 +187,9 @@ def map_strength(method: str, strength: int) -> tuple[dict[str, Any], float, str
     if method == "classical:contrast_saturation":
         base.update(contrast=round(0.3 * s, 3))
         return base, 1.0, f"native: contrast +{base['contrast']}"
+    if method == "classical:clarity":
+        base.update(amount=round(s, 2))
+        return base, 1.0, f"native: local-contrast blend {base['amount']} (lightness only)"
     return base, round(s, 3), "post-blend"
 
 

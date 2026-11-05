@@ -68,6 +68,21 @@ cleanup and beauty smoothing overlap), skin ΔE > 1.5 without a colour op. Tight
 canvas. Any GAN ("balanced") model output goes to Review regardless of signals (RealPLKSR evades all signals). Review Queue on: identity flags, guard action,
 confidence < 0.55, GAN use, Quality-Override runs.
 
+## 4b. Look (visible enhancement layer, default **Enhanced**)
+User feedback: defect-only repair looked almost unchanged on good images. A separate, explicitly selected *look*
+is applied after repair (Prepare/Batch/Settings/CLI `--look`). Non-generative only — no resampling of facial
+geometry, no texture synthesis; identity signals run on every job with faces.
+
+| Look | Tone/levels | Contrast | Vibrance (skin hues protected) | Clarity (CLAHE on lightness) | Sharpen (halo-clamped) | Auto ×2 below | Face protection |
+|---|---|---|---|---|---|---|---|
+| Natural | – | – | – | – | – | 1024 px | – |
+| **Enhanced** | stretch p1/p99 | +0.20 | +0.30 | 0.70 (clip 2.5) | 0.85 | 1536 px | 35 % |
+| Vivid | stretch p1/p99 | +0.32 | +0.48 | 1.00 (clip 3.2) | 1.20 | 2048 px | 30 % |
+
+Not applied to screenshots/UI or toned monochrome; clarity halved on previously oversharpened sources; AI
+images get 85 % vibrance. Measured identity (ArcFace vs source): portrait 0.992 / 0.985, AI characters
+0.982–0.99 / 0.964–0.982 (Enhanced / Vivid), no identity or geometry flags.
+
 ## 5. Learning from corrections
 Exports record `accepted_auto` or `manual_export` with the auto and final recipe and features.
 `python -m ips.eval.harness learn` aggregates per (content class, op kind); kinds the user removes in

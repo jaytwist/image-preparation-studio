@@ -71,11 +71,13 @@ class JobManager:
     # ------------------------------------------------------------------ batches
     def create_batch(self, name: str, inputs: list[str | Path], *, recursive: bool = True,
                      profiles: tuple[str, ...] = ("archive",), mode: str | None = None, scale: Any = "auto",
-                     target_long_edge: int | None = None, quality_override: bool = False) -> int:
+                     target_long_edge: int | None = None, quality_override: bool = False,
+                     look: str | None = None) -> int:
         files = enumerate_inputs(inputs, recursive)
         settings = {"profiles": list(profiles), "mode": mode or self.studio.settings.default_mode, "scale": scale,
                     "target_long_edge": target_long_edge, "quality_override": quality_override,
-                    "inputs": [str(x) for x in inputs], "recursive": recursive}
+                    "inputs": [str(x) for x in inputs], "recursive": recursive,
+                    "look": look or getattr(self.studio.settings, "default_look", "enhanced")}
         bid = self.db.insert("batches", {"name": name, "root": ";".join(str(x) for x in inputs),
                                          "output_root": self.studio.settings.output_root, "settings_json": settings,
                                          "state": "open", "created": time.time()})
@@ -192,7 +194,7 @@ class JobManager:
         bname = f"Batch/{brow['name']}" if brow else f"Batch/{batch_id}"
         req = self.studio.request(mode=bs.get("mode"), scale=bs.get("scale", "auto"),
                                   target_long_edge=bs.get("target_long_edge"),
-                                  quality_override=bs.get("quality_override", False))
+                                  quality_override=bs.get("quality_override", False), look=bs.get("look"))
         profiles = tuple(bs.get("profiles", ["archive"]))
         prefetched: dict[int, Future] = {}
         seen_sha: dict[str, int] = {r["source_sha256"]: r["id"] for r in self.db.query(

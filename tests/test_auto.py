@@ -19,6 +19,7 @@ def st(tmp_path_factory):
 
 
 def _route(st, corpus, rel, **req):
+    req.setdefault("look", "natural")   # defect-repair logic is tested without the visible "look" layer
     src = st.inspect(corpus / rel, record=False)
     r = st.auto_recipe(src, st.request(**req))
     return src, r
@@ -146,3 +147,32 @@ def test_regression_no_learned_upscaler_on_text(st, corpus, rel, mode):
     _, r = _route(st, corpus, rel, mode=mode, scale=2)
     ups = [o for o in r.ops if o.kind == "upscale"]
     assert ups and all(not o.model_id for o in ups), r.summary()
+
+
+@pytest.mark.parametrize("look", ["enhanced", "vivid"])
+def test_look_visibly_enhances_clean_images_without_models(st, corpus, look):
+    import numpy as np
+    src, r = _route(st, corpus, "portrait/astronaut_clean.png", scale=1, look=look)
+    assert not r.no_op and not any(o.model_id for o in r.ops), r.summary()
+    assert {"tone", "sharpen"} <= {o.kind for o in r.ops}
+    res = st.process(src, r)
+    diff = float(np.abs(res.rgb - src.image.rgb).mean())
+    assert diff > (0.015 if look == "enhanced" else 0.025), f"{look} must be visibly different (mean |Δ| {diff:.4f})"
+    sims = [f["embedding_similarity"] for f in res.identity["faces"] if f.get("embedding_similarity") is not None]
+    assert sims and min(sims) >= 0.95, f"{look} look must keep identity (similarity {sims})"
+    assert not [f for f in res.identity["flags"] if "identity" in f or "geometry" in f]
+
+
+def test_look_stronger_levels_are_ordered(st, corpus):
+    import numpy as np
+    src = st.inspect(corpus / "dslr/chelsea_clean.jpg", record=False)
+    d = {}
+    for look in ("natural", "enhanced", "vivid"):
+        res = st.process(src, st.auto_recipe(src, st.request(scale=1, look=look)))
+        d[look] = float(np.abs(res.rgb - src.image.rgb).mean())
+    assert d["natural"] < d["enhanced"] < d["vivid"], d
+
+
+def test_look_not_applied_to_screenshots(st, corpus):
+    _, r = _route(st, corpus, "screenshot/ui_clean.png", scale=1, look="vivid")
+    assert r.no_op, r.summary()

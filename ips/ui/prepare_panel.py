@@ -114,6 +114,15 @@ class PreparePanel(QWidget):
             self.scale.addItem(lab, v)
         row.addWidget(self.scale, 1)
         sl.addLayout(row)
+        self.look = QComboBox()
+        for lab, v in [("Look: Enhanced (visible, non-generative)", "enhanced"), ("Look: Vivid (strong)", "vivid"),
+                         ("Look: Natural (repair defects only)", "natural")]:
+            self.look.addItem(lab, v)
+        self.look.setCurrentIndex(max(0, self.look.findData(getattr(self.studio.settings, "default_look", "enhanced"))))
+        self.look.setToolTip("Enhanced/Vivid add tone, local contrast, vibrance (skin protected) and halo-free "
+                             "sharpening. No generative model; faces are identity-checked.")
+        self.look.activated.connect(lambda _i: self.src is not None and self.run_auto())
+        sl.addWidget(self.look)
         self.override = QCheckBox("Quality Override (allow jobs outside the measured 15 s Fast Profile)")
         self.override.setChecked(self.studio.settings.quality_override_default)
         sl.addWidget(self.override)
@@ -278,7 +287,7 @@ class PreparePanel(QWidget):
 
     def _request(self):
         return self.studio.request(mode=self.mode.currentData(), scale=self.scale.currentData(),
-                                   quality_override=self.override.isChecked())
+                                   quality_override=self.override.isChecked(), look=self.look.currentData())
 
     def _show_assessment(self, r: Recipe):
         a = self.src.assessment

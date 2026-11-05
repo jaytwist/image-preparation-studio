@@ -51,6 +51,8 @@ def _apply_classical(op: Operation, img: np.ndarray) -> np.ndarray:
         return cops.levels(img, **p)
     if m == "classical:contrast_saturation":
         return cops.contrast_saturation(img, **p)
+    if m == "classical:clarity":
+        return cops.clarity(img, **p)
     if m == "classical:halo_free_unsharp":
         return cops.halo_free_unsharp(img, **p)
     if m == "classical:unsharp_deconv":
@@ -206,14 +208,15 @@ class Pipeline:
                             warnings=warnings)
         # identity signals + fidelity guard
         uses_model = any(o.model_id for o in ops_list)
-        if identity_check and faces and uses_model:
+        if identity_check and faces and ops_list:   # any change to a face is checked, not only model ops
             t0 = time.perf_counter()
             from .identity import compare_faces
             denoised = any(o.kind == "denoise" for o in ops_list)
             artifact = any(o.kind in ("denoise", "jpeg_cleanup") for o in ops_list)
+            sharpened = any(o.kind == "sharpen" or o.method == "classical:clarity" for o in ops_list)
             colour = any(o.kind in GLOBAL_COLOR_KINDS for o in ops_list)
             rep = compare_faces(src_for_identity, cur, faces, self.face_analyzer, denoise_applied=denoised,
-                                color_changed=colour, artifact_removal=artifact)
+                                color_changed=colour, artifact_removal=artifact, sharpened=sharpened)
             if fidelity_guard and recipe.mode == "faithful" and rep.flags:
                 bad = [fd for fd in rep.faces if fd.flags and not any("too small" in x for x in fd.flags)]
                 if bad:
@@ -229,7 +232,7 @@ class Pipeline:
                         f"Fidelity guard: {len(bad)} flagged face region(s) blended 60% toward a conservative "
                         "rendering (classical colour ops + Lanczos). Review recommended.")
                     rep2 = compare_faces(src_for_identity, cur, faces, self.face_analyzer, denoise_applied=denoised,
-                                         color_changed=colour, artifact_removal=artifact)
+                                         color_changed=colour, artifact_removal=artifact, sharpened=sharpened)
                     d = rep2.to_json()
                     d["before_guard"] = rep.to_json()
                     res.identity = d

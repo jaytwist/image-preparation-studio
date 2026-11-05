@@ -8,13 +8,14 @@ from pathlib import Path
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QIcon, QPixmap
 from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QFileDialog, QHBoxLayout, QHeaderView,
-                               QLabel, QLineEdit, QListWidget, QMessageBox, QPushButton, QTableWidget,
+                               QLabel, QLineEdit, QListWidget, QMessageBox, QPushButton, QSplitter, QTableWidget,
                                QTableWidgetItem, QVBoxLayout, QWidget)
 
 from ..core.engine import Studio
 from ..core.jobs import JobManager, enumerate_inputs
 from ..core.recipes import Recipe
-from .common import STATE_COLORS, open_folder
+from .common import STATE_COLORS, open_folder, run_bg, to_qimage, wrap_label
+from .widgets.compare_view import CompareView
 
 FILTERS = [("All", None), ("Needs review", ("review", "needs_override")), ("Failed", ("failed", "cancelled")),
            ("Done", ("done",)), ("Queued/running", ("queued", "running")), ("Duplicates", ("duplicate",))]
@@ -61,6 +62,12 @@ class BatchPanel(QWidget):
         for lab, v in (("Scale: Auto per image", "auto"), ("×1", 1), ("×2", 2), ("×4", 4)):
             self.scale.addItem(lab, v)
         row.addWidget(self.scale)
+        self.look = QComboBox()
+        for lab, v in [("Look: Enhanced (visible, non-generative)", "enhanced"), ("Look: Vivid (strong)", "vivid"),
+                         ("Look: Natural (repair defects only)", "natural")]:
+            self.look.addItem(lab, v)
+        self.look.setCurrentIndex(max(0, self.look.findData(getattr(self.studio.settings, "default_look", "enhanced"))))
+        row.addWidget(self.look)
         row.addStretch(1)
         root.addLayout(row)
         row = QHBoxLayout()
@@ -120,7 +127,34 @@ class BatchPanel(QWidget):
             self.table.setColumnWidth(i, w)
         self.table.cellDoubleClicked.connect(self._open_row)
         self.table.setToolTip("Double-click a row to open it in Prepare (per-image override).")
-        root.addWidget(self.table, 1)
+        split = QSplitter(Qt.Orientation.Horizontal)
+        split.addWidget(self.table)
+        pv = QWidget()
+        pl = QVBoxLayout(pv)
+        pl.setContentsMargins(4, 0, 0, 0)
+        prow = QHBoxLayout()
+        self.follow = QCheckBox("Follow latest result")
+        self.follow.setChecked(True)
+        prow.addWidget(self.follow)
+        for lab, m in (("Wipe", "wipe"), ("Before", "before"), ("After", "after"), ("Side", "side")):
+            b = QPushButton(lab)
+            b.clicked.connect(lambda _=False, mm=m: self.preview.set_mode(mm))
+            prow.addWidget(b)
+        prow.addStretch(1)
+        pl.addLayout(prow)
+        self.preview = CompareView()
+        self.preview.empty_text = "Select a row (or start a batch) to preview Before / After"
+        pl.addWidget(self.preview, 1)
+        self.preview_info = wrap_label("")
+        self.preview_info.setMaximumHeight(90)
+        pl.addWidget(self.preview_info)
+        split.addWidget(pv)
+        split.setStretchFactor(0, 3)
+        split.setStretchFactor(1, 2)
+        self.table.itemSelectionChanged.connect(self._preview_selected)
+        root.addWidget(split, 1)
+        self._preview_job = None
+        self._preview_seen = set()
         self.similar = QListWidget()
         self.similar.setMaximumHeight(70)
         root.addWidget(QLabel("Visually similar pairs (suggestions only — nothing is deleted):"))
@@ -158,6 +192,7 @@ class BatchPanel(QWidget):
         self.batch_id = self.jm.create_batch(self.name.text().strip() or "batch", self.pending,
                                              recursive=self.recursive.isChecked(), profiles=profiles,
                                              mode=self.mode.currentData(), scale=self.scale.currentData(),
+                                             look=self.look.currentData(),
                                              quality_override=self.override.isChecked())
         self._clear_pending()
         self._load_batches(select=self.batch_id)
@@ -245,6 +280,7 @@ class BatchPanel(QWidget):
             ic = QTableWidgetItem()
             ic.setIcon(self._thumb(j["source_path"]))
             self.table.setItem(r, 0, ic)
+        self._follow_latest(jobs)
         st = self.jm.stats(self.batch_id)
         s = st["states"]
         tt = st["total_s"]
@@ -254,6 +290,59 @@ class BatchPanel(QWidget):
         self.similar.clear()
         for a, b, d in st["similar_pairs"][:50]:
             self.similar.addItem(f"job {a} ≈ job {b} (dHash distance {d})")
+
+    # ------------------------------------------------------------------ live preview
+    def _preview_selected(self):
+        rows = sorted({i.row() for i in self.table.selectedIndexes()})
+        if rows:
+            it = self.table.item(rows[0], 8)
+            if it:
+                self.show_preview(int(it.text()))
+
+    def show_preview(self, job_id: int):
+        """Load source + restored master for *job_id* off the UI thread and show them in the compare view."""
+        if job_id == self._preview_job:
+            return
+        self._preview_job = job_id
+        j = self.studio.db.one("SELECT * FROM jobs WHERE id=?", (job_id,))
+        if not j:
+            return
+        out = self.studio.db.one("SELECT path, kind FROM outputs WHERE job_id=? ORDER BY "
+                                 "(kind='restored_master') DESC, id DESC LIMIT 1", (job_id,))
+
+        def load(progress, cancel):
+            from ..core.imageio import load_image
+            src = load_image(j["source_path"])
+            res = load_image(out["path"]) if out and Path(out["path"]).is_file() else None
+            return (to_qimage(src.rgb, src.icc_profile, src.alpha),
+                    to_qimage(res.rgb, res.icc_profile, res.alpha) if res else None)
+
+        def done(imgs):
+            if self._preview_job != job_id:
+                return
+            a, b = imgs
+            self.preview.labels = ("Before · Source", "After · Restored Master" if b is not None else "After · (pending)")
+            self.preview.set_images(a, b)
+            rv = json.loads(j["review_json"]) if j["review_json"] else {}
+            rc = Recipe.from_json(json.loads(j["recipe_json"])).summary() if j["recipe_json"] else "—"
+            t = json.loads(j["timings_json"]) if j["timings_json"] else {}
+            secs = f"{t['total_job_ms'] / 1000:.1f} s" if isinstance(t.get("total_job_ms"), (int, float)) else ""
+            flags = rv.get("flags", [])
+            self.preview_info.setText(f"{Path(j['source_path']).name} · {j['state']} {secs}\n{rc}"
+                                      + (("\n⚑ " + " | ".join(flags[:3])) if flags else "")
+                                      + (f"\n{j['error']}" if j["error"] else ""))
+
+        run_bg(load, on_done=done, on_error=lambda m: self.preview_info.setText("Preview failed: " + m[:200]))
+
+    def _follow_latest(self, jobs: list[dict]):
+        if not self.follow.isChecked():
+            return
+        finished = [j for j in jobs if j["state"] in ("done", "review") and j["id"] not in self._preview_seen]
+        if finished:
+            latest = max(finished, key=lambda j: j["finished"] or 0)
+            for j in finished:
+                self._preview_seen.add(j["id"])
+            self.show_preview(latest["id"])
 
     def _open_row(self, row: int, col: int):
         jid = int(self.table.item(row, 8).text())

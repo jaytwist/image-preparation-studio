@@ -59,4 +59,5 @@ WINDOWS_VALIDATION.md for the 10-step procedure that closes this gap.
 * Work was paused before GPU validation; see docs/RESTART.md.
 
 ## Changelog
+* 0.9.0rc2 — Look levels (Enhanced default, Vivid, Natural) after user feedback that repair-only results were barely visible; live Before/After preview in Batch; identity check now runs for every operation on faces; real-ComfyUI v0.44 integration fixes; one-click `run.cmd` setup.
 * 0.9.0rc1 — first release candidate (this document).

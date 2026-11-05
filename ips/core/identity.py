@@ -216,7 +216,7 @@ def _ssim(a: np.ndarray, b: np.ndarray) -> float:
 def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
                   analyzer: FaceAnalyzer | None = None, denoise_applied: bool = False,
                   upscaled: bool | None = None, color_changed: bool = False,
-                  artifact_removal: bool | None = None) -> IdentityReport:
+                  artifact_removal: bool | None = None, sharpened: bool = False) -> IdentityReport:
     """Compare *faces* (detected on source) between source and output (any scale, same framing)."""
     if not faces:
         return IdentityReport(available=True, method="no faces detected")
@@ -308,7 +308,7 @@ def compare_faces(src_rgb: np.ndarray, out_rgb: np.ndarray, faces: list[Face],
                 (fd.fine_texture_ratio is not None and fd.fine_texture_ratio < FINE_SMOOTHING_REVIEW):
             fd.flags.append(f"possible skin smoothing / beautification (mid-texture ×{fd.mid_texture_ratio:.2f}, "
                             f"fine-texture ×{fd.fine_texture_ratio:.2f})")
-        if fd.fine_texture_ratio is not None and fd.fine_texture_ratio > INVENTED_REVIEW:
+        if fd.fine_texture_ratio is not None and fd.fine_texture_ratio > INVENTED_REVIEW * (2.0 if sharpened else 1.0):
             fd.flags.append(f"possible invented fine detail (fine-texture ×{fd.fine_texture_ratio:.2f})")
         if not color_changed and fd.skin_delta_e is not None and fd.skin_delta_e > SKIN_DE_REVIEW:
             fd.flags.append(f"skin tone shift ΔE {fd.skin_delta_e:.1f} > {SKIN_DE_REVIEW} without a colour operation")
