@@ -108,6 +108,11 @@ class Recipe:
                    MODELS[o.model_id].character == "generative" for o in self.ops)
 
     @property
+    def uses_external(self) -> bool:
+        """External (ComfyUI) models: character not benchmarked by Studio -> always reviewed."""
+        return any(o.enabled and o.method.startswith("comfy:") for o in self.ops)
+
+    @property
     def uses_gan(self) -> bool:
         from ..backends.registry import MODELS
         return any(o.enabled and o.model_id and MODELS.get(o.model_id) and

@@ -47,7 +47,9 @@ def make_server(fake: Fake):
                 run = [[0, f"other-{i}"] for i in range(fake.other_running)] + [[0, p] for p in fake.running]
                 return self._json({"queue_running": run, "queue_pending": [[1, p] for p in fake.pending]})
             if self.path.startswith("/object_info/UpscaleModelLoader"):
-                return self._json({"UpscaleModelLoader": {"input": {"required": {"model_name": [["4x_test.pth"]]}}}})
+                # modern typed COMBO format, as returned by ComfyUI v0.44
+                return self._json({"UpscaleModelLoader": {"input": {"required": {
+                    "model_name": ["COMBO", {"options": ["4x_test.pth"]}]}}}})
             if self.path.startswith("/object_info/"):
                 return self._json({})
             if self.path.startswith("/history/"):
@@ -94,6 +96,13 @@ def fake():
     f.url = f"http://127.0.0.1:{srv.server_address[1]}"
     yield f
     srv.shutdown()
+
+
+def test_combo_formats():
+    from ips.backends.comfy.client import _combo_options
+    assert _combo_options([["a.pth", "b.pth"], {}]) == ["a.pth", "b.pth"]
+    assert _combo_options(["COMBO", {"options": ["a.pth"]}]) == ["a.pth"]
+    assert _combo_options(["STRING", {}]) == []
 
 
 def test_rejects_non_local_hosts():

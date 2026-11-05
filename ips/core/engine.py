@@ -303,7 +303,8 @@ class Studio:
             timings["peak_vram_mb"] = res.peak_vram_mb
         identity_flags = (res.identity or {}).get("flags", [])
         state = "review" if (identity_flags or res.guard_actions or rec.confidence < 0.55 or
-                             (rec.outside_fast_profile and rec.quality_override) or rec.uses_gan) else "done"
+                             (rec.outside_fast_profile and rec.quality_override) or rec.uses_gan or
+                             rec.uses_external) else "done"
         outcome = JobOutcome(src, rec, auto, res, outs, timings, flags, state)
         self.write_sidecar(src, self.outcome_json(outcome), batch_name)
         return outcome

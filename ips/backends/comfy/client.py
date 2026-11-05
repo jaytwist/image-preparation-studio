@@ -117,7 +117,8 @@ class ComfyClient:
     def upscale_models(self) -> list[str]:
         try:
             info = self._get_json("/object_info/UpscaleModelLoader")
-            return list(info["UpscaleModelLoader"]["input"]["required"]["model_name"][0])
+            spec = info["UpscaleModelLoader"]["input"]["required"]["model_name"]
+            return _combo_options(spec)
         except (ComfyError, KeyError, IndexError, TypeError):
             return []
 
@@ -229,6 +230,18 @@ class ComfyClient:
         if not out:
             raise ComfyError("ComfyUI returned no image")
         return out[0]
+
+
+def _combo_options(spec: Any) -> list[str]:
+    """Combo inputs come as ``[[opt, ...], {...}]`` (classic) or ``["COMBO", {"options": [...]}]`` (ComfyUI >= 0.3.x
+    typed format, verified against v0.44)."""
+    if isinstance(spec, list) and spec:
+        first = spec[0]
+        if isinstance(first, list):
+            return [str(x) for x in first]
+        if first == "COMBO" and len(spec) > 1 and isinstance(spec[1], dict):
+            return [str(x) for x in spec[1].get("options", [])]
+    return []
 
 
 def load_workflow(name: str, **values: Any) -> dict[str, Any]:

@@ -160,6 +160,8 @@ class Pipeline:
                         out = cops.resize_to(out, int(round(w0 * remaining)), int(round(h0 * remaining)))
                 warnings.append(f"{op.method}: ran on local ComfyUI (8-bit PNG transfer; model character "
                                 "not benchmarked by Studio)")
+                recipe.flags.append(f"External ComfyUI model {op.method.split(':', 2)[2]}: identity/texture behaviour "
+                                    "not benchmarked — review faces and text.")
             else:
                 out = _apply_classical(op, inp)
             if op.kind == "geometry":

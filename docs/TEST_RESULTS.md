@@ -152,6 +152,23 @@ Manual-only and any GAN/"balanced" output goes to the Review Queue by policy. Fa
 "head" at ×0.5) are not detected, so identity cannot be assessed on very small images.
 Re-run of both face sets with the final thresholds (*post-hoc*: these sets informed the fixes), all 17 faces detected: faithful upscalers 0/17 flagged · legitimate FBCNN cleanup **0/17** (was 7/9) · Real-ESRGAN ×2plus 17/17 · beauty filter 16/17 · RealPLKSR 2/17 · Real-ESRGAN general v3 0/17 (on these large, clear faces it changed little: similarity ≥ 0.985).
 
+## 5d. Real ComfyUI integration (`tests/test_comfy_real.py`)
+Run against a **real ComfyUI v0.44.0** server (CPU, localhost:8188) installed in a separate venv in the build
+container — not the user's install, which was unreachable. `IPS_COMFY_URL=… IPS_COMFY_ROOT=… pytest tests/test_comfy_real.py`.
+
+| Test | Result |
+|---|---|
+| Discovery (`/system_stats`, `/object_info`), model list | ✅ (after fix 15) |
+| Upscale via ComfyUI vs Studio direct backend, same weights | ✅ SSIM > 0.98 (8-bit PNG transfer) |
+| Isolation: `input/ output/ models/ user/ custom_nodes/` unchanged; only `temp/` used | ✅ |
+| Foreign job running → Studio waits (ComfyBusy), foreign job completes untouched | ✅ |
+| Cancel: refuses a foreign prompt; deletes only its own pending prompt; foreign job succeeds | ✅ |
+| Studio pipeline route `comfy:upscale:<model>` → output + Review Queue | ✅ (after fix 16) |
+| Desktop UI lists the server's models in Manual | ✅ |
+| `tools/inspect_env.py` reads the install's models and server state | ✅ |
+
+Not covered: the user's own ComfyUI build, its custom nodes, GPU VRAM contention with NH Maker 2 on the RTX 5070 Ti.
+
 ## 6. Defects found by testing and fixed (all re-tested)
 
 | # | Found by | Defect | Fix |
@@ -170,6 +187,8 @@ Re-run of both face sets with the final thresholds (*post-hoc*: these sets infor
 | 12 | held-out evaluation | automatic WB raised colour error on 8/8 unseen photos | no automatic WB on photos (Faithful) |
 | 13 | text evaluation | pixel/glyph metrics cannot detect garbled letters | OCR-based dev evaluation; policy regression test |
 | 14 | held-out review | no-ground-truth sheets labelled the source "ground truth" | relabelled |
+| 15 | real ComfyUI v0.44 | model list parsed from the new typed COMBO format as single characters (fake server used the old format) | both formats parsed; fake server updated |
+| 16 | real ComfyUI v0.44 | outputs of external ComfyUI models were not sent to the Review Queue | external models always reviewed + flagged |
 
 ## 7. Performance (not the acceptance measurement)
 

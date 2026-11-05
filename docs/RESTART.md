@@ -12,7 +12,8 @@ Paused on 2026-11-04 at the user's request. State is fully committed and pushed 
 | Linux regression | Full combined run on final code: **84 passed, 0 failed** (14 min, `pytest -n 2 --dist loadfile`) |
 | Held-out validation | Done with frozen router (`reports/eval/holdout_results.json`); WB fix applied post-hoc |
 | Identity review signals | Recalibrated + 2 defects fixed; validated on unseen faces (TEST_RESULTS §5c) |
-| RTX 5070 Ti / ComfyUI / NH Maker 2 coexistence | **Not done** — no access (Remote Control never shared) |
+| Real ComfyUI integration | **Done** against real ComfyUI v0.44.0 (CPU, cloud container): 7/7 incl. isolation, busy-wait, own-prompt-only cancel |
+| RTX 5070 Ti speed / coexistence with the user's ComfyUI + NH Maker 2 | **Not done** — Remote Control lists Primenovator's folders but reports them "not available" to cloud sessions |
 
 ## Next steps, in priority order
 
